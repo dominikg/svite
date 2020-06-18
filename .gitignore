@@ -1,0 +1,4 @@
+.idea
+.env
+.npmrc
+node_modules

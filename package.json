@@ -1,0 +1,42 @@
+{
+  "name": "svite",
+  "version": "0.0.1",
+  "description": "svelte integration plugin for vite",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dominikg/svite.git"
+  },
+  "keywords": [
+    "vite",
+    "vite plugin",
+    "vitejs",
+    "vitejs plugin",
+    "svelte"
+  ],
+  "author": "dominikg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dominikg/svite/issues"
+  },
+  "homepage": "https://github.com/dominikg/svite#readme",
+  "dependencies": {},
+  "peerDependencies": {
+    "@rollup/plugin-node-resolve": ">=8.0.1 <9",
+    "cosmiconfig": ">=6.0.0 <7",
+    "rollup-plugin-svelte": ">=5.2.3 <6",
+    "rollup-pluginutils": "^2.8.2",
+    "svelte": ">= 3.23.2 <4",
+    "svelte-hmr": ">=0.9.0-0 <1",
+    "vite": ">=0.20.8 <1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "cosmiconfig": "^6.0.0",
+    "rollup-plugin-svelte": "^5.2.3",
+    "rollup-pluginutils": "^2.8.2",
+    "svelte": "^3.23.2",
+    "svelte-hmr": "^0.9.0-0",
+    "vite": "^0.20.8"
+  }
+}
