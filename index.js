@@ -56,6 +56,7 @@ const forcedSvelteDevOptions = {
 // values to fix for svelte compiler in build
 const forcedSvelteBuildOptions = {
   css: false,
+  format: 'esm', // pretty sure vite won't work with anything else
   emitCss: true,
 };
 
@@ -97,6 +98,13 @@ function createConfigs(pluginOptions) {
 
   const { hot, ...svelte } = config;
 
+  if(!svelte.extensions) {
+    svelte.extensions = ['.svelte'];
+  } else if (svelte.extensions.includes('.html')) {
+    console.warn('vite build does not support .html extension for svelte');
+    svelte.extensions = svelte.extensions.filter(ex => ex !== '.html');
+  }
+
   const dev = {
     ...svelte,
     ...forcedSvelteDevOptions,
@@ -125,7 +133,7 @@ function createConfigs(pluginOptions) {
  */
 function createSvelteRequestFilter(svelteOptions) {
   const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
-  const extensions = svelteOptions.extensions || ['.svelte']; // rollup-plugin-svelte fallback includes .html but vite might disagree, so don't
+  const extensions = svelteOptions.extensions || ['.svelte'];
   return (ctx) => ctx.body && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
 }
 
