@@ -2,6 +2,17 @@
   "name": "svite",
   "version": "0.0.1",
   "description": "svelte integration plugin for vite",
+  "scripts": {
+    "lint": "run-p lint:script lint:style",
+    "lint:script": "eslint --ignore-path .gitignore '**/*.{js,ts,svelte,html,svx,md}'",
+    "lint:style": "stylelint --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}'",
+    "lint:fix": "run-s lint:fix:script lint:fix:style",
+    "lint:fix:script": "npm run lint:script -- --fix",
+    "lint:fix:style": "npm run lint:style -- --fix",
+    "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
+    "format:fix": "npm run format -- --write",
+    "fixup": "run-s lint:fix format:fix"
+  },
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -32,11 +43,43 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^3.3.0",
+    "@typescript-eslint/parser": "^3.3.0",
     "cosmiconfig": "^6.0.0",
+    "eslint": "^7.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-config-recommended": "^4.1.0",
+    "eslint-plugin-html": "^6.0.2",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-jest": "^23.13.2",
+    "eslint-plugin-markdown": "^2.0.0-alpha.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-svelte3": "^2.7.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.0.5",
+    "prettier-plugin-svelte": "^1.1.0",
     "rollup-plugin-svelte": "^5.2.3",
     "rollup-pluginutils": "^2.8.2",
+    "stylelint": "^13.6.1",
+    "stylelint-config-prettier": "^8.0.1",
+    "stylelint-config-recommended": "^3.0.0",
     "svelte": "^3.23.2",
     "svelte-hmr": "^0.9.0-0",
+    "typescript": "^3.9.5",
     "vite": "^0.20.8"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,svelte,html,md,svx}": "./node_modules/.bin/eslint --fix",
+    "*.{css,scss,svelte,html,js,ts,md,svx}": [
+      "./node_modules/.bin/stylelint --fix",
+      "./node_modules/.bin/prettier --write"
+    ]
   }
 }

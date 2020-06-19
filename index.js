@@ -7,15 +7,7 @@ const { createMakeHot } = require('svelte-hmr');
 const { cosmiconfigSync } = require('cosmiconfig');
 const { walk } = require('svelte/compiler');
 
-const svelteDeps =  [
-  'svelte',
-  'svelte/animate',
-  'svelte/easing',
-  'svelte/internal',
-  'svelte/motion',
-  'svelte/store',
-  'svelte/transition'
-];
+const svelteDeps = ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition'];
 
 const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
   dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
@@ -70,7 +62,7 @@ function createConfigs(pluginOptions) {
   let baseConfig;
   try {
     const searchResult = cosmiconfigSync('svelte').search();
-    baseConfig = (!searchResult || searchResult.isEmpty) ? {} : searchResult.config;
+    baseConfig = !searchResult || searchResult.isEmpty ? {} : searchResult.config;
   } catch (e) {
     console.error('failed to load svelte config', e);
     baseConfig = {};
@@ -98,11 +90,11 @@ function createConfigs(pluginOptions) {
 
   const { hot, ...svelte } = config;
 
-  if(!svelte.extensions) {
+  if (!svelte.extensions) {
     svelte.extensions = ['.svelte'];
   } else if (svelte.extensions.includes('.html')) {
     console.warn('vite build does not support .html extension for svelte');
-    svelte.extensions = svelte.extensions.filter(ex => ex !== '.html');
+    svelte.extensions = svelte.extensions.filter((ex) => ex !== '.html');
   }
 
   const dev = {
@@ -140,14 +132,10 @@ function createSvelteRequestFilter(svelteOptions) {
 function updateViteConfig(config) {
   const viteConfig = config.vite;
   const optimizeDeps = {
-    include: svelteDeps.concat()
-  }
-  if(config.hot) {
-    optimizeDeps.include.push(
-      'svelte-hmr',
-      'svelte-hmr/runtime/esm',
-      'svelte-hmr/runtime/proxy-adapter-dom'
-    )
+    include: svelteDeps.concat(),
+  };
+  if (config.hot) {
+    optimizeDeps.include.push('svelte-hmr', 'svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom');
   }
   if (!viteConfig.optimizeDeps) {
     viteConfig.optimizeDeps = optimizeDeps;

@@ -19,31 +19,31 @@ npm run dev # starts dev-server with hot-module-reloading
 npm run build # builds to /dist
 ```
 
-
 # usage
 
 ## installation
 
 Install svite as a dev dependency
+
 ```shell script
 npm install -D svite
 ```
+
 Don't forget to install missing peer dependencies
 
-
 Add as plugin to `vite.config.js`
-```js 
+
+```js
 const svite = require('svite');
 module.exports = {
-  plugins:[
-    svite()
-  ]
-}
+  plugins: [svite()],
+};
 ```
 
 ## run
 
-just use regular `vite` or `vite build` commands 
+just use regular `vite` or `vite build` commands
+
 ```json
 {
   "scripts": {
@@ -54,9 +54,10 @@ just use regular `vite` or `vite build` commands
 ```
 
 ## check out the examples
-### [minimal](/examples/minimal)
-as barebones as it gets, just an essential App.svelte 
 
+### [minimal](/examples/minimal)
+
+as barebones as it gets, just an essential App.svelte
 
 ## limitations
 
@@ -65,17 +66,18 @@ as barebones as it gets, just an essential App.svelte
 - dev mode with externalized css
 
 # TODO
+
 - more examples
+
   - preprocessor support (postcss with tailwind)
-  - config 
+  - config
   - routify
-  
-- more features  
+
+- more features
+
   - vite options
-  
+
 # Credits
 
 - [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
 - [vite-plugin-svelte](https://github.com/intrnl/vite-plugin-svelte) - initial inspiration
-
-

@@ -1,0 +1,82 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "prettier"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "svelte3",
+    "html",
+    "markdown"
+  ],
+  "overrides": [
+    {
+      "files": ["./*.js","tools/**/*.js","**/*.config.js"],
+      "env": {
+        "node": true,
+        "browser": false
+      }
+    },
+    {
+      "files": ["**/*.svelte"],
+      "processor": "svelte3/svelte3",
+      "rules": {
+        "import/first": "off",
+        "import/no-duplicates": "off",
+        "import/no-mutable-exports": "off",
+        "import/no-unresolved": "off"
+      }
+    },
+    {
+      "files": ["**/*.svx","**/*.md"],
+      "processor": "markdown/markdown",
+      "rules": {
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "no-console": "off",
+        "padded-blocks": "off"
+      }
+    },
+    {
+      "files": ["**/*.svx/*.**","**/*.md/*.**"],
+      "rules": {
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "no-console": "off",
+        "padded-blocks": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.test.js"
+      ],
+      "env": {
+        "jest": true // now **/*.test.js files' env has both es6 *and* jest
+      },
+      // Can't extend in overrides: https://github.com/eslint/eslint/issues/8813
+      // "extends": ["plugin:jest/recommended"]
+      "plugins": ["jest"],
+      "rules": {
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "error",
+        "jest/prefer-to-have-length": "warn",
+        "jest/valid-expect": "error"
+      }
+    }
+  ]
+}
