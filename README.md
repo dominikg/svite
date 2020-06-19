@@ -1,6 +1,6 @@
 # svite
 
-[svelte](https://svelte.dev) integration plugin for [vite](https://github.com/vitejs/vite#readme)
+[svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = sweet
 
 ## features
 
