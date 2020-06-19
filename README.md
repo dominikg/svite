@@ -1,6 +1,6 @@
 # svite
 
-[svelte](https://svelte.dev) integration plugin for [vite](https://github.com/vitejs/vite#readme)
+[svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = sweet
 
 ## features
 
@@ -9,13 +9,14 @@
 - hot module reloading thanks to [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
 - drop-in installation as vite plugin
 
-#quickstart
+# quickstart
 
 ```shell script
 npx degit dominikg/svite/examples/minimal my-first-svite-project
 cd my-first-svite-project
 npm install
-npm run dev
+npm run dev # starts dev-server with hot-module-reloading
+npm run build # builds to /dist
 ```
 
 
@@ -73,6 +74,8 @@ as barebones as it gets, just an essential App.svelte
   - vite options
   
 # Credits
-  [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
+
+- [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
+- [vite-plugin-svelte](https://github.com/intrnl/vite-plugin-svelte) - initial inspiration
 
 
