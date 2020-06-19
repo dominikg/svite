@@ -73,7 +73,8 @@ as barebones as it gets, just an essential App.svelte
   - vite options
   
 # Credits
-  [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
-  [vite-plugin-svelte](https://github.com/intrnl/vite-plugin-svelte) - initial inspiration
+
+- [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
+- [vite-plugin-svelte](https://github.com/intrnl/vite-plugin-svelte) - initial inspiration
 
 
