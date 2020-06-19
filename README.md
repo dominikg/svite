@@ -15,7 +15,8 @@
 npx degit dominikg/svite/examples/minimal my-first-svite-project
 cd my-first-svite-project
 npm install
-npm run dev
+npm run dev # starts dev-server with hot-module-reloading
+npm run build # builds to /dist
 ```
 
 
