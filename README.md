@@ -9,7 +9,7 @@
 - hot module reloading thanks to [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
 - drop-in installation as vite plugin
 
-#quickstart
+# quickstart
 
 ```shell script
 npx degit dominikg/svite/examples/minimal my-first-svite-project
@@ -74,5 +74,6 @@ as barebones as it gets, just an essential App.svelte
   
 # Credits
   [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
+  [vite-plugin-svelte](https://github.com/intrnl/vite-plugin-svelte) - initial inspiration
 
 
