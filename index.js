@@ -1,6 +1,4 @@
 const path = require('path');
-const { Readable } = require('stream');
-
 const rollupPluginSvelte = require('rollup-plugin-svelte');
 const { createFilter } = require('rollup-pluginutils');
 const { createMakeHot } = require('svelte-hmr');
@@ -10,24 +8,10 @@ const { walk } = require('svelte/compiler');
 const svelteDeps = ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition'];
 
 const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
-  dedupe: importee => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
+  dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
 });
 
 const makeHot = createMakeHot({ walk });
-
-function readBody(stream) {
-  if (stream instanceof Readable) {
-    return new Promise((resolve, reject) => {
-      let res = '';
-      stream
-        .on('data', chunk => (res += chunk))
-        .on('error', reject)
-        .on('end', () => resolve(res));
-    });
-  } else {
-    return !stream || typeof stream === 'string' ? stream : stream.toString();
-  }
-}
 
 // default config to start building upon. hot value is also used if hot = true is passed in
 const defaultConfig = {
@@ -94,7 +78,7 @@ function createConfigs(pluginOptions) {
     svelte.extensions = ['.svelte'];
   } else if (svelte.extensions.includes('.html')) {
     console.warn('vite build does not support .html extension for svelte');
-    svelte.extensions = svelte.extensions.filter(ex => ex !== '.html');
+    svelte.extensions = svelte.extensions.filter((ex) => ex !== '.html');
   }
 
   const dev = {
@@ -120,13 +104,13 @@ function createConfigs(pluginOptions) {
 
 /**
  * builds a filter function that works out if rollup-plugin-svelte would process the request
- * this prevents reading request body if not required
+ * this prevents calling transform when not needed
  *
  */
-function createSvelteRequestFilter(svelteOptions) {
+function createSvelteTransformTest(svelteOptions) {
   const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
   const extensions = svelteOptions.extensions || ['.svelte'];
-  return ctx => ctx.body && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
+  return (ctx) => ctx && ctx.path && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
 }
 
 function updateViteConfig(config) {
@@ -146,67 +130,44 @@ function updateViteConfig(config) {
   }
 }
 
-function createSvelteMiddleware(config) {
-  const devRollupPluginSvelte = rollupPluginSvelte(config.dev);
-  const isSvelteRequest = createSvelteRequestFilter(config.dev);
-
-  return async (ctx, next) => {
-    await next();
-
-    if (!isSvelteRequest(ctx)) {
-      return;
-    }
-    const id = ctx.path;
-    let codeToCompile = await readBody(ctx.body);
-    let output;
-    try {
-      const compiled = { js: await devRollupPluginSvelte.transform(codeToCompile, id) };
-      if (config.hot) {
-        output = makeHot(id, compiled.js.code, config.hot, compiled, codeToCompile, config.dev);
-      } else {
-        output = compiled.js.code;
-      }
-      ctx.type = 'js';
-      ctx.body = output;
-    } catch (e) {
-      console.error(`failed to compile ${id}`, { codeToCompile }, e);
-      throw e;
-    }
-  };
-}
-
 module.exports = function svite(pluginOptions = {}) {
   const config = createConfigs(pluginOptions);
   const devRollupPluginSvelte = rollupPluginSvelte(config.dev);
+  const buildRollupPluginSvelte = rollupPluginSvelte(config.build);
+  const isSvelteRequest = createSvelteTransformTest(config.dev);
+
   return {
     rollupDedupe: svelteDeps, // doesn't work here
     rollupInputOptions: {
       plugins: [
         rollupPluginDedupeSvelte, // but this does.
-        rollupPluginSvelte(config.build),
+        //buildRollupPluginSvelte , // transform handles building, reenable here and dev only test to switch
       ],
     },
     transforms: [
       {
-        test: ctx => ctx.path.endsWith('.svelte'),
-        transform: async ({ code, ...ctx }) => {
+        //test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx), // dev only test
+        test: (ctx) => isSvelteRequest(ctx),
+        transform: async ({ id, code, isBuild }) => {
+          if (isBuild) {
+            return buildRollupPluginSvelte.transform(code, id);
+          }
           // console.log('compile', ctx.path)
-          const id = ctx.path;
+
           const compiled = { js: await devRollupPluginSvelte.transform(code, id) };
-          const result = { ...compiled.js }
+          const result = { ...compiled.js };
           if (config.hot) {
             result.code = makeHot(id, result.code, config.hot, compiled, code, config.dev);
           }
-          return result
+          return result;
         },
       },
     ],
-    // configureServer: [
-    //   async ({ app, config: viteConfig }) => {
-    //     config.vite = viteConfig;
-    //     updateViteConfig(config);
-    //     app.use(createSvelteMiddleware(config));
-    //   },
-    // ],
+    configureServer: [
+      async ({ config: viteConfig }) => {
+        config.vite = viteConfig;
+        updateViteConfig(config);
+      },
+    ],
   };
 };
