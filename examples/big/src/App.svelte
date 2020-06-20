@@ -76,7 +76,6 @@
 {:else}
   <div class="App">
     <header class="App-header">
-      <img src="/logo.svg" class="App-logo" alt="logo" />
       <p>
         Edit
         <code>src/App.svelte</code>

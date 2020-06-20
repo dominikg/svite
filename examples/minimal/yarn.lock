@@ -1026,9 +1026,9 @@ es6-promise@^4.1.1:
   integrity sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==
 
 esbuild@^0.5.3:
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.5.4.tgz#0460ef999089dba534f2d214a0b84affae32669b"
-  integrity sha512-qUKfkCHZ6jNzM1mIFlc4axTujYF+eNwjVMbYvmS26to5DnavdIQiE2JB3MEs77pgK9nrUviwAJKN39r7t4DynA==
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.5.6.tgz#a8166266d0189298eca86b5361ab5415659f9c16"
+  integrity sha512-dsP/rM0y+gzU2bCwhrK5q5BhjQN3YxFCvrmYu8yiD3FQeaSwCkIwASzu095TJnsMrluoDIKBfTd5xSirEmJwvQ==
 
 escape-html@^1.0.3, escape-html@~1.0.3:
   version "1.0.3"

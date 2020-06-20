@@ -1,40 +1,43 @@
-const path = require('path');
-const rollupPluginSvelte = require('rollup-plugin-svelte');
+// const path = require('path');
+// const rollupPluginSvelte = require('rollup-plugin-svelte');
+const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
 const { createFilter } = require('@rollup/pluginutils');
-const { createMakeHot } = require('svelte-hmr');
+// const { createMakeHot } = require('svelte-hmr');
 const { cosmiconfigSync } = require('cosmiconfig');
-const { walk } = require('svelte/compiler');
+// const { walk } = require('svelte/compiler');
 
 const svelteDeps = ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition'];
 
-const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
-  dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
-});
+// const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
+//   dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
+// });
 
-const makeHot = createMakeHot({ walk });
+// const makeHot = createMakeHot({ walk });
 
-// default config to start building upon. hot value is also used if hot = true is passed in
+const defaultHotOptions = {
+  compatVite: true,
+  optimistic: true,
+};
+
+// default config to start building upon.
 const defaultConfig = {
-  hot: {
-    compatVite: true,
-    optimistic: true,
-  },
+  hot: defaultHotOptions,
 };
 
-// values to fix for svelte compiler in dev
-const forcedSvelteDevOptions = {
-  css: true, // no exernal css in dev mode until we figure out how that could work
-  emitCss: false, // there's nothing listening for a possible emit, so don't.
-  format: 'esm', // pretty sure vite won't work with anything else
-  generate: 'dom', // just to make sure
-};
-
-// values to fix for svelte compiler in build
-const forcedSvelteBuildOptions = {
-  css: false,
-  format: 'esm', // pretty sure vite won't work with anything else
-  emitCss: true,
-};
+// // values to fix for svelte compiler in dev
+// const forcedSvelteDevOptions = {
+//   css: true, // no exernal css in dev mode until we figure out how that could work
+//   emitCss: false, // there's nothing listening for a possible emit, so don't.
+//   format: 'esm', // pretty sure vite won't work with anything else
+//   generate: 'dom', // just to make sure
+// };
+//
+// // values to fix for svelte compiler in build
+// const forcedSvelteBuildOptions = {
+//   css: false,
+//   format: 'esm', // pretty sure vite won't work with anything else
+//   emitCss: true,
+// };
 
 /**
  * create required configs by merging default config, svelte config (read via cosmiconfig), passed pluginOptions.
@@ -60,43 +63,38 @@ function createConfigs(pluginOptions) {
 
   const isProduction = process.env.NODE_ENV === 'production';
 
-  if (isProduction) {
-    config.hot = false; // no hmr in production mode
-  }
-
-  if (config.hot === true) {
-    config.hot = defaultConfig.hot; // use default hot config for true
-  }
-
-  if (config.hot) {
-    config.dev = true; // needed, otherwise svelte-hmr doesn't work
-  }
-
-  const { hot, ...svelte } = config;
-
-  if (!svelte.extensions) {
-    svelte.extensions = ['.svelte'];
-  } else if (svelte.extensions.includes('.html')) {
+  if (!config.extensions) {
+    config.extensions = ['.svelte'];
+  } else if (config.extensions.includes('.html')) {
     console.warn('vite build does not support .html extension for svelte');
-    svelte.extensions = svelte.extensions.filter((ex) => ex !== '.html');
+    config.extensions = config.extensions.filter((ex) => ex !== '.html');
   }
-
-  const dev = {
-    ...svelte,
-    ...forcedSvelteDevOptions,
-  };
 
   const build = {
-    ...svelte,
-    ...forcedSvelteBuildOptions,
+    ...config,
+    // ...forcedSvelteBuildOptions,
   };
+
+  // no dev code in build
+  delete build.hot;
+
+  const dev = {
+    ...config,
+    // ...forcedSvelteDevOptions,
+  };
+
+  if (config.hot === true) {
+    dev.hot = defaultHotOptions; // use default hot config for true
+  }
+  if (config.hot) {
+    dev.dev = true; // needed, otherwise svelte-hmr doesn't work
+  }
 
   if (isProduction) {
     build.dev = false;
   }
 
   return {
-    hot,
     dev,
     build,
   };
@@ -107,67 +105,54 @@ function createConfigs(pluginOptions) {
  * this prevents calling transform when not needed
  *
  */
-function createSvelteTransformTest(svelteOptions) {
-  const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
-  const extensions = svelteOptions.extensions || ['.svelte'];
-  return (ctx) => ctx && ctx.path && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
-}
-
-function updateViteConfig(config) {
-  const viteConfig = config.vite;
-  const optimizeDeps = {
-    include: svelteDeps.concat(),
-  };
-  if (config.hot) {
-    optimizeDeps.include.push('svelte-hmr', 'svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom');
-  }
-  if (!viteConfig.optimizeDeps) {
-    viteConfig.optimizeDeps = optimizeDeps;
-  } else if (viteConfig.optimizeDeps.include) {
-    viteConfig.optimizeDeps.include.push(...optimizeDeps.include);
-  } else {
-    console.warn('failed to add optimizeDeps to vite optimizeDeps');
-  }
-}
+// function createSvelteTransformTest(svelteOptions) {
+//   const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
+//   const extensions = svelteOptions.extensions || ['.svelte'];
+//   return (ctx) => ctx && ctx.path && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
+// }
+//
+// function updateViteConfig(config) {
+//   const viteConfig = config.vite;
+//   const optimizeDeps = {
+//     include: svelteDeps.concat(),
+//   };
+//   if (config.hot) {
+//     optimizeDeps.include.push('svelte-hmr', 'svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom');
+//   }
+//   if (!viteConfig.optimizeDeps) {
+//     viteConfig.optimizeDeps = optimizeDeps;
+//   } else if (viteConfig.optimizeDeps.include) {
+//     viteConfig.optimizeDeps.include.push(...optimizeDeps.include);
+//   } else {
+//     console.warn('failed to add optimizeDeps to vite optimizeDeps');
+//   }
+// }
 
 module.exports = function svite(pluginOptions = {}) {
   const config = createConfigs(pluginOptions);
-  const devRollupPluginSvelte = rollupPluginSvelte(config.dev);
-  const buildRollupPluginSvelte = rollupPluginSvelte(config.build);
-  const isSvelteRequest = createSvelteTransformTest(config.dev);
-
+  const devPlugin = rollupPluginSvelteHot(config.dev);
+  const buildPlugin = rollupPluginSvelteHot(config.build);
+  const isIncluded = createFilter(pluginOptions.include, pluginOptions.exclude);
   return {
     rollupDedupe: svelteDeps, // doesn't work here
     rollupInputOptions: {
       plugins: [
-        rollupPluginDedupeSvelte, // but this does.
+        buildPlugin,
+        // rollupPluginDedupeSvelte,
         //buildRollupPluginSvelte , // transform handles building, reenable here and dev only test to switch
       ],
     },
     transforms: [
       {
-        //test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx), // dev only test
-        test: (ctx) => isSvelteRequest(ctx),
-        transform: async ({ id, code, isBuild }) => {
-          if (isBuild) {
-            return buildRollupPluginSvelte.transform(code, id);
-          }
-          // console.log('compile', ctx.path)
-
-          const compiled = { js: await devRollupPluginSvelte.transform(code, id) };
-          const result = { ...compiled.js };
-          if (config.hot) {
-            result.code = makeHot(id, result.code, config.hot, compiled, code, config.dev);
-          }
-          return result;
-        },
+        test: (ctx) => !ctx.isBuild && isIncluded(ctx),
+        transform: async ({ path: id, code }) => await devPlugin.transform(code, id),
       },
     ],
-    configureServer: [
-      async ({ config: viteConfig }) => {
-        config.vite = viteConfig;
-        updateViteConfig(config);
-      },
-    ],
+    // configureServer: [
+    //   async ({ config: viteConfig }) => {
+    //     config.vite = viteConfig;
+    //     updateViteConfig(config);
+    //   },
+    // ],
   };
 };
