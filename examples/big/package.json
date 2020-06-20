@@ -13,7 +13,7 @@
     "cosmiconfig": "^6.0.0",
     "rollup-plugin-svelte": "^5.2.3",
     "svelte-hmr": "^0.9.0-0",
-    "svite": "../..",
+    "svite": "latest",
     "vite": "^1.0.0-beta.1"
   }
 }

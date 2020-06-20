@@ -190,7 +190,7 @@ module.exports = function svite(pluginOptions = {}) {
       {
         test: ctx => ctx.path.endsWith('.svelte'),
         transform: async ({ code, ...ctx }) => {
-          console.log('compile', ctx.path)
+          // console.log('compile', ctx.path)
           const id = ctx.path;
           const compiled = { js: await devRollupPluginSvelte.transform(code, id) };
           const result = { ...compiled.js }
