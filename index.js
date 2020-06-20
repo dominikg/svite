@@ -1,5 +1,6 @@
 const path = require('path');
 const { Readable } = require('stream');
+const ConvertSourceMap = require('convert-source-map');
 
 const rollupPluginSvelte = require('rollup-plugin-svelte');
 const { createFilter } = require('rollup-pluginutils');
@@ -10,7 +11,7 @@ const { walk } = require('svelte/compiler');
 const svelteDeps = ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition'];
 
 const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
-  dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
+  dedupe: importee => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
 });
 
 const makeHot = createMakeHot({ walk });
@@ -20,7 +21,7 @@ function readBody(stream) {
     return new Promise((resolve, reject) => {
       let res = '';
       stream
-        .on('data', (chunk) => (res += chunk))
+        .on('data', chunk => (res += chunk))
         .on('error', reject)
         .on('end', () => resolve(res));
     });
@@ -94,7 +95,7 @@ function createConfigs(pluginOptions) {
     svelte.extensions = ['.svelte'];
   } else if (svelte.extensions.includes('.html')) {
     console.warn('vite build does not support .html extension for svelte');
-    svelte.extensions = svelte.extensions.filter((ex) => ex !== '.html');
+    svelte.extensions = svelte.extensions.filter(ex => ex !== '.html');
   }
 
   const dev = {
@@ -126,7 +127,7 @@ function createConfigs(pluginOptions) {
 function createSvelteRequestFilter(svelteOptions) {
   const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
   const extensions = svelteOptions.extensions || ['.svelte'];
-  return (ctx) => ctx.body && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
+  return ctx => ctx.body && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
 }
 
 function updateViteConfig(config) {
@@ -167,7 +168,9 @@ function createSvelteMiddleware(config) {
         output = compiled.js.code;
       }
       ctx.type = 'js';
-      ctx.body = output;
+      console.log(compiled.js.map) ; process.exit()
+      ctx.body = output
+      + '\n' + ConvertSourceMap.fromObject();
     } catch (e) {
       console.error(`failed to compile ${id}`, { codeToCompile }, e);
       throw e;
@@ -177,6 +180,7 @@ function createSvelteMiddleware(config) {
 
 module.exports = function svite(pluginOptions = {}) {
   const config = createConfigs(pluginOptions);
+  const devRollupPluginSvelte = rollupPluginSvelte(config.dev);
   return {
     rollupDedupe: svelteDeps, // doesn't work here
     rollupInputOptions: {
@@ -185,12 +189,27 @@ module.exports = function svite(pluginOptions = {}) {
         rollupPluginSvelte(config.build),
       ],
     },
-    configureServer: [
-      async ({ app, config: viteConfig }) => {
-        config.vite = viteConfig;
-        updateViteConfig(config);
-        app.use(createSvelteMiddleware(config));
+    transforms: [
+      {
+        test: ctx => ctx.path.endsWith('.svelte'),
+        transform: async ({ code, ...ctx }) => {
+          console.log('compile', ctx.path)
+          const id = ctx.path;
+          const compiled = { js: await devRollupPluginSvelte.transform(code, id) };
+          const result = { ...compiled.js }
+          if (config.hot) {
+            result.code = makeHot(id, result.code, config.hot, compiled, code, config.dev);
+          }
+          return result
+        },
       },
     ],
+    // configureServer: [
+    //   async ({ app, config: viteConfig }) => {
+    //     config.vite = viteConfig;
+    //     updateViteConfig(config);
+    //     app.use(createSvelteMiddleware(config));
+    //   },
+    // ],
   };
 };
