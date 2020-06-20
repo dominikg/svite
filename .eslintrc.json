@@ -18,7 +18,7 @@
     "sourceType": "module"
   },
   "plugins": [
-    "@typescript-eslint",
+    "@typescript-eslint/eslint-plugin",
     "svelte3",
     "html",
     "markdown"
