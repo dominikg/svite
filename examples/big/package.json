@@ -1,0 +1,19 @@
+{
+  "name": "svite-example-minimal",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "svelte": "^3.23.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^8.0.1",
+    "cosmiconfig": "^6.0.0",
+    "rollup-plugin-svelte": "^5.2.3",
+    "svelte-hmr": "^0.9.0-0",
+    "svite": "../..",
+    "vite": "^1.0.0-beta.1"
+  }
+}

@@ -1,6 +1,5 @@
 const path = require('path');
 const { Readable } = require('stream');
-const ConvertSourceMap = require('convert-source-map');
 
 const rollupPluginSvelte = require('rollup-plugin-svelte');
 const { createFilter } = require('rollup-pluginutils');
@@ -168,9 +167,7 @@ function createSvelteMiddleware(config) {
         output = compiled.js.code;
       }
       ctx.type = 'js';
-      console.log(compiled.js.map) ; process.exit()
-      ctx.body = output
-      + '\n' + ConvertSourceMap.fromObject();
+      ctx.body = output;
     } catch (e) {
       console.error(`failed to compile ${id}`, { codeToCompile }, e);
       throw e;
