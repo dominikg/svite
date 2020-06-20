@@ -133,6 +133,8 @@ module.exports = function svite(pluginOptions = {}) {
   const devPlugin = rollupPluginSvelteHot(config.dev);
   const buildPlugin = rollupPluginSvelteHot(config.build);
   const isIncluded = createFilter(pluginOptions.include, pluginOptions.exclude);
+  const { extensions = ['.svelte'] } = pluginOptions;
+  const testExtension = (file) => extensions.some((ext) => file.endsWith(ext));
   return {
     rollupDedupe: svelteDeps, // doesn't work here
     rollupInputOptions: {
@@ -144,7 +146,7 @@ module.exports = function svite(pluginOptions = {}) {
     },
     transforms: [
       {
-        test: (ctx) => !ctx.isBuild && isIncluded(ctx),
+        test: (ctx) => !ctx.isBuild && testExtension(ctx.path) && isIncluded(ctx.path),
         transform: async ({ path: id, code }) => await devPlugin.transform(code, id),
       },
     ],
