@@ -1,6 +1,6 @@
 const path = require('path');
 const rollupPluginSvelte = require('rollup-plugin-svelte');
-const { createFilter } = require('rollup-pluginutils');
+const { createFilter } = require('@rollup/pluginutils');
 const { createMakeHot } = require('svelte-hmr');
 const { cosmiconfigSync } = require('cosmiconfig');
 const { walk } = require('svelte/compiler');
