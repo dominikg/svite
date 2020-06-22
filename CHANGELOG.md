@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.0.4
+
+### Added
+
+- updated dependencies of examples
+
+### Fixed
+
+- optimizeDeps were not built correctly in 0.0.3
+
 ## 0.0.3
 
 ### Added
