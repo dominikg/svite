@@ -1,18 +1,13 @@
-// const path = require('path');
-// const rollupPluginSvelte = require('rollup-plugin-svelte');
 const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
 const { createFilter } = require('@rollup/pluginutils');
-// const { createMakeHot } = require('svelte-hmr');
 const { cosmiconfigSync } = require('cosmiconfig');
-// const { walk } = require('svelte/compiler');
+const log = require('./tools/log');
 
 const svelteDeps = ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition'];
 
-// const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
-//   dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
-// });
-
-// const makeHot = createMakeHot({ walk });
+const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
+  dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
+});
 
 const defaultHotOptions = {
   compatVite: true,
@@ -22,22 +17,9 @@ const defaultHotOptions = {
 // default config to start building upon.
 const defaultConfig = {
   hot: defaultHotOptions,
+  css: false,
+  emitCss: true,
 };
-
-// // values to fix for svelte compiler in dev
-// const forcedSvelteDevOptions = {
-//   css: true, // no exernal css in dev mode until we figure out how that could work
-//   emitCss: false, // there's nothing listening for a possible emit, so don't.
-//   format: 'esm', // pretty sure vite won't work with anything else
-//   generate: 'dom', // just to make sure
-// };
-//
-// // values to fix for svelte compiler in build
-// const forcedSvelteBuildOptions = {
-//   css: false,
-//   format: 'esm', // pretty sure vite won't work with anything else
-//   emitCss: true,
-// };
 
 /**
  * create required configs by merging default config, svelte config (read via cosmiconfig), passed pluginOptions.
@@ -51,8 +33,8 @@ function createConfigs(pluginOptions) {
     const searchResult = cosmiconfigSync('svelte').search();
     baseConfig = !searchResult || searchResult.isEmpty ? {} : searchResult.config;
   } catch (e) {
-    console.error('failed to load svelte config', e);
-    baseConfig = {};
+    log.error('failed to load svelte config', e);
+    throw e;
   }
 
   const config = {
@@ -66,27 +48,29 @@ function createConfigs(pluginOptions) {
   if (!config.extensions) {
     config.extensions = ['.svelte'];
   } else if (config.extensions.includes('.html')) {
-    console.warn('vite build does not support .html extension for svelte');
+    log.warn('vite build does not support .html extension for svelte');
     config.extensions = config.extensions.filter((ex) => ex !== '.html');
+  }
+  if (!config.onwarn) {
+    config.onwarn = require('./tools/rollupwarn');
   }
 
   const build = {
     ...config,
-    // ...forcedSvelteBuildOptions,
   };
 
-  // no dev code in build
+  // no hmr in build config
   delete build.hot;
 
   const dev = {
     ...config,
-    // ...forcedSvelteDevOptions,
   };
 
   if (config.hot === true) {
     dev.hot = defaultHotOptions; // use default hot config for true
   }
-  if (config.hot) {
+
+  if (dev.hot) {
     dev.dev = true; // needed, otherwise svelte-hmr doesn't work
   }
 
@@ -105,56 +89,72 @@ function createConfigs(pluginOptions) {
  * this prevents calling transform when not needed
  *
  */
-// function createSvelteTransformTest(svelteOptions) {
-//   const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
-//   const extensions = svelteOptions.extensions || ['.svelte'];
-//   return (ctx) => ctx && ctx.path && filter(ctx.path) && extensions.includes(path.extname(ctx.path));
-// }
-//
-// function updateViteConfig(config) {
-//   const viteConfig = config.vite;
-//   const optimizeDeps = {
-//     include: svelteDeps.concat(),
-//   };
-//   if (config.hot) {
-//     optimizeDeps.include.push('svelte-hmr', 'svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom');
-//   }
-//   if (!viteConfig.optimizeDeps) {
-//     viteConfig.optimizeDeps = optimizeDeps;
-//   } else if (viteConfig.optimizeDeps.include) {
-//     viteConfig.optimizeDeps.include.push(...optimizeDeps.include);
-//   } else {
-//     console.warn('failed to add optimizeDeps to vite optimizeDeps');
-//   }
-// }
+function createSvelteTransformTest(svelteOptions) {
+  const filter = createFilter(svelteOptions.include, svelteOptions.exclude);
+  const extensions = svelteOptions.extensions || ['.svelte'];
+  return (ctx) => filter(ctx.path) && extensions.some((ext) => ctx.path.endsWith(ext));
+}
+
+function updateViteConfig(config) {
+  const viteConfig = config.vite;
+  const optimizeDeps = {
+    include: svelteDeps.concat(),
+  };
+  if (config.hot) {
+    optimizeDeps.include.push('svelte-hmr', 'svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom');
+  }
+  if (!viteConfig.optimizeDeps) {
+    viteConfig.optimizeDeps = optimizeDeps;
+  } else if (viteConfig.optimizeDeps.include) {
+    viteConfig.optimizeDeps.include.push(...optimizeDeps.include);
+  } else {
+    log.warn('failed to add optimizeDeps to vite optimizeDeps');
+  }
+}
 
 module.exports = function svite(pluginOptions = {}) {
   const config = createConfigs(pluginOptions);
   const devPlugin = rollupPluginSvelteHot(config.dev);
   const buildPlugin = rollupPluginSvelteHot(config.build);
-  const isIncluded = createFilter(pluginOptions.include, pluginOptions.exclude);
-  const { extensions = ['.svelte'] } = pluginOptions;
-  const testExtension = (file) => extensions.some((ext) => file.endsWith(ext));
+  const isSvelteRequest = createSvelteTransformTest(config.dev);
+
   return {
-    rollupDedupe: svelteDeps, // doesn't work here
     rollupInputOptions: {
       plugins: [
+        rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
         buildPlugin,
-        // rollupPluginDedupeSvelte,
-        //buildRollupPluginSvelte , // transform handles building, reenable here and dev only test to switch
       ],
     },
     transforms: [
       {
-        test: (ctx) => !ctx.isBuild && testExtension(ctx.path) && isIncluded(ctx.path),
-        transform: async ({ path: id, code }) => await devPlugin.transform(code, id),
+        // only run transform in dev, during build the buildPlugin is used instead
+        // we cannot do both as it would lead to the svelte compiler running twice
+        test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
+        transform: async ({ path: id, code }) => {
+          return await devPlugin.transform(code, id);
+        },
       },
     ],
-    // configureServer: [
-    //   async ({ config: viteConfig }) => {
-    //     config.vite = viteConfig;
-    //     updateViteConfig(config);
-    //   },
-    // ],
+    configureServer: [
+      async ({ app, config: viteConfig }) => {
+        config.vite = viteConfig;
+        updateViteConfig(config);
+        if (config.dev.emitCss) {
+          log.warn('your svelte config has emitCss=true for development. adding workaround to prevent errors in dev mode');
+          // workaround
+          // emitCss adds css import call for SvelteComonent.css, which results in vite trying to load a non existant css file
+          // provide a fake css body in this case, but keep it empty because svelte handles adding that css
+          app.use(async (ctx, next) => {
+            if (ctx.path.endsWith('.css')) {
+              const cachedCss = devPlugin.load(ctx.path);
+              if (cachedCss) {
+                ctx.body = `/* css for ${ctx.path} is handled by svelte */`;
+              }
+            }
+            await next();
+          });
+        }
+      },
+    ],
   };
 };
