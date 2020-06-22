@@ -1,5 +1,5 @@
 {
-  "name": "svite-example-minimal",
+  "name": "svite-example-big",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,12 @@
     "svelte": "^3.23.2"
   },
   "devDependencies": {
-    "svite": "../..",
-    "vite": "^1.0.0-beta.1"
+    "@rollup/plugin-node-resolve": ">=8.0.1 <9",
+    "@rollup/pluginutils": ">=3.1.0 <4",
+    "chalk": ">=4.1.0 < 5",
+    "cosmiconfig": ">=6.0.0 <7",
+    "vite": ">=1.0.0-beta.1 <2",
+    "rollup-plugin-svelte-hot": "^0.9.3-1",
+    "svite": "latest"
   }
 }

@@ -1,18 +1,7 @@
 <script>
-  import Child from './Child.svelte'
-  import OtherChild from './OtherChild.svelte'
+  import Child from './Child.svelte';
+  import OtherChild from './OtherChild.svelte';
 </script>
-
-<h1>Page 60</h1>
-
-<p>I am page 01.</p>
-
-<p>I have some children:</p>
-
-<div>
-  <Child />
-  <OtherChild />
-</div>
 
 <style>
   * {
@@ -27,3 +16,14 @@
     flex: 1;
   }
 </style>
+
+<h1>Page 60</h1>
+
+<p>I am page 01.</p>
+
+<p>I have some children:</p>
+
+<div>
+  <Child />
+  <OtherChild />
+</div>

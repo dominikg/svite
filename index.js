@@ -3,7 +3,7 @@ const { createFilter } = require('@rollup/pluginutils');
 const { cosmiconfigSync } = require('cosmiconfig');
 const log = require('./tools/log');
 
-const svelteDeps = ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition'];
+const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition', 'svelte'];
 
 const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
   dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
@@ -17,8 +17,6 @@ const defaultHotOptions = {
 // default config to start building upon.
 const defaultConfig = {
   hot: defaultHotOptions,
-  css: false,
-  emitCss: true,
 };
 
 /**
@@ -97,18 +95,28 @@ function createSvelteTransformTest(svelteOptions) {
 
 function updateViteConfig(config) {
   const viteConfig = config.vite;
-  const optimizeDeps = {
-    include: svelteDeps.concat(),
-  };
-  if (config.hot) {
-    optimizeDeps.include.push('svelte-hmr', 'svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom');
+  let addToOptimize = svelteDeps.concat();
+
+  if (config.dev.hot) {
+    addToOptimize.push('svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom', 'svelte-hmr/runtime/hot-api-esm', 'svelte-hmr');
   }
-  if (!viteConfig.optimizeDeps) {
-    viteConfig.optimizeDeps = optimizeDeps;
-  } else if (viteConfig.optimizeDeps.include) {
-    viteConfig.optimizeDeps.include.push(...optimizeDeps.include);
+  const optimizeDeps = viteConfig.optimizeDeps;
+  if (!optimizeDeps) {
+    viteConfig.optimizeDeps = { include: addToOptimize };
   } else {
-    log.warn('failed to add optimizeDeps to vite optimizeDeps');
+    if (optimizeDeps.exclude && optimizeDeps.exclude.length > 0) {
+      addToOptimize = addToOptimize.filter((dep) => !optimizeDeps.exclude.includes(dep));
+    }
+    if (addToOptimize.length > 0) {
+      if (optimizeDeps.include && optimizeDeps.include.length > 0) {
+        addToOptimize = addToOptimize.filter((dep) => !optimizeDeps.include.includes(dep));
+        if (addToOptimize.length > 0) {
+          optimizeDeps.include.push(...addToOptimize);
+        }
+      } else {
+        optimizeDeps.include = addToOptimize;
+      }
+    }
   }
 }
 
