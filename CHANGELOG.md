@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.0.3
+
+### Added
+
+- logging util with colors and more helpful output
+
+### Changed
+
+- use vite transform instead of middleware in dev mode
+- workaround for emitCss
+
 ## 0.0.2
 
 ### Added
