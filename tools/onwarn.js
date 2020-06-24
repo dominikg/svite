@@ -1,7 +1,19 @@
 const log = require('./log');
 
-module.exports = function rollupWarn(warning) {
+function extractOffender(frame, start, end) {
+  const line = frame.split('\n').find((line) => line.trim().startsWith(start.line));
+  const lineNumberOffset = line.indexOf(': ') + 2;
+  const startPos = lineNumberOffset + start.column;
+  const endPos = end && end.line === start.line ? lineNumberOffset + end.column : undefined;
+  return !endPos || endPos > startPos ? line.substring(startPos, endPos) : '';
+}
+module.exports = function onwarn(warning) {
   const isProduction = process.env.NODE_ENV === 'production';
+
+  if (!log[isProduction ? 'error' : 'warn'].enabled) {
+    return;
+  }
+
   if (typeof warning === 'string') {
     warning = {
       message: warning,
@@ -16,20 +28,14 @@ module.exports = function rollupWarn(warning) {
     logMessage = `${loc.file}(${loc.line}:${loc.column}) ${message}`;
   } else if (filename && start) {
     logMessage = `${filename}(${start.line}:${start.column}) ${message}`;
-    if (frame) {
-      const line = frame.split('\n').find((line) => line.trim().startsWith(start.line));
-      const lineNumberOffset = line.indexOf(': ') + 2;
-      const startPos = lineNumberOffset + start.column;
-      const endPos = end && end.line === start.line ? lineNumberOffset + end.column : undefined;
-      const fragment = line.substring(startPos, endPos);
-      logMessage += ` ${fragment}`;
-    }
   } else {
     logMessage = message;
   }
   if (isProduction) {
     if (code === 'css-unused-selector') {
-      log.error(logMessage); // do not include frame, it includes inline sourcemaps from postcss
+      // do not include frame, it includes inline sourcemaps from postcss
+      const offender = extractOffender(frame, start, end);
+      log.warn(`${logMessage}${offender ? `: ${offender}` : ''}`);
     } else {
       log.error(logMessage, frame);
     }

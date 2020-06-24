@@ -2,7 +2,7 @@ const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
 const { createFilter } = require('@rollup/pluginutils');
 const { cosmiconfigSync } = require('cosmiconfig');
 const log = require('./tools/log');
-
+const LRU = require('lru-cache');
 const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition', 'svelte'];
 
 const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
@@ -10,15 +10,56 @@ const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeReso
 });
 
 const defaultHotOptions = {
-  compatVite: true,
   optimistic: true,
+  compatVite: true,
 };
 
-// default config to start building upon.
-const defaultConfig = {
-  hot: defaultHotOptions,
+const defaultOptions = {
+  hot: true,
+  useTransformCache: true,
+  logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
 };
 
+const defaultSvelteOptions = {
+  format: 'esm',
+  generate: 'dom',
+};
+
+const forcedSvelteDevOptions = {
+  format: 'esm',
+  generate: 'dom',
+  css: true,
+  emitCss: false,
+};
+const forcedSvelteBuildOptions = {
+  format: 'esm',
+  generate: 'dom',
+  css: false,
+  emitCss: true,
+};
+
+const forcedHotOptions = {
+  compatVite: true,
+};
+
+function overrideConfig(config, overrides, type) {
+  const appliedChanges = {};
+  for (const [key, value] of Object.entries(overrides)) {
+    if (config[key] !== value) {
+      if (Object.prototype.hasOwnProperty.call(config, key)) {
+        appliedChanges[key] = value;
+      }
+      config[key] = value;
+    }
+  }
+  if (Object.keys(appliedChanges).length > 0) {
+    log.warn(
+      `the following values have been forced for svelte config ${type}. Consider adopting or removing them to let svite it.`,
+      appliedChanges,
+    );
+  }
+  return config;
+}
 /**
  * create required configs by merging default config, svelte config (read via cosmiconfig), passed pluginOptions.
  * finally override some options to ensure dev and build work as expected.
@@ -26,60 +67,67 @@ const defaultConfig = {
  *
  */
 function createConfigs(pluginOptions) {
-  let baseConfig;
+  let baseSvelteOptions;
   try {
     const searchResult = cosmiconfigSync('svelte').search();
-    baseConfig = !searchResult || searchResult.isEmpty ? {} : searchResult.config;
+    baseSvelteOptions = !searchResult || searchResult.isEmpty ? {} : searchResult.config;
   } catch (e) {
     log.error('failed to load svelte config', e);
     throw e;
   }
 
-  const config = {
-    ...defaultConfig,
-    ...baseConfig,
-    ...pluginOptions,
+  const { svelte: sveltePluginOptions, ...svitePluginOptions } = pluginOptions || {};
+
+  const sviteConfig = {
+    ...defaultOptions,
+    ...svitePluginOptions,
+  };
+
+  const svelteConfig = {
+    ...defaultSvelteOptions,
+    ...baseSvelteOptions,
+    ...sveltePluginOptions,
   };
 
   const isProduction = process.env.NODE_ENV === 'production';
 
-  if (!config.extensions) {
-    config.extensions = ['.svelte'];
-  } else if (config.extensions.includes('.html')) {
+  if (!svelteConfig.extensions) {
+    svelteConfig.extensions = ['.svelte'];
+  } else if (svelteConfig.extensions.includes('.html')) {
     log.warn('vite build does not support .html extension for svelte');
-    config.extensions = config.extensions.filter((ex) => ex !== '.html');
+    svelteConfig.extensions = svelteConfig.extensions.filter((ex) => ex !== '.html');
   }
-  if (!config.onwarn) {
-    config.onwarn = require('./tools/rollupwarn');
-  }
-
-  const build = {
-    ...config,
-  };
-
-  // no hmr in build config
-  delete build.hot;
-
-  const dev = {
-    ...config,
-  };
-
-  if (config.hot === true) {
-    dev.hot = defaultHotOptions; // use default hot config for true
+  if (!svelteConfig.onwarn) {
+    svelteConfig.onwarn = require('./tools/onwarn');
   }
 
-  if (dev.hot) {
-    dev.dev = true; // needed, otherwise svelte-hmr doesn't work
+  const dev = overrideConfig({ ...svelteConfig }, forcedSvelteDevOptions, 'dev');
+  const build = overrideConfig({ ...svelteConfig }, forcedSvelteBuildOptions, 'build');
+
+  if (sviteConfig.hot) {
+    dev.hot =
+      sviteConfig.hot === true
+        ? defaultHotOptions
+        : {
+            ...defaultHotOptions,
+            ...sviteConfig.hot,
+            ...forcedHotOptions,
+          };
+    // needed, otherwise svelte-hmr doesn't work
+    dev.dev = true;
   }
 
   if (isProduction) {
     build.dev = false;
   }
 
-  return {
+  const config = {
     dev,
     build,
+    svite: sviteConfig,
   };
+  log.debug.enabled && log.debug('configurations', config);
+  return config;
 }
 
 /**
@@ -120,49 +168,96 @@ function updateViteConfig(config) {
   }
 }
 
-module.exports = function svite(pluginOptions = {}) {
-  const config = createConfigs(pluginOptions);
+function createDev(config) {
+  const useTransformCache = config.svite.useTransformCache;
   const devPlugin = rollupPluginSvelteHot(config.dev);
-  const buildPlugin = rollupPluginSvelteHot(config.build);
   const isSvelteRequest = createSvelteTransformTest(config.dev);
 
+  const transforms = [];
+  const configureServer = [
+    async ({ config: viteConfig }) => {
+      config.vite = viteConfig;
+      updateViteConfig(config);
+    },
+  ];
+
+  if (useTransformCache) {
+    // prevent rerunning svelte transform on unmodified files
+    // cannot be done from transform alone as it lacks the information to decide
+    // use a tandem of middleware and transform to get it done
+    const useCacheMarker = '___use-cached-transform___';
+    const transformCache = new LRU(10000);
+
+    transforms.push({
+      test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
+      transform: async ({ path: id, code }) => {
+        const useCache = code === useCacheMarker;
+        if (useCache) {
+          log.debug.enabled && log.debug(`transform cache get ${id}`);
+          return transformCache.get(id);
+        }
+        const result = await devPlugin.transform(code, id);
+        log.debug.enabled && log.debug(`transform cache set ${id}`);
+        transformCache.set(id, result);
+        return result;
+      },
+    });
+
+    configureServer.push(async ({ app, resolver }) => {
+      app.use(async (ctx, next) => {
+        if (isSvelteRequest(ctx)) {
+          if (transformCache.has(ctx.path)) {
+            await ctx.read(resolver.requestToFile(ctx.path));
+            if (ctx.__notModified) {
+              ctx.body = useCacheMarker;
+            } else {
+              log.debug.enabled && log.debug(`transform cache del ${ctx.path}`);
+              transformCache.del(ctx.path);
+            }
+          }
+        }
+        await next(); // runs the transform above
+      });
+    });
+  } else {
+    transforms.push({
+      test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
+      transform: async ({ path: id, code }) => {
+        return devPlugin.transform(code, id);
+      },
+    });
+  }
+  return {
+    transforms,
+    configureServer,
+  };
+}
+
+function createBuildPlugins(config) {
+  const buildPlugin = rollupPluginSvelteHot(config.build);
+  return [
+    rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
+    buildPlugin,
+  ];
+}
+
+function createVitePlugin(config) {
+  const buildPlugins = createBuildPlugins(config);
+  const { transforms, configureServer } = createDev(config);
   return {
     rollupInputOptions: {
-      plugins: [
-        rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
-        buildPlugin,
-      ],
+      plugins: buildPlugins,
     },
-    transforms: [
-      {
-        // only run transform in dev, during build the buildPlugin is used instead
-        // we cannot do both as it would lead to the svelte compiler running twice
-        test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
-        transform: async ({ path: id, code }) => {
-          return await devPlugin.transform(code, id);
-        },
-      },
-    ],
-    configureServer: [
-      async ({ app, config: viteConfig }) => {
-        config.vite = viteConfig;
-        updateViteConfig(config);
-        if (config.dev.emitCss) {
-          log.warn('your svelte config has emitCss=true for development. adding workaround to prevent errors in dev mode');
-          // workaround
-          // emitCss adds css import call for SvelteComonent.css, which results in vite trying to load a non existant css file
-          // provide a fake css body in this case, but keep it empty because svelte handles adding that css
-          app.use(async (ctx, next) => {
-            if (ctx.path.endsWith('.css')) {
-              const cachedCss = devPlugin.load(ctx.path);
-              if (cachedCss) {
-                ctx.body = `/* css for ${ctx.path} is handled by svelte */`;
-              }
-            }
-            await next();
-          });
-        }
-      },
-    ],
+    transforms,
+    configureServer,
   };
+}
+
+module.exports = function svite(pluginOptions = {}) {
+  if (pluginOptions.logLevel) {
+    log.setLevel(pluginOptions.logLevel);
+  }
+  const config = createConfigs(pluginOptions);
+  log.setLevel(config.svite.logLevel);
+  return createVitePlugin(config);
 };
