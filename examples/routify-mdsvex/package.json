@@ -1,5 +1,5 @@
 {
-  "name": "svite-example-minimal",
+  "name": "svite-example-routify-mdsvex",
   "version": "0.0.0",
   "scripts": {
     "dev": "run-p dev:routify dev:vite",
