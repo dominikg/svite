@@ -57,6 +57,14 @@ just use regular `vite` or `vite build` commands
 
 as barebones as it gets, just an essential App.svelte
 
+### [postcss-tailwind](/examples/postcss-tailwind)
+
+postcss and [tailwindcss](https://tailwindcss.com)
+
+### [minimal](/examples/routify-mdsvex)
+
+[routify](https://routify.dev) with support for [mdsvex](https://mdsvex.com)
+
 ## limitations
 
 - this is a very early version, expect things to break, hard.

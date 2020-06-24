@@ -1,0 +1,7 @@
+# This is mdsvex
+
+Go <a href="https://mdsvex.com" target="_blank">check it out</a>
+
+# try it out below with this page open in dev mode
+
+you'll love it, promise!
