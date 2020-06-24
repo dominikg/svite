@@ -23,13 +23,11 @@ npm run build # builds to /dist
 
 ## installation
 
-Install svite as a dev dependency
+Install svite and vite as a dev dependency
 
 ```shell script
-npm install -D svite
+npm install -D svite vite
 ```
-
-Don't forget to install missing peer dependencies
 
 Add as plugin to `vite.config.js`
 

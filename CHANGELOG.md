@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.0.5
+
+### Added
+
+- logLevel option
+- debug log output
+- useTransformCache option
+
+### Changed
+
+- reenabled overriding svelte config for dev and build
+
+### Removed
+
+- workaround for emitCss
+
 ## 0.0.4
 
 ### Added
