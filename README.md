@@ -61,7 +61,7 @@ as barebones as it gets, just an essential App.svelte
 
 postcss and [tailwindcss](https://tailwindcss.com)
 
-### [minimal](/examples/routify-mdsvex)
+### [routify-mdsvex](/examples/routify-mdsvex)
 
 [routify](https://routify.dev) with support for [mdsvex](https://mdsvex.com)
 
