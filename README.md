@@ -1,4 +1,4 @@
-# svite <img width=36 alt="svite-logo" src="svite-logo.svg"> 
+# svite <img width=24 alt="svite-logo" src="svite-logo.svg"> 
 
 [svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = sweet
 
