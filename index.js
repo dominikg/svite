@@ -54,7 +54,7 @@ function overrideConfig(config, overrides, type) {
   }
   if (Object.keys(appliedChanges).length > 0) {
     log.warn(
-      `the following values have been forced for svelte config ${type}. Consider adopting or removing them to let svite it.`,
+      `the following values have been forced for svelte config ${type}. Consider adopting or removing them to let svite handle it automatically.`,
       appliedChanges,
     );
   }
@@ -89,8 +89,6 @@ function createConfigs(pluginOptions) {
     ...sveltePluginOptions,
   };
 
-  const isProduction = process.env.NODE_ENV === 'production';
-
   if (!svelteConfig.extensions) {
     svelteConfig.extensions = ['.svelte'];
   } else if (svelteConfig.extensions.includes('.html')) {
@@ -115,10 +113,6 @@ function createConfigs(pluginOptions) {
           };
     // needed, otherwise svelte-hmr doesn't work
     dev.dev = true;
-  }
-
-  if (isProduction) {
-    build.dev = false;
   }
 
   const config = {
@@ -233,8 +227,33 @@ function createDev(config) {
   };
 }
 
+function rollupPluginDeferred(createPlugin) {
+  const wrapper = {
+    options: function (options) {
+      const plugin = createPlugin();
+      Object.keys(plugin).forEach((key) => {
+        if (key !== 'options') {
+          wrapper[key] = plugin[key];
+        }
+      });
+      return plugin.options ? plugin.options.apply(this, options) : null;
+    },
+  };
+  return wrapper;
+}
+
 function createBuildPlugins(config) {
-  const buildPlugin = rollupPluginSvelteHot(config.build);
+  const buildPlugin = rollupPluginDeferred(() => {
+    const mode = process.env.NODE_ENV;
+    if (mode !== 'production' && config.dev.hot && !config.build.dev) {
+      log.debug(`forcing dev: true svelte option for build plugin so that optimized dependencies work with svelte-hmr in ${mode} mode\n`);
+      config.build.dev = true;
+    } else if (mode === 'production' && config.build.dev) {
+      log.warn(`forcing dev: false svelte option for build plugin in production mode`);
+      config.build.dev = true;
+    }
+    return rollupPluginSvelteHot(config.build);
+  });
   return [
     rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
     buildPlugin,
