@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.0.6
+
+### Added
+
+- tiny logo
+- correct evaluation of vite mode for build
+
 ## 0.0.5
 
 ### Added
