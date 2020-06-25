@@ -1,6 +1,6 @@
-# svite <img width=24 alt="svite-logo" src="svite-logo.svg"> 
+# svite 
 
-[svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = sweet
+[svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = <img width=24 alt="svite-logo" src="svite-logo.svg"> 
 
 ## features
 
