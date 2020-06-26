@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.0.7
+
+### Added
+
+- deferred initialization of rollup plugin
+- improved log output
+
 ## 0.0.6
 
 ### Added
