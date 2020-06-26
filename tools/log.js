@@ -45,19 +45,21 @@ function setLevel(level) {
   }
 }
 
+let _viteLogOverwriteProtection = false;
+function setViteLogOverwriteProtection(viteLogOverwriteProtection) {
+  _viteLogOverwriteProtection = !!viteLogOverwriteProtection;
+}
+
 function _log(logger, message, payload) {
   if (!logger.enabled) {
     return;
   }
-  message = logger.color(`${prefix} ${message}`);
-  if (payload || process.env.NODE_ENV === 'production') {
-    message += '\n'; // linebreak required in production to prevent vite spinner killing the log
-  }
-
+  logger.log(logger.color(`${prefix} ${message}`));
   if (payload) {
-    logger.log(message, payload);
-  } else {
-    logger.log(message);
+    logger.log(payload);
+  }
+  if (_viteLogOverwriteProtection) {
+    logger.log('');
   }
 }
 
@@ -78,4 +80,5 @@ module.exports = {
   warn: createLogger('warn'),
   error: createLogger('error'),
   setLevel,
+  setViteLogOverwriteProtection,
 };

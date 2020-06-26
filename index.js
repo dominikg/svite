@@ -1,13 +1,10 @@
 const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
+const rollupPluginNodeResolve = require('@rollup/plugin-node-resolve');
 const { createFilter } = require('@rollup/pluginutils');
 const { cosmiconfigSync } = require('cosmiconfig');
 const log = require('./tools/log');
 const LRU = require('lru-cache');
 const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition', 'svelte'];
-
-const rollupPluginDedupeSvelte = require('@rollup/plugin-node-resolve').nodeResolve({
-  dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
-});
 
 const defaultHotOptions = {
   optimistic: true,
@@ -25,17 +22,17 @@ const defaultSvelteOptions = {
   generate: 'dom',
 };
 
-const forcedSvelteDevOptions = {
-  format: 'esm',
-  generate: 'dom',
-  css: true,
-  emitCss: false,
-};
-const forcedSvelteBuildOptions = {
-  format: 'esm',
-  generate: 'dom',
-  css: false,
-  emitCss: true,
+const forcedSvelteOptions = {
+  dev: {
+    format: 'esm',
+    generate: 'dom',
+    css: true,
+    emitCss: false,
+  },
+  build: {
+    format: 'esm',
+    generate: 'dom',
+  },
 };
 
 const forcedHotOptions = {
@@ -66,7 +63,7 @@ function overrideConfig(config, overrides, type) {
  * e.g. not hot mode with production build, when hot is enabled svelte compile needs to be dev: true
  *
  */
-function createConfigs(pluginOptions) {
+function createConfig(pluginOptions) {
   let baseSvelteOptions;
   try {
     const searchResult = cosmiconfigSync('svelte').search();
@@ -99,8 +96,8 @@ function createConfigs(pluginOptions) {
     svelteConfig.onwarn = require('./tools/onwarn');
   }
 
-  const dev = overrideConfig({ ...svelteConfig }, forcedSvelteDevOptions, 'dev');
-  const build = overrideConfig({ ...svelteConfig }, forcedSvelteBuildOptions, 'build');
+  const dev = { ...svelteConfig };
+  const build = { ...svelteConfig };
 
   if (sviteConfig.hot) {
     dev.hot =
@@ -115,13 +112,11 @@ function createConfigs(pluginOptions) {
     dev.dev = true;
   }
 
-  const config = {
+  return {
     dev,
     build,
     svite: sviteConfig,
   };
-  log.debug.enabled && log.debug('configurations', config);
-  return config;
 }
 
 /**
@@ -160,18 +155,30 @@ function updateViteConfig(config) {
       }
     }
   }
+  log.debug.enabled && log.debug('vite config', viteConfig);
+}
+
+function createRollupPluginSvelteHot(config, type) {
+  const finalSvelteConfig = overrideConfig(config[type], forcedSvelteOptions[type], type);
+  log.debug.enabled && log.debug(`creating rollup-plugin-svelte-hot for ${type} with config `, finalSvelteConfig);
+  if (config.vite && log.debug.enabled) {
+    log.debug(''); // extra line to prevent config log cutoff
+  }
+  return rollupPluginSvelteHot(finalSvelteConfig);
 }
 
 function createDev(config) {
   const useTransformCache = config.svite.useTransformCache;
-  const devPlugin = rollupPluginSvelteHot(config.dev);
   const isSvelteRequest = createSvelteTransformTest(config.dev);
+  let devPlugin; // initialized in configureServer hook to prevent eager fruitless initialization during vite build
 
   const transforms = [];
+
   const configureServer = [
     async ({ config: viteConfig }) => {
       config.vite = viteConfig;
       updateViteConfig(config);
+      devPlugin = createRollupPluginSvelteHot(config, 'dev');
     },
   ];
 
@@ -246,15 +253,32 @@ function createBuildPlugins(config) {
   const buildPlugin = rollupPluginDeferred(() => {
     const mode = process.env.NODE_ENV;
     if (mode !== 'production' && config.dev.hot && !config.build.dev) {
-      log.debug(`forcing dev: true svelte option for build plugin so that optimized dependencies work with svelte-hmr in ${mode} mode\n`);
+      log.debug(`forcing dev: true svelte option for build plugin so that optimized dependencies work with svelte-hmr in ${mode} mode`);
       config.build.dev = true;
     } else if (mode === 'production' && config.build.dev) {
       log.warn(`forcing dev: false svelte option for build plugin in production mode`);
-      config.build.dev = true;
+      config.build.dev = false;
     }
-    return rollupPluginSvelteHot(config.build);
+    return createRollupPluginSvelteHot(config, 'build');
   });
+
+  const rollupPluginDedupeSvelte = rollupPluginDeferred(() =>
+    rollupPluginNodeResolve.nodeResolve({
+      dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
+    }),
+  );
+
+  // prevent vite build spinner from swallowing our logs
+  const logProtectPlugin = {
+    options: () => {
+      log.setViteLogOverwriteProtection(true);
+    },
+    buildEnd: () => {
+      log.setViteLogOverwriteProtection(false);
+    },
+  };
   return [
+    logProtectPlugin,
     rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
     buildPlugin,
   ];
@@ -276,7 +300,7 @@ module.exports = function svite(pluginOptions = {}) {
   if (pluginOptions.logLevel) {
     log.setLevel(pluginOptions.logLevel);
   }
-  const config = createConfigs(pluginOptions);
+  const config = createConfig(pluginOptions);
   log.setLevel(config.svite.logLevel);
   return createVitePlugin(config);
 };
