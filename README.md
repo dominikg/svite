@@ -51,6 +51,43 @@ just use regular `vite` or `vite build` commands
 }
 ```
 
+## svite options
+
+you can pass options to svite via vite.config.jd
+
+```js
+const svite = require('svite');
+const sviteConfig = {
+  hot: true, // boolean or options object for svelte-hmr
+  useTransformCache: true, // boolean
+  svelte: {}, // options for rollup-plugin-svelte
+};
+module.exports = {
+  plugins: [svite(sviteConfig)],
+};
+```
+
+### hot
+
+- type: boolean | object
+  - true: use default svelte-hmr config.
+  - false: disable svelte-hmr (warning, not tested!)
+  - object: use as svelte-hmr config. see [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
+- default: true
+
+### useTransformCache
+
+- type: boolean
+  - true: cache results of svelte compiler and reuse them for unmodified files
+  - false: rerun compiler every time
+- default: true
+
+### svelte
+
+- type: object
+  - rollup-plugin-svelte options. overrides values read from svelte config file
+- default: not set
+
 ## check out the examples
 
 ### [minimal](/examples/minimal)
@@ -72,12 +109,6 @@ postcss and [tailwindcss](https://tailwindcss.com)
 - dev mode with externalized css
 
 # TODO
-
-- more examples
-
-  - preprocessor support (postcss with tailwind)
-  - config
-  - routify
 
 - more features
 
