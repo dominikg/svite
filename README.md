@@ -9,6 +9,7 @@
 - svelte dependency optimization in dev
 - svelte compiler result caching in dev
 - hot module reloading thanks to [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
+- logging with configurable level
 - drop-in installation as vite plugin
 
 # quickstart
@@ -55,7 +56,7 @@ just use regular `vite` or `vite build` commands
 
 ## svite options
 
-you can pass options to svite via vite.config.jd
+you can pass options to svite via vite.config.js
 
 ```js
 const svite = require('svite');
@@ -69,11 +70,12 @@ module.exports = {
 };
 ```
 
-| option                    | type                      | default         | values                                                                                                                                      |
-| ------------------------- | ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **hot**<br><br>           | `boolean`<br>`object`<br> | `true`<br><br>  | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config |
-| **useTransformCache**<br> | `boolean`<br>             | `true`<br>      | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                    |
-| **svelte**<br>            | `object`<br>              | `undefined`<br> | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                     |
+| option                    | type                      | default        | values                                                                                                                                      |
+| ------------------------- | ------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **hot**<br><br>           | `boolean`<br>`object`<br> | `true`<br><br> | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config |
+| **useTransformCache**<br> | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                    |
+| **logLevel**              | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`                                |
+| **svelte**<br>            | `object`<br>              | `not set`<br>  | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                     |
 
 ### hot
 
@@ -84,6 +86,11 @@ Only change this option if you have to. See [svelte-hmr](https://github.com/rixo
 Improves performance for reloads.
 
 When a reload request hits the dev server, vite runs transforms again. this option caches the result of the last transform and reuses it if the file was not modified. Uses more ram, less cpu and is a bit faster.
+
+### logLevel
+
+Set this to `'debug'` if you want to see more output, use `'warn'`, `'error'` or `'silent'` for less.
+This only applies to svites own logging. Logging of vite remains unaffected.
 
 ### svelte
 
