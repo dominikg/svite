@@ -1,11 +1,13 @@
-# svite <img width=36 alt="svite-logo" src="svite-logo.svg" style="vertical-align: middle; float: left;">
+<h1><img width=24 alt="svite-logo" src="svite-logo.svg" style="vertical-align: middle">&nbsp;svite&nbsp;<img width=24 alt="svite-logo" src="svite-logo.svg" style="vertical-align: middle"></h1>
 
 [svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = sweet
 
 ## features
 
-- read svelte configruation with [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme)
+- reads svelte configruation with [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme)
 - svelte preprocessor support
+- svelte dependency optimization in dev
+- svelte compiler result caching in dev
 - hot module reloading thanks to [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
 - drop-in installation as vite plugin
 
@@ -67,26 +69,25 @@ module.exports = {
 };
 ```
 
+| option                    | type                      | default         | values                                                                                                                                      |
+| ------------------------- | ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **hot**<br><br>           | `boolean`<br>`object`<br> | `true`<br><br>  | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config |
+| **useTransformCache**<br> | `boolean`<br>             | `true`<br>      | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                    |
+| **svelte**<br>            | `object`<br>              | `undefined`<br> | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                     |
+
 ### hot
 
-- type: boolean | object
-  - true: use default svelte-hmr config.
-  - false: disable svelte-hmr (warning, not tested!)
-  - object: use as svelte-hmr config. see [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
-- default: true
+Only change this option if you have to. See [svelte-hmr](https://github.com/rixo/svelte-hmr#readme) for more Information
 
 ### useTransformCache
 
-- type: boolean
-  - true: cache results of svelte compiler and reuse them for unmodified files
-  - false: rerun compiler every time
-- default: true
+Improves performance for reloads.
+
+When a reload request hits the dev server, vite runs transforms again. this option caches the result of the last transform and reuses it if the file was not modified. Uses more ram, less cpu and is a bit faster.
 
 ### svelte
 
-- type: object
-  - rollup-plugin-svelte options. overrides values read from svelte config file
-- default: not set
+use this option if you don't want to use any of the ways you can provide a svelte config via [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme) or need a quick override.
 
 ## check out the examples
 
@@ -104,17 +105,17 @@ postcss and [tailwindcss](https://tailwindcss.com)
 
 ## limitations
 
-- this is a very early version, expect things to break, hard.
-- vite options like --ssr or --sourcemap
-- dev mode with externalized css
+This is an early version, some things may not work as expected. Please report findings.
 
 # TODO
 
 - more features
-
   - vite options
+- release process
+- tests
 
 # Credits
 
+- [svelte](https://svelte.dev) and [vite](https://github.com/vitejs/vite#readme) obviously
 - [rixo](https://github.com/rixo) - without svelte-hmr and your support this would not have been possible
 - [vite-plugin-svelte](https://github.com/intrnl/vite-plugin-svelte) - initial inspiration
