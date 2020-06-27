@@ -20,18 +20,24 @@ const defaultOptions = {
 const defaultSvelteOptions = {
   format: 'esm',
   generate: 'dom',
+  css: false,
+  emitCss: true,
+  extensions: ['svelte'],
 };
 
 const forcedSvelteOptions = {
   dev: {
     format: 'esm',
     generate: 'dom',
+    dev: true,
     css: true,
     emitCss: false,
   },
   build: {
     format: 'esm',
     generate: 'dom',
+    css: false,
+    emitCss: true,
   },
 };
 
@@ -39,9 +45,9 @@ const forcedHotOptions = {
   compatVite: true,
 };
 
-function overrideConfig(config, overrides, type) {
+function applyForcedOptions(config, forcedOptions) {
   const appliedChanges = {};
-  for (const [key, value] of Object.entries(overrides)) {
+  for (const [key, value] of Object.entries(forcedOptions)) {
     if (config[key] !== value) {
       if (Object.prototype.hasOwnProperty.call(config, key)) {
         appliedChanges[key] = value;
@@ -49,14 +55,32 @@ function overrideConfig(config, overrides, type) {
       config[key] = value;
     }
   }
-  if (Object.keys(appliedChanges).length > 0) {
-    log.warn(
-      `the following values have been forced for svelte config ${type}. Consider adopting or removing them to let svite handle it automatically.`,
-      appliedChanges,
-    );
-  }
-  return config;
+  return appliedChanges;
 }
+
+function finalizeConfig(config, type) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const isDevServer = !!config.vite;
+  const isBuild = type === 'build';
+  const svelteConfig = config[type];
+  const forcedOptions = forcedSvelteOptions[type];
+  if (isBuild) {
+    forcedOptions.dev = (isDevServer && !!config.dev.hot) || !isProduction;
+  }
+  const appliedChanges = applyForcedOptions(svelteConfig, forcedOptions);
+  if (isDevServer && isBuild) {
+    type = 'optimizeDeps';
+  }
+  if (Object.keys(appliedChanges).length > 0) {
+    log.info(`applied changes to svelte config used for ${type}.`, appliedChanges);
+  }
+  log.debug.enabled && log.debug(`svelte config used for ${type}`, svelteConfig);
+  if (isDevServer && log.debug.enabled) {
+    log.debug(''); // extra line to prevent config log cutoff
+  }
+  return svelteConfig;
+}
+
 /**
  * create required configs by merging default config, svelte config (read via cosmiconfig), passed pluginOptions.
  * finally override some options to ensure dev and build work as expected.
@@ -86,9 +110,7 @@ function createConfig(pluginOptions) {
     ...sveltePluginOptions,
   };
 
-  if (!svelteConfig.extensions) {
-    svelteConfig.extensions = ['.svelte'];
-  } else if (svelteConfig.extensions.includes('.html')) {
+  if (svelteConfig.extensions.includes('.html')) {
     log.warn('vite build does not support .html extension for svelte');
     svelteConfig.extensions = svelteConfig.extensions.filter((ex) => ex !== '.html');
   }
@@ -108,8 +130,6 @@ function createConfig(pluginOptions) {
             ...sviteConfig.hot,
             ...forcedHotOptions,
           };
-    // needed, otherwise svelte-hmr doesn't work
-    dev.dev = true;
   }
 
   return {
@@ -159,11 +179,7 @@ function updateViteConfig(config) {
 }
 
 function createRollupPluginSvelteHot(config, type) {
-  const finalSvelteConfig = overrideConfig(config[type], forcedSvelteOptions[type], type);
-  log.debug.enabled && log.debug(`creating rollup-plugin-svelte-hot for ${type} with config `, finalSvelteConfig);
-  if (config.vite && log.debug.enabled) {
-    log.debug(''); // extra line to prevent config log cutoff
-  }
+  const finalSvelteConfig = finalizeConfig(config, type);
   return rollupPluginSvelteHot(finalSvelteConfig);
 }
 
@@ -251,14 +267,6 @@ function rollupPluginDeferred(createPlugin) {
 
 function createBuildPlugins(config) {
   const buildPlugin = rollupPluginDeferred(() => {
-    const mode = process.env.NODE_ENV;
-    if (mode !== 'production' && config.dev.hot && !config.build.dev) {
-      log.debug(`forcing dev: true svelte option for build plugin so that optimized dependencies work with svelte-hmr in ${mode} mode`);
-      config.build.dev = true;
-    } else if (mode === 'production' && config.build.dev) {
-      log.warn(`forcing dev: false svelte option for build plugin in production mode`);
-      config.build.dev = false;
-    }
     return createRollupPluginSvelteHot(config, 'build');
   });
 
