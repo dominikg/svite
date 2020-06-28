@@ -89,62 +89,56 @@ describe('vite', () => {
     });
 
     if (!isBuild) {
-      test('hmr', async () => {
-        const expectCounterValue = async (hmrTestId, value) => {
-          expect(await getText(`#hmr-test-${hmrTestId} .counter`)).toBe(`${value}`);
-        };
-        const expectLabelColor = async (hmrTestId, color) => {
-          expect(await getComputedColor(`#hmr-test-${hmrTestId} .label`)).toBe(color);
-        };
-        const incCounter = async (hmrTestId) => {
-          (await getEl(`#hmr-test-${hmrTestId} .increment`)).click();
-        };
+      describe('hmr', () => {
         const updateHmrTest = updateFile.bind(null, 'src/components/HmrTest.svelte');
-        // initial state, both counters 0, both labels red
-        await expectCounterValue(1, 0);
-        await expectCounterValue(2, 0);
-        await expectLabelColor(1, 'rgb(255, 0, 0)');
-        await expectLabelColor(2, 'rgb(255, 0, 0)');
+        const updateApp = updateFile.bind(null, 'src/App.svelte');
+        test('should have expected initial state', async () => {
+          // initial state, both counters 0, both labels red
+          expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
+          expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
+          expect(await getComputedColor(`#hmr-test-1 .label`)).toBe('rgb(255, 0, 0)');
+          expect(await getComputedColor(`#hmr-test-2 .label`)).toBe('rgb(255, 0, 0)');
+        });
+        test('should have working increment button', async () => {
+          // increment counter of one instance to have local state to verify after hmr updates
+          (await getEl(`#hmr-test-1 .increment`)).click();
+          await timeout(50);
 
-        // no hmr update, change state of counter 1
-        incCounter(1);
-        await timeout(50);
+          // counter1 = 1, counter2 = 0
+          expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+          expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
+        });
+        test('should apply css changes', async () => {
+          // update style, change label color from red to green
+          await updateHmrTest((content) => content.replace('color: red', 'color: green'));
 
-        // counter1 = 1, counter2 = 0
-        await expectCounterValue(1, 1);
-        await expectCounterValue(2, 0);
+          // counter state should remain
+          expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+          expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
 
-        // update style, change label color from red to green
-        updateHmrTest((content) => content.replace('color: red', 'color: green'));
-        await timeout(200);
+          // color should have changed
+          expect(await getComputedColor(`#hmr-test-1 .label`)).toBe('rgb(0, 128, 0)');
+          expect(await getComputedColor(`#hmr-test-2 .label`)).toBe('rgb(0, 128, 0)');
+        });
+        test('should preserve state of component instances', async () => {
+          // update script, change initial counter value
+          await updateHmrTest((content) => content.replace('let counter = 0;', 'let counter = 2;'));
 
-        // counter state should remain
-        await expectCounterValue(1, 1);
-        await expectCounterValue(2, 0);
-        await expectLabelColor(1, 'rgb(0, 128, 0)');
-        await expectLabelColor(2, 'rgb(0, 128, 0)');
+          // counter state should remain
+          await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+          await expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
+        });
+        test('should not preserve state of nested component instances', async () => {
+          // update App, add a new instance of HmrTest
+          await updateApp((content) => `${content}\n<HmrTest/>`);
 
-        // update script, change initial counter value
-        updateHmrTest((content) => content.replace('let counter = 0;', 'let counter = 2;'));
-        await timeout(200);
+          // counter state is reset as instances are recreated
+          await expect(await getText(`#hmr-test-1 .counter`)).toBe('2');
+          await expect(await getText(`#hmr-test-2 .counter`)).toBe('2');
 
-        // counter state should remain
-        await expectCounterValue(1, 1);
-        await expectCounterValue(2, 0);
-        await expectLabelColor(1, 'rgb(0, 128, 0)');
-        await expectLabelColor(2, 'rgb(0, 128, 0)');
-
-        // update App, add a new instance of HmrTest
-        updateFile('src/App.svelte', (content) => content.replace('<!-- replace -->', '<HmrTest/>'));
-        await timeout(200);
-
-        // counter state is reset //TODO correct behavior or should it be kept here aswell?
-        await expectCounterValue(1, 2);
-        await expectCounterValue(2, 2);
-        await expectCounterValue(3, 2);
-        await expectLabelColor(1, 'rgb(0, 128, 0)');
-        await expectLabelColor(2, 'rgb(0, 128, 0)');
-        await expectLabelColor(3, 'rgb(0, 128, 0)');
+          // a third instance has been added
+          await expect(await getText(`#hmr-test-3 .counter`)).toBe('2');
+        });
       });
     }
   }
@@ -170,7 +164,7 @@ describe('vite', () => {
         if (staticServer) staticServer.close();
       });
 
-      describe('assertions', () => {
+      describe('app', () => {
         beforeAll(async () => {
           // start a static file server
           const app = new (require('koa'))();
@@ -215,8 +209,9 @@ describe('vite', () => {
       });
       await page.goto('http://localhost:3000');
     });
-
-    declareTests(false);
+    describe('app', () => {
+      declareTests(false);
+    });
   });
 });
 
@@ -224,6 +219,9 @@ async function updateFile(file, replacer) {
   const compPath = path.join(tempDir, file);
   const content = await fs.readFile(compPath, 'utf-8');
   await fs.writeFile(compPath, replacer(content));
+  // wait for hmr update to complete
+  // TODO find more efficient way
+  await timeout(200);
 }
 
 // poll until it updates
