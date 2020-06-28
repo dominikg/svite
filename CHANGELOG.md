@@ -1,5 +1,17 @@
 # Change Log
 
+### 0.0.9
+
+### Added
+
+- upated changelog
+
+### 0.0.8
+
+### Changed
+
+- fixed default svelte extensions list
+
 ## 0.0.7
 
 ### Added
