@@ -22,7 +22,7 @@ const defaultSvelteOptions = {
   generate: 'dom',
   css: false,
   emitCss: true,
-  extensions: ['svelte'],
+  extensions: ['.svelte'],
 };
 
 const forcedSvelteOptions = {
@@ -240,7 +240,8 @@ function createDev(config) {
     transforms.push({
       test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
       transform: async ({ path: id, code }) => {
-        return devPlugin.transform(code, id);
+        const result = await devPlugin.transform(code, id);
+        return result;
       },
     });
   }
