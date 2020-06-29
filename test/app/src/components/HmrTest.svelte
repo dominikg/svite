@@ -1,20 +1,14 @@
-<script context="module">
-  let idCount = 1;
-</script>
-
 <script>
-  export let label = 'from-script';
-  export let id = `hmr-test-${idCount++}`;
-  let counter = 0;
+  import { getStore } from '../stores/hmr-stores';
+  export let id;
+  const count = getStore(id, 0);
+  const label = 'hmr-test';
   function increment() {
-    counter++;
+    $count++;
   }
 </script>
 
 <style>
-  .hmr-test {
-    display: flex;
-  }
   .label {
     color: red;
   }
@@ -22,7 +16,5 @@
 
 <div class="hmr-test" {id}>
   <span class="label">{label}</span>
-  <span class="counter">{counter}</span>
-  <button class="increment" on:click={increment}>inc</button>
-
+  <span class="counter increment" on:click={increment}>{$count}</span>
 </div>

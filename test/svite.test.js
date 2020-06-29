@@ -3,7 +3,7 @@ const path = require('path');
 const execa = require('execa');
 const puppeteer = require('puppeteer');
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 const timeout = (n) => new Promise((r) => setTimeout(r, n));
 
@@ -54,7 +54,7 @@ afterAll(async () => {
       forceKillAfterTimeout: 2000,
     });
   }
-  // console.log(browserLogs)
+  console.log(browserLogs);
   // console.log(serverLogs)
 });
 
@@ -92,10 +92,13 @@ describe('vite', () => {
       describe('hmr', () => {
         const updateHmrTest = updateFile.bind(null, 'src/components/HmrTest.svelte');
         const updateApp = updateFile.bind(null, 'src/App.svelte');
+        const updateStore = updateFile.bind(null, 'src/stores/hmr-stores.js');
         test('should have expected initial state', async () => {
           // initial state, both counters 0, both labels red
           expect(await getText(`#hmr-test-1 .counter`)).toBe('0');
           expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
+          expect(await getText(`#hmr-test-1 .label`)).toBe('hmr-test');
+          expect(await getText(`#hmr-test-2 .label`)).toBe('hmr-test');
           expect(await getComputedColor(`#hmr-test-1 .label`)).toBe('rgb(255, 0, 0)');
           expect(await getComputedColor(`#hmr-test-2 .label`)).toBe('rgb(255, 0, 0)');
         });
@@ -108,7 +111,7 @@ describe('vite', () => {
           expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
           expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
         });
-        test('should apply css changes', async () => {
+        test('should apply css changes in HmrTest.svelte', async () => {
           // update style, change label color from red to green
           await updateHmrTest((content) => content.replace('color: red', 'color: green'));
 
@@ -120,24 +123,38 @@ describe('vite', () => {
           expect(await getComputedColor(`#hmr-test-1 .label`)).toBe('rgb(0, 128, 0)');
           expect(await getComputedColor(`#hmr-test-2 .label`)).toBe('rgb(0, 128, 0)');
         });
-        test('should preserve state of component instances', async () => {
-          // update script, change initial counter value
-          await updateHmrTest((content) => content.replace('let counter = 0;', 'let counter = 2;'));
-
+        test('should apply js change in HmrTest.svelte ', async () => {
+          // update script, change label value
+          await updateHmrTest((content) => content.replace("const label = 'hmr-test';", "const label = 'hmr-test-updated';"));
+          expect(await getText(`#hmr-test-1 .label`)).toBe('hmr-test-updated');
+          expect(await getText(`#hmr-test-2 .label`)).toBe('hmr-test-updated');
+        });
+        test('should keep state of external store intact on change of HmrTest.svelte', async () => {
           // counter state should remain
+          await updateHmrTest((content) => `${content}\n<span/>\n`);
           await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
           await expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
         });
-        test('should not preserve state of nested component instances', async () => {
+        test('should preserve state of external store used by HmrTest.svelte when editing App.svelte', async () => {
           // update App, add a new instance of HmrTest
-          await updateApp((content) => `${content}\n<HmrTest/>`);
-
-          // counter state is reset as instances are recreated
-          await expect(await getText(`#hmr-test-1 .counter`)).toBe('2');
-          await expect(await getText(`#hmr-test-2 .counter`)).toBe('2');
-
+          await updateApp((content) => `${content}\n<HmrTest id="hmr-test-3"/>`);
+          // counter state is preserved
+          await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+          await expect(await getText(`#hmr-test-2 .counter`)).toBe('0');
           // a third instance has been added
-          await expect(await getText(`#hmr-test-3 .counter`)).toBe('2');
+          await expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
+        });
+        test('should preserve state of store when editing hmr-stores.js', async () => {
+          // change state
+          (await getEl(`#hmr-test-2 .increment`)).click();
+          await timeout(50);
+          // update store
+          await updateStore((content) => `${content}\n/*trigger change*/\n`);
+          // counter state is preserved
+          await expect(await getText(`#hmr-test-1 .counter`)).toBe('1');
+          await expect(await getText(`#hmr-test-2 .counter`)).toBe('1');
+          // a third instance has been added
+          await expect(await getText(`#hmr-test-3 .counter`)).toBe('0');
         });
       });
     }
@@ -215,13 +232,49 @@ describe('vite', () => {
   });
 });
 
+const lastFileWriteTime = {};
+async function throttledWrite(filePath, content, wait) {
+  const lastTime = lastFileWriteTime[filePath];
+  if (lastTime) {
+    const diff = process.hrtime(lastTime);
+    if (diff[0] === 0) {
+      const elapsed = Math.floor(diff[1] / 1e6);
+      if (wait > elapsed) {
+        await timeout(wait - elapsed);
+      }
+    }
+  }
+  await fs.writeFile(filePath, content);
+  lastFileWriteTime[filePath] = process.hrtime();
+}
+
 async function updateFile(file, replacer) {
   const compPath = path.join(tempDir, file);
   const content = await fs.readFile(compPath, 'utf-8');
-  await fs.writeFile(compPath, replacer(content));
-  // wait for hmr update to complete
-  // TODO find more efficient way
-  await timeout(200);
+  await throttledWrite(compPath, replacer(content), 50);
+  await hmrUpdateComplete(file, 250);
+}
+
+async function hmrUpdateComplete(file, timeout) {
+  return new Promise(function (resolve, reject) {
+    var timer;
+    function listener(data) {
+      const text = data.text();
+      //console.log('got log: '+text);
+      if (text.indexOf(file) > -1) {
+        clearTimeout(timer);
+        page.off('console', listener);
+        console.log(text);
+        resolve();
+      }
+    }
+    page.on('console', listener);
+    timer = setTimeout(function () {
+      page.off('console', listener);
+      console.log(browserLogs);
+      reject(new Error(`timeout after ${timeout}ms waiting for hmr update of ${file} to complete`));
+    }, timeout);
+  });
 }
 
 // poll until it updates

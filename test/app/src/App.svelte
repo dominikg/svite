@@ -22,5 +22,5 @@
 {:else}
   <svelte:component this={dynamicImportComponent} />
 {/if}
-<HmrTest />
-<HmrTest />
+<HmrTest id="hmr-test-1" />
+<HmrTest id="hmr-test-2" />
