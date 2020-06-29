@@ -8,6 +8,7 @@ const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelt
 
 const defaultHotOptions = {
   optimistic: true,
+  noPreserveState: true,
   compatVite: true,
 };
 
