@@ -1,14 +1,9 @@
 module.exports = {
   purge: process.env.NODE_ENV === 'production' && {
-    content: [
-      './src/**/*.svelte',
-      './src/**/*.html',
-      './src/**/*.css',
-      './index.html'
-    ],
+    content: ['./src/**/*.svelte', './src/**/*.html', './src/**/*.css', './index.html'],
     options: {
       whitelistPatterns: [/svelte-/],
-      defaultExtractor: content => {
+      defaultExtractor: (content) => {
         const regExp = new RegExp(/[A-Za-z0-9-_:/]+/g);
         const matchedTokens = [];
         let match = regExp.exec(content);
@@ -21,8 +16,8 @@ module.exports = {
           match = regExp.exec(content);
         }
         return matchedTokens;
-      }
-    }
+      },
+    },
   },
   theme: {
     extend: {},
