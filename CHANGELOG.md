@@ -1,5 +1,16 @@
 # Change Log
 
+## 0.0.10
+
+### BREAKING
+
+- default to `noPreserveState: true` in svelte-hmr options. Custom stores can be used for preservable state
+
+### Added
+
+- Initial work on testsuite based on vite's test.js
+- prevent purging when using dynamic class bindings like `class:p-4={true}` in tailwind example
+
 ### 0.0.9
 
 ### Added

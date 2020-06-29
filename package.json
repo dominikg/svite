@@ -1,6 +1,6 @@
 {
   "name": "svite",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "svelte integration plugin for vite",
   "scripts": {
     "lint": "run-p lint:script lint:style",
