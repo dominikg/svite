@@ -4,7 +4,7 @@
 
 ## features
 
-- reads svelte configruation with [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme)
+- reads svelte configuration with [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme)
 - svelte preprocessor support
 - svelte dependency optimization in dev
 - svelte compiler result caching in dev
