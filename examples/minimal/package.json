@@ -9,7 +9,7 @@
     "svelte": "^3.23.2"
   },
   "devDependencies": {
-    "vite": "^1.0.0-beta.6",
-    "svite": "latest"
+    "svite": "latest",
+    "vite": "^1.0.0-beta.8"
   }
 }
