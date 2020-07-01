@@ -10,6 +10,7 @@ const defaultHotOptions = {
   optimistic: true,
   noPreserveState: true,
   compatVite: true,
+  absoluteImports: false,
 };
 
 const defaultOptions = {
@@ -43,6 +44,7 @@ const forcedSvelteOptions = {
 };
 
 const forcedHotOptions = {
+  absoluteImports: false,
   compatVite: true,
 };
 
@@ -153,28 +155,30 @@ function createSvelteTransformTest(svelteOptions) {
 
 function updateViteConfig(config) {
   const viteConfig = config.vite;
-  let addToOptimize = svelteDeps.concat();
-
+  let addToInclude = svelteDeps.concat();
+  let addToExclude = [];
   if (config.dev.hot) {
-    addToOptimize.push('svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom', 'svelte-hmr/runtime/hot-api-esm', 'svelte-hmr');
+    addToExclude.push('svelte-hmr');
+    addToInclude.push('svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom', 'svelte-hmr/runtime/hot-api-esm');
   }
   const optimizeDeps = viteConfig.optimizeDeps;
   if (!optimizeDeps) {
-    viteConfig.optimizeDeps = { include: addToOptimize };
+    viteConfig.optimizeDeps = {
+      include: addToInclude,
+      exclude: addToExclude,
+    };
   } else {
-    if (optimizeDeps.exclude && optimizeDeps.exclude.length > 0) {
-      addToOptimize = addToOptimize.filter((dep) => !optimizeDeps.exclude.includes(dep));
+    if (!optimizeDeps.exclude) {
+      optimizeDeps.exclude = addToExclude;
+    } else {
+      optimizeDeps.exclude = [...new Set(addToExclude.concat(optimizeDeps.exclude))];
     }
-    if (addToOptimize.length > 0) {
-      if (optimizeDeps.include && optimizeDeps.include.length > 0) {
-        addToOptimize = addToOptimize.filter((dep) => !optimizeDeps.include.includes(dep));
-        if (addToOptimize.length > 0) {
-          optimizeDeps.include.push(...addToOptimize);
-        }
-      } else {
-        optimizeDeps.include = addToOptimize;
-      }
+    if (!optimizeDeps.include) {
+      optimizeDeps.include = addToInclude;
+    } else {
+      optimizeDeps.include = [...new Set(addToInclude.concat(optimizeDeps.include))];
     }
+    optimizeDeps.include = optimizeDeps.include.filter((i) => !optimizeDeps.exclude.includes(i));
   }
   log.debug.enabled && log.debug('vite config', viteConfig);
 }
@@ -207,7 +211,7 @@ function createDev(config) {
     const transformCache = new LRU(10000);
 
     transforms.push({
-      test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
+      test: (ctx) => !ctx.isBuild && !!devPlugin && isSvelteRequest(ctx),
       transform: async ({ path: id, code }) => {
         const useCache = code === useCacheMarker;
         if (useCache) {
@@ -228,9 +232,6 @@ function createDev(config) {
             await ctx.read(resolver.requestToFile(ctx.path));
             if (ctx.__notModified) {
               ctx.body = useCacheMarker;
-            } else {
-              log.debug.enabled && log.debug(`transform cache del ${ctx.path}`);
-              transformCache.del(ctx.path);
             }
           }
         }
