@@ -1,0 +1,18 @@
+{
+  "name": "svite-example-hmr-benchmark",
+  "version": "0.0.0",
+  "scripts": {
+    "benchmark": "node tools/benchmark.js"
+  },
+  "dependencies": {
+    "svelte": "^3.23.2"
+  },
+  "devDependencies": {
+    "del": "^5.1.0",
+    "execa": "^4.0.2",
+    "fs-extra": "^9.0.1",
+    "puppeteer": "^4.0.1",
+    "svite": "latest",
+    "vite": "^1.0.0-beta.8"
+  }
+}
