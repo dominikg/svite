@@ -232,26 +232,13 @@ describe('vite', () => {
   });
 });
 
-const lastFileWriteTime = {};
-async function throttledWrite(filePath, content, wait) {
-  const lastTime = lastFileWriteTime[filePath];
-  if (lastTime) {
-    const diff = process.hrtime(lastTime);
-    if (diff[0] === 0) {
-      const elapsed = Math.floor(diff[1] / 1e6);
-      if (wait > elapsed) {
-        await timeout(wait - elapsed);
-      }
-    }
-  }
-  await fs.writeFile(filePath, content);
-  lastFileWriteTime[filePath] = process.hrtime();
-}
-
+const fileContentCache = {};
 async function updateFile(file, replacer) {
   const compPath = path.join(tempDir, file);
-  const content = await fs.readFile(compPath, 'utf-8');
-  await throttledWrite(compPath, replacer(content), 50);
+  const content = fileContentCache[file] || (await fs.readFile(compPath, 'utf-8'));
+  const newContent = replacer(content);
+  await fs.writeFile(compPath, newContent);
+  fileContentCache[file] = newContent;
   await hmrUpdateComplete(file, 250);
 }
 
@@ -260,7 +247,6 @@ async function hmrUpdateComplete(file, timeout) {
     var timer;
     function listener(data) {
       const text = data.text();
-      //console.log('got log: '+text);
       if (text.indexOf(file) > -1) {
         clearTimeout(timer);
         page.off('console', listener);
