@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.1.0
+
+### BREAKING
+
+- update to rollup-plugin-svelte-hot/svelte-hmr 0.10.0
+  - hmr updates behave differently (less buggy) with noPreserveState=true
+
+### Added
+
+- new hmr-showcase example with guided demonstration
+- hmr-benchmark with cool gif output
+
+### Other improvements
+
+- cut down test execution time
+
 ## 0.0.10
 
 ### BREAKING
