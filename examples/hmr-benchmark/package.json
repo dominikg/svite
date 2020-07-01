@@ -2,7 +2,7 @@
   "name": "svite-example-hmr-benchmark",
   "version": "0.0.0",
   "scripts": {
-    "benchmark": "node tools/benchmark.js"
+    "benchmark": "node benchmark.js"
   },
   "dependencies": {
     "svelte": "^3.23.2"
