@@ -1,7 +1,10 @@
 <h1><img width=24 alt="svite-logo" src="svite-logo.svg" style="vertical-align: middle">&nbsp;svite&nbsp;<img width=24 alt="svite-logo" src="svite-logo.svg" style="vertical-align: middle"></h1>
 
-[svelte](https://svelte.dev) + [vite](https://github.com/vitejs/vite#readme) = sweet
+## hot module reloading - done quick
+![svelte+vite=sweet](https://user-images.githubusercontent.com/611613/86400551-18cffc00-bca9-11ea-81cd-fd0dcd0ad129.gif)
 
+Every change in that gif is a separate hot module reload - seriously - [try it](https://github.com/dominikg/svite/issues/6)
+ 
 ## features
 
 - reads svelte configuration with [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme)
