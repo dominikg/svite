@@ -172,12 +172,12 @@ async function writeStats() {
   const min = Math.min(...durations);
   const max = Math.max(...durations);
   const now = new Date();
-  const { brand, cores } = await si.cpu();
+  const { brand, cores, physicalCores } = await si.cpu();
   const { total, available, free } = await si.mem();
   const { platform } = await si.osInfo();
   const system = {
     platform,
-    cpu: { brand, cores },
+    cpu: { brand, cores, physicalCores },
     mem: { total, available, free },
     date: now.toUTCString(),
   };
