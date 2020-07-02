@@ -10,10 +10,22 @@ const outputDir = path.join(__dirname, 'dist');
 const hmrTriggerFile = path.join(__dirname, 'src/App.svelte');
 
 const argv = require('minimist')(process.argv.slice(2), {});
+if (argv.h || argv.help) {
+  console.log(`
+    benchmark supports the following arguments:
+      --headless    - render headless
+      --gif         - create a gif in ./dist (requires ImageMagick 'convert' in path)
+      --resultfile  - write stats to a timestamped file
+      --throttle X  - wait X milliseconds between writes to the same file
+      --help,-h     - print this message
+`);
+  process.exit(0);
+  return;
+}
 const gif = argv.gif || false;
 const headless = argv.headless || false;
 const resultfile = argv.resultfile || false;
-const throttle = argv.throttle || 60; // 60ms seems to work on my machine, no clue what happens below, it just stops
+let throttle = argv.throttle || 0;
 
 let vite;
 let browser;
@@ -144,8 +156,12 @@ async function produceGif() {
   }
   convertArgs.push('-loop', '-1');
   convertArgs.push('benchmark.gif');
-  await execa('convert', convertArgs, { cwd: outputDir });
-  await del(`${outputDir}/*.png`);
+  try {
+    await execa('convert', convertArgs, { cwd: outputDir });
+    await del(`${outputDir}/*.png`);
+  } catch (e) {
+    console.error('converting png screenshots to gif failed, is ImageMagick "convert" available in path?', e);
+  }
 }
 
 async function writeStats() {
@@ -206,12 +222,36 @@ async function writeStats() {
 }
 async function updateTriggerFile(replacer) {
   currentTriggerContent = replacer(currentTriggerContent);
-  const start = process.hrtime();
-  await throttledWrite(hmrTriggerFile, currentTriggerContent, throttle);
-  await hmrUpdateComplete(hmrTriggerFile, 250);
+  let start = process.hrtime();
+  try {
+    await throttledWrite(hmrTriggerFile, currentTriggerContent, throttle);
+    await hmrUpdateComplete(hmrTriggerFile, 250);
+  } catch (e) {
+    throttle += 10;
+    console.log(
+      `hmr update got stuck, increased write throttle to ${throttle}. use "--throttle ${throttle}" argument to prevent this message`,
+    );
+    start = process.hrtime();
+    try {
+      await throttledWrite(hmrTriggerFile, currentTriggerContent, throttle);
+      await hmrUpdateComplete(hmrTriggerFile, 250);
+    } catch (e) {
+      console.log('retry also got stuck, giving up');
+      throw e;
+    }
+  }
+  let screenshot;
+  if (headless) {
+    // headless doesn't render, which kind of cheats the timing a bit. so render screenshot before taking the time
+    screenshot = await takeScreenShot();
+  }
   const stat = { duration: msDiff(start) };
+
   if (gif) {
-    stat.screenshot = await takeScreenShot();
+    if (!screenshot) {
+      screenshot = await takeScreenShot();
+    }
+    stat.screenshot = screenshot;
   }
   hmrUpdateStats.push(stat);
 }
@@ -246,16 +286,14 @@ async function takeScreenShot() {
 
 const lastFileWriteTime = {};
 async function throttledWrite(filePath, content, wait) {
-  if (!wait) {
-    return fs.writeFile(filePath, content);
-  }
-
-  const lastTime = lastFileWriteTime[filePath];
-  if (lastTime) {
-    const elapsed = msDiff(lastTime);
-    if (wait > elapsed) {
-      const n = wait - elapsed;
-      await sleep(n);
+  if (wait) {
+    const lastTime = lastFileWriteTime[filePath];
+    if (lastTime) {
+      const elapsed = msDiff(lastTime);
+      if (wait > elapsed) {
+        const n = wait - elapsed;
+        await sleep(n);
+      }
     }
   }
   lastFileWriteTime[filePath] = process.hrtime();
