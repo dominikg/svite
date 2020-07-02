@@ -237,7 +237,7 @@ async function updateFile(file, replacer) {
   const compPath = path.join(tempDir, file);
   const content = fileContentCache[file] || (await fs.readFile(compPath, 'utf-8'));
   const newContent = replacer(content);
-  await fs.writeFile(compPath, newContent);
+  await throttledWrite(compPath, newContent, 100);
   fileContentCache[file] = newContent;
   await hmrUpdateComplete(file, 250);
 }
@@ -276,3 +276,25 @@ async function expectByPolling(poll, expected) {
     }
   }
 }
+
+function msDiff(start) {
+  const diff = process.hrtime(start);
+  return diff[0] * 1000 + Math.round(diff[1] / 1e6);
+}
+
+const lastFileWriteTime = {};
+async function throttledWrite(filePath, content, wait) {
+  if (wait) {
+    const lastTime = lastFileWriteTime[filePath];
+    if (lastTime) {
+      const elapsed = msDiff(lastTime);
+      if (wait > elapsed) {
+        const n = wait - elapsed;
+        await sleep(n);
+      }
+    }
+  }
+  lastFileWriteTime[filePath] = process.hrtime();
+  return fs.writeFile(filePath, content);
+}
+const sleep = (n) => new Promise((r) => setTimeout(r, n));
