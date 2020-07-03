@@ -10,6 +10,7 @@
     "svelte": "^3.23.2"
   },
   "devDependencies": {
-    "svite": "file:../../../svite/"
+    "svite": "file:../../../svite/",
+    "vite": "^1.0.0-beta.10"
   }
 }

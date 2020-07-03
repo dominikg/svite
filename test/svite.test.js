@@ -8,8 +8,8 @@ jest.setTimeout(60000);
 const timeout = (n) => new Promise((r) => setTimeout(r, n));
 
 const testAppDir = path.join(__dirname, 'app');
-const tempDir = path.join(__dirname, 'temp');
-const binPath = path.join(__dirname, '../node_modules/.bin/vite');
+const tempDir = path.join(__dirname, 'temp/app');
+const binPath = path.join(tempDir, 'node_modules', '.bin', 'vite');
 
 let devServer;
 let browser;
@@ -39,23 +39,47 @@ async function deleteTempDir() {
 }
 
 beforeAll(async () => {
-  await deleteTempDir();
-  await fs.copy(testAppDir, tempDir, {
-    filter: (file) => !/dist|node_modules/.test(file),
-  });
-  await execa('npm', ['install'], { cwd: tempDir });
+  try {
+    await deleteTempDir();
+    await fs.mkdirp(tempDir);
+    await fs.copy(testAppDir, tempDir, {
+      filter: (file) => !/dist|node_modules/.test(file),
+    });
+    await updateFile(
+      'package.json',
+      (c) =>
+        c
+          .replace(/"svite": ?"[^"]+"/, '"svite": "file:../../../../svite/"')
+          .replace(/"name": ?"([^"]+)"/, '"name": "$1-test"')
+          .replace('@dependency/dependency', '@dependency/dependency-test'),
+      true,
+    );
+    await updateFile('vite.config.js', (c) => c.replace('@dependency/dependency', '@dependency/dependency-test'), true);
+    await updateFile('src/App.svelte', (c) => c.replace('@dependency/dependency', '@dependency/dependency-test'), true);
+    await updateFile('dependency/package.json', (c) => c.replace(/"name": ?"([^"]+)"/, '"name": "$1-test"'), true);
+  } catch (e) {
+    console.error('setup failed', e);
+    throw e;
+  }
+
+  try {
+    await execa('npm', ['install'], { cwd: tempDir });
+  } catch (e) {
+    console.error(`npm install failed in ${tempDir}`, e);
+    throw e;
+  }
 });
 
 afterAll(async () => {
-  await deleteTempDir();
+  //await deleteTempDir();
   if (browser) await browser.close();
   if (devServer) {
     devServer.kill('SIGTERM', {
       forceKillAfterTimeout: 2000,
     });
   }
-  console.log(browserLogs);
-  // console.log(serverLogs)
+  await fs.writeFile(path.join(tempDir, 'browser.log'), browserLogs.join('\n'));
+  await fs.writeFile(path.join(tempDir, 'server.log'), serverLogs.join('\n'));
 });
 
 describe('vite', () => {
@@ -82,9 +106,6 @@ describe('vite', () => {
     });
     test('should not have failed requests', async () => {
       const has404 = browserLogs.some((msg) => msg.match('404'));
-      if (has404) {
-        console.log(browserLogs);
-      }
       expect(has404).toBe(false);
     });
 
@@ -167,30 +188,37 @@ describe('vite', () => {
     describe('build', () => {
       let staticServer;
       beforeAll(async () => {
-        console.log('building...');
-        const buildOutput = await execa(binPath, ['build'], {
-          cwd: tempDir,
-        });
-        expect(buildOutput.stdout).toMatch('Build completed');
-        expect(buildOutput.stderr).toBe('');
-        console.log('build complete. running build tests...');
+        try {
+          const buildOutput = await execa(binPath, ['build'], {
+            cwd: tempDir,
+          });
+          expect(buildOutput.stdout).toMatch('Build completed');
+          expect(buildOutput.stderr).toBe('');
+        } catch (e) {
+          console.error(`vite build failed`, e);
+          throw e;
+        }
       });
 
       afterAll(() => {
-        console.log('build test done.');
         if (staticServer) staticServer.close();
       });
 
       describe('app', () => {
         beforeAll(async () => {
-          // start a static file server
-          const app = new (require('koa'))();
-          app.use(require('koa-static')(path.join(tempDir, 'dist')));
-          staticServer = require('http').createServer(app.callback());
-          await new Promise((r) => staticServer.listen(3001, r));
+          try {
+            // start a static file server
+            const app = new (require('koa'))();
+            app.use(require('koa-static')(path.join(tempDir, 'dist')));
+            staticServer = require('http').createServer(app.callback());
+            await new Promise((r) => staticServer.listen(3001, r));
 
-          page = await browser.newPage();
-          await page.goto('http://localhost:3001');
+            page = await browser.newPage();
+            await page.goto('http://localhost:3001');
+          } catch (e) {
+            console.error(`failed to serve build and open page`, e);
+            throw e;
+          }
         });
 
         declareTests(true);
@@ -200,31 +228,32 @@ describe('vite', () => {
 
   describe('dev', () => {
     beforeAll(async () => {
-      browserLogs.length = 0;
-      console.log('starting dev server...');
-      // start dev server
-      devServer = execa(binPath, {
-        cwd: tempDir,
-      });
-      devServer.stderr.on('data', (data) => {
-        serverLogs.push(data.toString());
-      });
-      await new Promise((resolve) => {
-        devServer.stdout.on('data', (data) => {
-          serverLogs.push(data.toString());
-          if (data.toString().match('running')) {
-            console.log('dev server running.');
-            resolve();
-          }
+      browserLogs.push('------------------- dev -------------------------');
+      try {
+        devServer = execa(binPath, {
+          cwd: tempDir,
         });
-      });
+        devServer.stderr.on('data', (data) => {
+          serverLogs.push(data.toString());
+        });
+        await new Promise((resolve) => {
+          devServer.stdout.on('data', (data) => {
+            serverLogs.push(data.toString());
+            if (data.toString().match('running')) {
+              resolve();
+            }
+          });
+        });
 
-      console.log('launching browser');
-      page = await browser.newPage();
-      page.on('console', (msg) => {
-        browserLogs.push(msg.text());
-      });
-      await page.goto('http://localhost:3000');
+        page = await browser.newPage();
+        page.on('console', (msg) => {
+          browserLogs.push(msg.text());
+        });
+        await page.goto('http://localhost:3000');
+      } catch (e) {
+        console.error(`failed to start devserver and open page in dev mode`, e);
+        throw e;
+      }
     });
     describe('app', () => {
       declareTests(false);
@@ -233,13 +262,15 @@ describe('vite', () => {
 });
 
 const fileContentCache = {};
-async function updateFile(file, replacer) {
+async function updateFile(file, replacer, noHmrWait) {
   const compPath = path.join(tempDir, file);
   const content = fileContentCache[file] || (await fs.readFile(compPath, 'utf-8'));
   const newContent = replacer(content);
   await throttledWrite(compPath, newContent, 100);
   fileContentCache[file] = newContent;
-  await hmrUpdateComplete(file, 250);
+  if (!noHmrWait) {
+    await hmrUpdateComplete(file, 250);
+  }
 }
 
 async function hmrUpdateComplete(file, timeout) {
@@ -250,14 +281,12 @@ async function hmrUpdateComplete(file, timeout) {
       if (text.indexOf(file) > -1) {
         clearTimeout(timer);
         page.off('console', listener);
-        console.log(text);
         resolve();
       }
     }
     page.on('console', listener);
     timer = setTimeout(function () {
       page.off('console', listener);
-      console.log(browserLogs);
       reject(new Error(`timeout after ${timeout}ms waiting for hmr update of ${file} to complete`));
     }, timeout);
   });
