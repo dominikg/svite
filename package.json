@@ -36,13 +36,12 @@
     "@rollup/plugin-node-resolve": "^8.1.0",
     "@rollup/pluginutils": "^3.1.0",
     "chalk": "^4.1.0",
-    "cosmiconfig": "^6.0.0",
     "lru-cache": "^5.1.1",
     "rollup-plugin-svelte-hot": "^0.10.0-0 || ^0.10.0"
   },
   "peerDependencies": {
     "svelte": "^3.23.2",
-    "vite": "^1.0.0-beta.8 || ^1.0.0"
+    "vite": "^1.0.0-beta.10 || ^1.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.5.0",
@@ -69,7 +68,7 @@
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "^3.23.2",
     "typescript": "^3.9.6",
-    "vite": "^1.0.0-beta.8"
+    "vite": "^1.0.0-beta.10"
   },
   "husky": {
     "hooks": {
