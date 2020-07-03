@@ -112,6 +112,10 @@ postcss and [tailwindcss](https://tailwindcss.com)
 
 [routify](https://routify.dev) with support for [mdsvex](https://mdsvex.com)
 
+### [svelte-preprocess-auto](/examples/svelte-preprocess-auto)
+
+typescript and svelte-preprocess in automatic mode. This is heavily based on the regular svelte-preprocess example
+
 ## limitations
 
 This is an early version, some things may not work as expected. Please report findings.
@@ -121,7 +125,6 @@ This is an early version, some things may not work as expected. Please report fi
 - more features
   - vite options
 - release process
-- tests
 
 # Credits
 
