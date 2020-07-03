@@ -3,10 +3,10 @@
 ![svelte+vite=sweet](https://user-images.githubusercontent.com/611613/86400551-18cffc00-bca9-11ea-81cd-fd0dcd0ad129.gif)
 
 Every change in that gif is a separate hot module reload - seriously - [build it yourself](https://github.com/dominikg/svite/issues/6)
- 
+
 ## features
 
-- reads svelte configuration with [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme)
+- reads svelte configuration from `svelte.config.js`
 - svelte preprocessor support
 - svelte dependency optimization in dev
 - svelte compiler result caching in dev
@@ -96,7 +96,7 @@ This only applies to svites own logging. Logging of vite remains unaffected.
 
 ### svelte
 
-use this option if you don't want to use any of the ways you can provide a svelte config via [cosmiconfig](https://github.com/davidtheclark/cosmiconfig#readme) or need a quick override.
+use this option if you don't want to use `svelte.config.js` or need a quick override.
 
 ## check out the examples
 

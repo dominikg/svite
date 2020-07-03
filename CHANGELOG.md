@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.2.0
+
+### BREAKING
+
+- removed cosmiconfig support for svelte config
+  - `svelte.config.js` is now the only file where you may specify svelte options (besides plugin initialization)
+
+### Added
+
+- support proposed `compilerOptions` in `svelte.config.js`
+- testsuite that ensures examples are working
+
+### Changed
+
+- bumped vite to 1.0.0-beta.10
+
 ## 0.1.0
 
 ### BREAKING
