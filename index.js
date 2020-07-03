@@ -1,10 +1,16 @@
+const path = require('path');
 const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
 const rollupPluginNodeResolve = require('@rollup/plugin-node-resolve');
 const { createFilter } = require('@rollup/pluginutils');
-const { cosmiconfigSync } = require('cosmiconfig');
 const log = require('./tools/log');
 const LRU = require('lru-cache');
 const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition', 'svelte'];
+
+const defaultOptions = {
+  hot: true,
+  useTransformCache: true,
+  logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
+};
 
 const defaultHotOptions = {
   optimistic: true,
@@ -13,10 +19,9 @@ const defaultHotOptions = {
   absoluteImports: false,
 };
 
-const defaultOptions = {
-  hot: true,
-  useTransformCache: true,
-  logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
+const forcedHotOptions = {
+  absoluteImports: false,
+  compatVite: true,
 };
 
 const defaultSvelteOptions = {
@@ -41,11 +46,6 @@ const forcedSvelteOptions = {
     css: false,
     emitCss: true,
   },
-};
-
-const forcedHotOptions = {
-  absoluteImports: false,
-  compatVite: true,
 };
 
 function applyForcedOptions(config, forcedOptions) {
@@ -84,21 +84,26 @@ function finalizeConfig(config, type) {
   return svelteConfig;
 }
 
+function readSvelteConfigFile() {
+  const svelteConfigFilePath = path.join(process.cwd(), 'svelte.config.js');
+  try {
+    let config = require(svelteConfigFilePath);
+    const { compilerOptions, ...otherOptions } = config;
+    return compilerOptions ? { ...compilerOptions, ...otherOptions } : otherOptions;
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      log.error(`failed to load svelte config from ${svelteConfigFilePath}`, e);
+    }
+  }
+}
 /**
- * create required configs by merging default config, svelte config (read via cosmiconfig), passed pluginOptions.
+ * create required configs by merging default config, svelte config and passed pluginOptions.
  * finally override some options to ensure dev and build work as expected.
  * e.g. not hot mode with production build, when hot is enabled svelte compile needs to be dev: true
  *
  */
 function createConfig(pluginOptions) {
-  let baseSvelteOptions;
-  try {
-    const searchResult = cosmiconfigSync('svelte').search();
-    baseSvelteOptions = !searchResult || searchResult.isEmpty ? {} : searchResult.config;
-  } catch (e) {
-    log.error('failed to load svelte config', e);
-    throw e;
-  }
+  const baseSvelteOptions = readSvelteConfigFile();
 
   const { svelte: sveltePluginOptions, ...svitePluginOptions } = pluginOptions || {};
 
