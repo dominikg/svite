@@ -116,15 +116,13 @@ postcss and [tailwindcss](https://tailwindcss.com)
 
 typescript and svelte-preprocess in automatic mode. This is heavily based on the regular svelte-preprocess example
 
-## limitations
+# limitations
 
 This is an early version, some things may not work as expected. Please report findings.
 
-# TODO
+# Got a question? / Need help?
 
-- more features
-  - vite options
-- release process
+Join [svite discord](https://discord.gg/nzgMZJD)
 
 # Credits
 
