@@ -81,5 +81,6 @@
         "jest/valid-expect": "error"
       }
     }
-  ]
+  ],
+  "ignorePatterns": ["examples/svelte-preprocess-auto/src/App.svelte"]
 }

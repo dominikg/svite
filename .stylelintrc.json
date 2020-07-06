@@ -10,5 +10,6 @@
         "ignorePseudoClasses": ["global"]
       }
     ]
-  }
+  },
+  "ignoreFiles": ["examples/svelte-preprocess-auto/src/App.svelte"]
 }

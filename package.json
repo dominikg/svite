@@ -12,7 +12,9 @@
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
     "format:fix": "npm run format -- --write",
     "fixup": "run-s lint:fix format:fix",
-    "test": "jest --clearCache && jest --runInBand --forceExit"
+    "test": "jest --clearCache && jest --runInBand --forceExit",
+    "prerelease": "run-s lint test",
+    "release": "standard-version"
   },
   "main": "index.js",
   "repository": {
@@ -44,6 +46,8 @@
     "vite": "^1.0.0-beta.10 || ^1.0.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^9.0.1",
+    "@commitlint/config-conventional": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
     "@typescript-eslint/parser": "^3.5.0",
     "eslint": "^7.2.0",
@@ -63,6 +67,7 @@
     "prettier": "^2.0.5",
     "prettier-plugin-svelte": "^1.1.0",
     "puppeteer": "^4.0.1",
+    "standard-version": "^8.0.0",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-recommended": "^3.0.0",
@@ -72,7 +77,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
