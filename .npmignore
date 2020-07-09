@@ -6,3 +6,5 @@
 !README.md
 !tools
 !tools/*.js
+!bin
+!bin/svite.js

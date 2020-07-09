@@ -16,6 +16,7 @@
     "prerelease": "run-s lint test",
     "release": "standard-version"
   },
+  "bin": "./bin/svite.js",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -50,6 +51,7 @@
     "@commitlint/config-conventional": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
     "@typescript-eslint/parser": "^3.5.0",
+    "commander": "^5.1.0",
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-recommended": "^4.1.0",

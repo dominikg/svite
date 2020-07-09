@@ -216,7 +216,9 @@ function createDev(config) {
     const transformCache = new LRU(10000);
 
     transforms.push({
-      test: (ctx) => !ctx.isBuild && !!devPlugin && isSvelteRequest(ctx),
+      test: (ctx) => {
+        return !ctx.isBuild && !!devPlugin && isSvelteRequest(ctx);
+      },
       transform: async ({ path: id, code }) => {
         const useCache = code === useCacheMarker;
         if (useCache) {
@@ -286,6 +288,7 @@ function createBuildPlugins(config) {
 
   // prevent vite build spinner from swallowing our logs
   const logProtectPlugin = {
+    name: 'svite:logprotect',
     options: () => {
       log.setViteLogOverwriteProtection(true);
     },
@@ -294,6 +297,7 @@ function createBuildPlugins(config) {
     },
   };
   return [
+    { name: 'svite', options: () => {} }, // just a marker so cli can test if svite was loaded from vite config
     logProtectPlugin,
     rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
     buildPlugin,
@@ -304,6 +308,7 @@ function createVitePlugin(config) {
   const buildPlugins = createBuildPlugins(config);
   const { transforms, configureServer } = createDev(config);
   return {
+    name: 'svite',
     rollupInputOptions: {
       plugins: buildPlugins,
     },
@@ -315,6 +320,8 @@ function createVitePlugin(config) {
 module.exports = function svite(pluginOptions = {}) {
   if (pluginOptions.logLevel) {
     log.setLevel(pluginOptions.logLevel);
+  } else if (pluginOptions.debug) {
+    log.setLevel('debug');
   }
   const config = createConfig(pluginOptions);
   log.setLevel(config.svite.logLevel);

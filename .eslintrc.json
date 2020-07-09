@@ -26,7 +26,7 @@
   ],
   "overrides": [
     {
-      "files": ["./*.js","tools/**/*.js","**/*.config.js"],
+      "files": ["./*.js","tools/**/*.js","**/*.config.js","bin/**/*.js"],
       "env": {
         "node": true,
         "browser": false
