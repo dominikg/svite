@@ -76,7 +76,7 @@ async function runServe(options) {
       log.error('server error', e);
     }
   });
-  server.listen(port, () => {
+  await server.listen(port, () => {
     log.info(`  Dev server running at:`);
     const interfaces = os.networkInterfaces();
     Object.keys(interfaces).forEach((key) => {
@@ -106,44 +106,54 @@ async function runBuild(options) {
   }
 }
 
-program.version(version).description('svite - build svelte apps with vite');
+async function main() {
+  program.version(version).description('svite - build svelte apps with vite');
 
-program
-  .command('dev', { isDefault: true })
-  .description('start dev server')
-  .option('-d, --debug', 'enable debug output', false)
-  .option('-c, --config [string]', 'use specified vite config file')
-  .option('-p,--port [port]', 'port to use for serve', 3000)
-  .option('-sw, --serviceWorker [boolean]', 'enable service worker caching', false)
-  .option('--open [boolean]', 'open browser on start')
-  .action(async (cmd) => {
-    const options = cmd.opts();
-    if (options.debug) {
-      log.setLevel('debug');
-    }
-    options.mode = 'development';
-    runServe(await setupSvite(options));
+  program
+    .command('dev', { isDefault: true })
+    .description('start dev server')
+    .option('-d, --debug', 'enable debug output', false)
+    .option('-c, --config [string]', 'use specified vite config file')
+    .option('-p,--port [port]', 'port to use for serve', 3000)
+    .option('-sw, --serviceWorker [boolean]', 'enable service worker caching', false)
+    .option('--open [boolean]', 'open browser on start')
+    .action(async (cmd) => {
+      const options = cmd.opts();
+      if (options.debug) {
+        log.setLevel('debug');
+      }
+      options.mode = 'development';
+      await runServe(await setupSvite(options));
+    });
+
+  program
+    .command('build')
+    .description('build')
+    .option('-d, --debug', 'enable debug output', false)
+    .option('-c, --config [string]', 'use specified vite config file')
+    .option('--base [string]', 'public base path for build', '/')
+    .option('--outDir [string]', 'output directory for build', 'dist')
+    .option('--assetsDir [string]', 'directory under outDir to place assets in', '_assets')
+    .option('--assetsInlineLimit [number]', 'static asset base64 inline threshold in bytes', 4096)
+    .option('--sourcemap [boolean]', 'output source maps for build', false)
+    .option('--minify [boolean | "terser" | "esbuild"]', 'enable/disable minification, or specify minifier to use.', 'terser')
+    .option('-m, --mode [string]', 'specify env mode', 'production')
+    // .option('--ssr [boolean]', 'build for server-side rendering')
+    .action(async (cmd) => {
+      const options = cmd.opts();
+      if (options.debug) {
+        log.setLevel('debug');
+      }
+      await runBuild(await setupSvite(options));
+    });
+  await program.parseAsync(process.argv);
+}
+
+main()
+  .then(() => {
+    log.debug('command success');
+  })
+  .catch((e) => {
+    log.debug('command error', e);
+    process.exit(1);
   });
-
-program
-  .command('build')
-  .description('build')
-  .option('-d, --debug', 'enable debug output', false)
-  .option('-c, --config [string]', 'use specified vite config file')
-  .option('--base [string]', 'public base path for build', '/')
-  .option('--outDir [string]', 'output directory for build', 'dist')
-  .option('--assetsDir [string]', 'directory under outDir to place assets in', '_assets')
-  .option('--assetsInlineLimit [number]', 'static asset base64 inline threshold in bytes', 4096)
-  .option('--sourcemap [boolean]', 'output source maps for build', false)
-  .option('--minify [boolean | "terser" | "esbuild"]', 'enable/disable minification, or specify minifier to use.', 'terser')
-  .option('-m, --mode [string]', 'specify env mode', 'production')
-  // .option('--ssr [boolean]', 'build for server-side rendering')
-  .action(async (cmd) => {
-    const options = cmd.opts();
-    if (options.debug) {
-      log.setLevel('debug');
-    }
-    runBuild(await setupSvite(options));
-  });
-
-program.parse(process.argv);
