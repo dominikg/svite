@@ -211,10 +211,10 @@ describe('vite', () => {
             const app = new (require('koa'))();
             app.use(require('koa-static')(path.join(tempDir, 'dist')));
             staticServer = require('http').createServer(app.callback());
-            await new Promise((r) => staticServer.listen(3001, r));
+            await new Promise((r) => staticServer.listen(4001, r));
 
             page = await browser.newPage();
-            await page.goto('http://localhost:3001');
+            await page.goto('http://localhost:4001');
           } catch (e) {
             console.error(`failed to serve build and open page`, e);
             throw e;
@@ -234,22 +234,27 @@ describe('vite', () => {
           cwd: tempDir,
         });
         devServer.stderr.on('data', (data) => {
-          serverLogs.push(data.toString());
+          serverLogs.push(`stderr: ${data.toString()}`);
         });
-        await new Promise((resolve) => {
-          devServer.stdout.on('data', (data) => {
-            serverLogs.push(data.toString());
-            if (data.toString().match('running')) {
-              resolve();
+        devServer.stdout.on('data', (data) => {
+          serverLogs.push(`stdout: ${data.toString()}`);
+        });
+        const url = await new Promise((resolve) => {
+          const resolveLocalUrl = (data) => {
+            const match = data.toString().match(/http:\/\/localhost:\d+/);
+            if (match) {
+              devServer.stdout.off('data', resolveLocalUrl);
+              resolve(match[0]);
             }
-          });
+          };
+          devServer.stdout.on('data', resolveLocalUrl);
         });
 
         page = await browser.newPage();
         page.on('console', (msg) => {
           browserLogs.push(msg.text());
         });
-        await page.goto('http://localhost:3000');
+        await page.goto(url, { waitUntil: 'networkidle2' });
       } catch (e) {
         console.error(`failed to start devserver and open page in dev mode`, e);
         throw e;
