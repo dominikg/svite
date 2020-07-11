@@ -14,7 +14,8 @@
     "fixup": "run-s lint:fix format:fix",
     "test": "jest --clearCache && jest --runInBand --forceExit",
     "prerelease": "run-s lint test",
-    "release": "standard-version"
+    "release": "standard-version",
+    "beta-release": "npm run release -- -p beta"
   },
   "bin": "./bin/svite.js",
   "main": "index.js",
