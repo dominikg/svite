@@ -34,31 +34,70 @@ Install svite and vite as a dev dependency
 npm install -D svite vite
 ```
 
-Add as plugin to `vite.config.js`
+## project setup
 
-```js
-const svite = require('svite');
-module.exports = {
-  plugins: [svite()],
-};
-```
+Vite requires an index.html file at project root that serves as entry point. [example](/examples/minimal/index.html)
 
 ## run
 
-just use regular `vite` or `vite build` commands
+Svite has its own cli that wraps vite. It does not require a vite.config.js by default
 
 ```json
 {
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "dev": "svite",
+    "build": "svite build"
   }
 }
 ```
 
+# Advanced usage
+
+# svite cli
+
+most of vite cli options can also be passed to svite.
+
+## commands
+
+### dev
+
+Start a dev server with `svite` or `svite dev`
+
+```shell script
+Usage: svite dev [options]
+
+Options:
+  -d,  --debug [boolean|string]   enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
+  -c,  --config [string]          use specified vite config file
+  -p,  --port [port]              port to use for serve (default: 3000)
+  -sw, --serviceWorker [boolean]  enable service worker caching (default: false)
+  -o,  --open [boolean]           open browser on start
+```
+
+### build
+
+Bundle for production with `svite build`
+
+```shell script
+Usage: svite build [options]
+
+Options:
+  -d, --debug [boolean|string]               enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
+  -c, --config [string]                      use specified vite config file
+  -m, --mode [string]                        specify env mode (default: "production")
+  --base [string]                            public base path for build (default: "/")
+  --outDir [string]                          output directory for build (default: "dist")
+  --assetsDir [string]                       directory under outDir to place assets in (default: "_assets")
+  --assetsInlineLimit [number]               static asset base64 inline threshold in bytes (default: 4096)
+  --sourcemap [boolean]                      output source maps for build (default: false)
+  --minify [boolean | "terser" | "esbuild"]  enable/disable minification, or specify minifier to use. (default: "terser")
+  --ssr [boolean]                            build for server-side rendering
+
+```
+
 ## svite options
 
-you can pass options to svite via vite.config.js
+you can pass additional options to svite via vite.config.js
 
 ```js
 const svite = require('svite');
@@ -72,12 +111,12 @@ module.exports = {
 };
 ```
 
-| option                    | type                      | default        | values                                                                                                                                      |
-| ------------------------- | ------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **hot**<br><br>           | `boolean`<br>`object`<br> | `true`<br><br> | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config |
-| **useTransformCache**<br> | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                    |
-| **logLevel**              | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`                                |
-| **svelte**<br>            | `object`<br>              | `not set`<br>  | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                     |
+| option                    | type                      | default        | values                                                                                                                                                                |
+| ------------------------- | ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **hot**<br><br>           | `boolean`<br>`object`<br> | `true`<br><br> | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config                           |
+| **useTransformCache**<br> | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
+| **logLevel**              | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
+| **svelte**<br>            | `object`<br>              | `not set`<br>  | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                                               |
 
 ### hot
 
@@ -93,6 +132,7 @@ When a reload request hits the dev server, vite runs transforms again. this opti
 
 Set this to `'debug'` if you want to see more output, use `'warn'`, `'error'` or `'silent'` for less.
 This only applies to svites own logging. Logging of vite remains unaffected.
+You can use `--debug` cli option to control vite debug output
 
 ### svelte
 
