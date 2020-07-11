@@ -9,7 +9,7 @@ const timeout = (n) => new Promise((r) => setTimeout(r, n));
 
 const testAppDir = path.join(__dirname, 'app');
 const tempDir = path.join(__dirname, 'temp/app');
-const binPath = path.join(tempDir, 'node_modules', '.bin', 'vite');
+const binPath = path.join(tempDir, 'node_modules', '.bin', 'svite');
 
 let devServer;
 let browser;

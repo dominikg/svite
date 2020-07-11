@@ -39,7 +39,7 @@ describe('examples', () => {
 
     describe(example, () => {
       const exampleTempDir = path.join(tempDir, example);
-      const binPath = path.join(exampleTempDir, 'node_modules', '.bin', 'vite');
+      const binPath = path.join(exampleTempDir, 'node_modules', '.bin', 'svite');
       const updateExampleFile = updateFile.bind(null, exampleTempDir);
       const browserLogs = [];
       const serverLogs = [];
@@ -78,7 +78,7 @@ describe('examples', () => {
         await fs.writeFile(path.join(exampleTempDir, 'browser.log'), browserLogs.join('\n'));
         await fs.writeFile(path.join(exampleTempDir, 'server.log'), serverLogs.join('\n'));
       });
-      describe('vite', () => {
+      describe('svite', () => {
         beforeAll(async () => {
           browser = await puppeteer.launch(process.env.CI ? { args: ['--no-sandbox', '--disable-setuid-sandbox'] } : {});
         });
