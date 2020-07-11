@@ -318,10 +318,10 @@ function createVitePlugin(config) {
 }
 
 module.exports = function svite(pluginOptions = {}) {
-  if (pluginOptions.logLevel) {
-    log.setLevel(pluginOptions.logLevel);
-  } else if (pluginOptions.debug) {
+  if (pluginOptions.debug) {
     log.setLevel('debug');
+  } else if (pluginOptions.logLevel) {
+    log.setLevel(pluginOptions.logLevel);
   }
   const config = createConfig(pluginOptions);
   log.setLevel(config.svite.logLevel);

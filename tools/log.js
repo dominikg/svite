@@ -1,13 +1,13 @@
 const chalk = require('chalk');
 const prefix = '[svite]';
-
+const debug = require('debug');
 const levels = ['debug', 'info', 'warn', 'error', 'silent'];
 
 const loggers = {
   debug: {
-    color: (str) => str,
-    log: console.debug,
+    log: debug('svite:'),
     enabled: false,
+    isDebug: true,
   },
   info: {
     color: chalk.cyan,
@@ -54,9 +54,13 @@ function _log(logger, message, payload) {
   if (!logger.enabled) {
     return;
   }
-  logger.log(logger.color(`${prefix} ${message}`));
-  if (payload) {
-    logger.log(payload);
+  if (logger.isDebug) {
+    payload !== undefined ? logger.log(message, payload) : logger.log(message);
+  } else {
+    logger.log(logger.color(`${prefix} ${message}`));
+    if (payload) {
+      logger.log(payload);
+    }
   }
   if (_viteLogOverwriteProtection) {
     logger.log('');
