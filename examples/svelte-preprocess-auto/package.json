@@ -1,5 +1,5 @@
 {
-  "name": "svite-example-minimal",
+  "name": "svite-example-preprocess",
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",

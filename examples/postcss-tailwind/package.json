@@ -2,8 +2,8 @@
   "name": "svite-example-postcss-tailwind",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "dev": "svite",
+    "build": "svite build"
   },
   "dependencies": {
     "svelte": "^3.23.2"

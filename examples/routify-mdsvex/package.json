@@ -2,12 +2,12 @@
   "name": "svite-example-routify-mdsvex",
   "version": "0.0.0",
   "scripts": {
-    "dev": "run-p dev:routify dev:vite",
+    "dev": "run-p dev:routify dev:svite",
     "dev:routify": "routify run",
-    "dev:vite": "vite",
-    "build": "run-s build:routify build:vite",
+    "dev:svite": "svite",
+    "build": "run-s build:routify build:svite",
     "build:routify": "routify run -b",
-    "build:vite": "vite build"
+    "build:svite": "svite build"
   },
   "dependencies": {
     "svelte": "^3.23.2"

@@ -1,5 +1,5 @@
 <script>
-  export let label = ''
+  export let label = '';
 </script>
 
-<div> Your name is '{label}' </div>
+<div>Your name is '{label}'</div>

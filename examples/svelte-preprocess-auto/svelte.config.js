@@ -5,5 +5,5 @@ module.exports = {
       // skips type checking
       transpileOnly: true,
     },
-  })
-}
+  }),
+};
