@@ -1,4 +1,15 @@
-# Changelog
+### [0.2.2-beta.0](https://github.com/dominikg/svite/compare/v0.2.1...v0.2.2-beta.0) (2020-07-11)
+
+### Features
+
+- use same debug output method as vite and allow configuration through --debug cli option ([37e63b9](https://github.com/dominikg/svite/commit/37e63b9f371e7ec2b7c3ce9d798cb38664795569))
+- **cli:** graceful exit on SIGTERM and SIGINT ([519c759](https://github.com/dominikg/svite/commit/519c75988ef6a8a31ecb310d0b237c279f729ec3))
+- add svite binary ([d3ddee0](https://github.com/dominikg/svite/commit/d3ddee0728b124dea4f6bdfada27f0dfb0dab366))
+- use svite bin in minimal example ([e35bc93](https://github.com/dominikg/svite/commit/e35bc93ca9c6d40c2df77f305852d72de67a86be))
+
+### Bug Fixes
+
+- async handling for commands in bin ([2e1e698](https://github.com/dominikg/svite/commit/2e1e6984d050887694632af13be1036cc2a18c6f))
 
 ### 0.2.1 (2020-07-06)
 
