@@ -1,3 +1,11 @@
+
+### [0.2.2-beta.3](https://github.com/dominikg/svite/compare/v0.2.2-beta.1...v0.2.2-beta.3) (2020-07-12)
+
+
+### Bug Fixes
+
+* execa dependency ([d4bcb0f](https://github.com/dominikg/svite/commit/d4bcb0fa52aac21f03c28dce42c476859f33233f))
+
 ### [0.2.2-beta.2](https://github.com/dominikg/svite/compare/v0.2.2-beta.1...v0.2.2-beta.2) (2020-07-12)
 
 ### Bug Fixes
