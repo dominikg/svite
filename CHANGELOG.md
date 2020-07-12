@@ -1,4 +1,11 @@
 
+### [0.2.2-beta.4](https://github.com/dominikg/svite/compare/0.2.2-beta.3...0.2.2-beta.4) (2020-07-12)
+
+
+### Features
+
+* **cli:** add optimize command ([f18e12a](https://github.com/dominikg/svite/commit/f18e12a0aa11546bc9e5d997b8457cf7a840bac1))
+
 ### [0.2.2-beta.3](https://github.com/dominikg/svite/compare/v0.2.2-beta.1...v0.2.2-beta.3) (2020-07-12)
 
 
