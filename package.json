@@ -40,20 +40,21 @@
     "@rollup/plugin-node-resolve": "^8.1.0",
     "@rollup/pluginutils": "^3.1.0",
     "chalk": "^4.1.0",
+    "commander": "^5.1.0",
     "debug": "^4.1.1",
-    "lru-cache": "^5.1.1",
+    "degit": "^2.8.0",
+    "lru-cache": "^6.0.0",
     "rollup-plugin-svelte-hot": "^0.10.0-0 || ^0.10.0"
   },
   "peerDependencies": {
     "svelte": "^3.23.2",
-    "vite": "^1.0.0-beta.10 || ^1.0.0"
+    "vite": "^1.0.0-beta.11 || ^1.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.0.1",
     "@commitlint/config-conventional": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^3.5.0",
     "@typescript-eslint/parser": "^3.5.0",
-    "commander": "^5.1.0",
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-recommended": "^4.1.0",
