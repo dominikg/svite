@@ -73,7 +73,7 @@
     "prettier": "^2.0.5",
     "prettier-plugin-svelte": "^1.1.0",
     "puppeteer": "^4.0.1",
-    "standard-version": "^8.0.0",
+    "standard-version": "^8.0.1",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-recommended": "^3.0.0",
