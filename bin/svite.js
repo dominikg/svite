@@ -1,16 +1,25 @@
 #!/usr/bin/env node
-
 const program = require('commander');
 const path = require('path');
 const os = require('os');
 const chalk = require('chalk');
-const version = require(path.join(__dirname, '../package.json')).version;
+const pkg = require(path.join(__dirname, '../package.json'));
+const version = pkg.version;
+const execa = require('execa');
+const fs = require('fs');
 
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
 let vite;
 let log = console;
 
 async function setupSvite(options) {
+  try {
+    vite = require('vite');
+  } catch (e) {
+    log.error('failed to find vite. Vite is required to run this svite command', e);
+    process.exit(1);
+  }
+
   const userConfig = await vite.resolveConfig(options.mode, options.config);
   let viteConfig = {
     ...userConfig,
@@ -139,11 +148,95 @@ function setupDebug(options) {
   if (debugOption) {
     log.setLevel('debug');
   }
-  vite = require('vite');
+}
+const templates = ['minimal', 'routify-mdsvex', 'postcss-tailwind', 'svelte-preprocess-auto'];
+async function installTemplate(options) {
+  const template = options.template;
+
+  if (!templates.includes(template)) {
+    log.error(`invalid template ${template}. Valid: ${JSON.stringify(templates)}`);
+    return;
+  }
+  const targetDir = path.join(process.cwd(), options.targetDir || `svite-${template}`);
+
+  const degit = require('degit');
+  const githubRepo = pkg.repository.url.match(/github\.com\/(.*).git/)[1];
+  const beta = pkg.version.indexOf('beta') > -1;
+  const degitPath = `${githubRepo}/examples/${template}${beta ? '#beta' : ''}`;
+  const degitOptions = {
+    cache: options.cache,
+    force: options.force,
+    verbose: options.debug,
+    mode: 'tar',
+  };
+  if (options.debug) {
+    log.debug(`degit ${degitPath}`, degitOptions);
+  }
+  const emitter = degit(degitPath, degitOptions);
+
+  emitter.on('info', (info) => {
+    log.info(info.message);
+  });
+  emitter.on('warn', (warning) => {
+    log.warn(warning.message);
+  });
+  emitter.on('error', (error) => {
+    log.error(error.message, error);
+  });
+
+  await emitter.clone(targetDir);
+  log.info(`created ${targetDir}`);
+  await updatePkg(targetDir);
+  if (!options.skipInstall) {
+    await npmInstall(targetDir);
+  }
+
+  if (!options.skipGit) {
+    await gitInit(targetDir);
+    if (!options.skipCommit) {
+      await gitCommit(targetDir);
+    }
+  }
+}
+
+async function updatePkg(dir) {
+  const pkgFile = path.join(dir, 'package.json');
+  const pkg = require(pkgFile);
+  pkg.name = path.basename(dir);
+  pkg.devDependencies.svite = `^${version}`;
+  fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
+}
+
+async function npmInstall(dir) {
+  try {
+    await execa('npm', ['install'], { cwd: dir });
+  } catch (e) {
+    console.error(`npm install failed in ${dir}`, e);
+    throw e;
+  }
+}
+
+async function gitInit(dir) {
+  try {
+    await execa('git', ['init'], { cwd: dir });
+  } catch (e) {
+    console.error(`git init failed in ${dir}`, e);
+    throw e;
+  }
+}
+
+async function gitCommit(dir) {
+  try {
+    await execa('git', ['add', '.'], { cwd: dir });
+    await execa('git', ['commit', '-m "initial commit"'], { cwd: dir });
+  } catch (e) {
+    console.error(`git commit failed in ${dir}`, e);
+    throw e;
+  }
 }
 
 async function main() {
-  program.version(version).description('svite - build svelte apps with vite');
+  program.version(version, '-v, --version').description('svite - build svelte apps with vite');
 
   program
     .command('dev', { isDefault: true })
@@ -187,6 +280,23 @@ async function main() {
       setupDebug(options);
       await runBuild(await setupSvite(options));
     });
+
+  program
+    .command('create [targetDir]')
+    .description('create a new project. If you do not specify targetDir, "./svite-<template>" will be used')
+    .option('-t, --template [string]', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
+    .option('-f, --force', 'force operation even if targetDir exists and is not empty', false)
+    .option('-c, --cache', 'cache template for later use', false)
+    .option('-d, --debug', 'more verbose logging', false)
+    .option('-si, --skip-install', 'skip npm install', false)
+    .option('-sg, --skip-git', 'skit git init', false)
+    .option('-sc, --skip-commit', 'skit initial commit', false)
+    .action(async (targetDir, cmd) => {
+      const options = cmd.opts();
+      setupDebug(options);
+      options.targetDir = targetDir;
+      await installTemplate(options);
+    });
   await program.parseAsync(process.argv);
 }
 
@@ -195,6 +305,6 @@ main()
     log.debug('command success');
   })
   .catch((e) => {
-    log.debug('command error', e);
+    log.error('command error', e);
     process.exit(1);
   });

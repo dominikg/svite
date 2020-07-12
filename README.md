@@ -17,9 +17,8 @@ Every change in that gif is a separate hot module reload - seriously - [build it
 # quickstart
 
 ```shell script
-npx degit dominikg/svite/examples/minimal my-first-svite-project
+npx svite create my-first-svite-project
 cd my-first-svite-project
-npm install
 npm run dev # starts dev-server with hot-module-reloading
 npm run build # builds to /dist
 ```
@@ -36,11 +35,13 @@ npm install -D svite vite
 
 ## project setup
 
-Vite requires an index.html file at project root that serves as entry point. [example](/examples/minimal/index.html)
+Vite requires an index.html file at project root that serves as entry point. see [example](/examples/minimal/index.html)
 
 ## run
 
-Svite has its own cli that wraps vite. It does not require a vite.config.js by default
+Svite has its own cli that wraps vite. It does not require a vite.config.js by default.
+
+Simply set it up in scripts of package.json
 
 ```json
 {
@@ -59,11 +60,30 @@ most of vite cli options can also be passed to svite.
 
 ## commands
 
+### create
+
+Create a new svite project from a template.
+
+```
+Usage: svite create [options] [targetDir]
+
+create a new project. If you do not specify targetDir, "./svite-<template>" will be used
+
+Options:
+  -t, --template [string]  template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
+  -f, --force              force operation even if targetDir exists and is not empty (default: false)
+  -c, --cache              cache template for later use (default: false)
+  -d, --debug              more verbose logging (default: false)
+  -si, --skip-install      skip npm install (default: false)
+  -sg, --skip-git          skit git init (default: false)
+  -sc, --skip-commit       skit initial commit (default: false)
+```
+
 ### dev
 
 Start a dev server with `svite` or `svite dev`
 
-```shell script
+```
 Usage: svite dev [options]
 
 Options:
@@ -78,7 +98,7 @@ Options:
 
 Bundle for production with `svite build`
 
-```shell script
+```
 Usage: svite build [options]
 
 Options:
