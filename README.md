@@ -115,6 +115,21 @@ Options:
 
 ```
 
+### optimize
+
+Run vite optimizer. `svite dev` runs this automatically by default. Sometimes it can be helpful to run it manually to force updates to optimized dependencies.
+
+```
+Usage: svite optimize [options]
+
+run vite optimizer
+
+Options:
+  -d, --debug [boolean|string]  enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
+  -c, --config [string]         use specified vite config file
+  -f, --force                   force optimize even if hash is equal
+```
+
 ## svite options
 
 you can pass additional options to svite via vite.config.js

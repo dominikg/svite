@@ -136,6 +136,17 @@ async function runBuild(options) {
   }
 }
 
+async function runOptimize(options) {
+  try {
+    options.configureServer[0]({ config: options }); //hack, call configureServer hook of plugin to get optimizeDeps populated
+    await vite.optimizeDeps(options, true);
+    process.exit(0);
+  } catch (err) {
+    log.error('optimize error', err);
+    process.exit(1);
+  }
+}
+
 function setupDebug(options) {
   const debugOption = options.debug;
   if (debugOption) {
@@ -279,6 +290,26 @@ async function main() {
       const options = cmd.opts();
       setupDebug(options);
       await runBuild(await setupSvite(options));
+    });
+
+  program
+    .command('optimize')
+    .description('run vite optimizer')
+    .option(
+      '-d, --debug [boolean|string]',
+      'enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar" ',
+      false,
+    )
+    .option('-c, --config [string]', 'use specified vite config file')
+    .option('-f, --force', 'force optimize even if hash is equal')
+    .action(async (cmd) => {
+      const options = cmd.opts();
+      setupDebug(options);
+      const buildConfig = await setupSvite(options);
+      if (options.force) {
+        buildConfig.force = true;
+      }
+      await runOptimize(buildConfig);
     });
 
   program
