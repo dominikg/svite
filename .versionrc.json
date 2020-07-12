@@ -1,3 +1,5 @@
 {
-  "header": ""
+  "header": "",
+  "noVerify": true,
+  "tagPrefix": ""
 }
