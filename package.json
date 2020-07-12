@@ -1,6 +1,6 @@
 {
   "name": "svite",
-  "version": "0.2.2-beta.0",
+  "version": "0.2.2-beta.1",
   "description": "svelte integration plugin for vite",
   "scripts": {
     "lint": "run-p lint:script lint:style",
@@ -91,7 +91,7 @@
     "*.{js,ts,svelte,html,md,svx}": "./node_modules/.bin/eslint --fix",
     "*.{css,scss,svelte,html,js,ts,md,svx}": [
       "./node_modules/.bin/stylelint --fix",
-      "./node_modules/.bin/prettier --write"
+      "./node_modules/.bin/prettier --write '!CHANGELOG.md'"
     ]
   }
 }

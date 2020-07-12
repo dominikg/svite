@@ -1,3 +1,9 @@
+### [0.2.2-beta.1](https://github.com/dominikg/svite/compare/v0.2.2-beta.0...v0.2.2-beta.1) (2020-07-12)
+
+### Features
+
+- **cli:** add create command ([d10292b](https://github.com/dominikg/svite/commit/d10292ba7c4e9481e32ca0a410bdca230958ce43))
+
 ### [0.2.2-beta.0](https://github.com/dominikg/svite/compare/v0.2.1...v0.2.2-beta.0) (2020-07-11)
 
 ### Features
