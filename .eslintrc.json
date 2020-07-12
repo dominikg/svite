@@ -82,5 +82,5 @@
       }
     }
   ],
-  "ignorePatterns": ["examples/svelte-preprocess-auto/src/App.svelte"]
+  "ignorePatterns": ["examples/svelte-preprocess-auto/src/App.svelte","CHANGELOG.md"]
 }
