@@ -43,6 +43,7 @@
     "commander": "^5.1.0",
     "debug": "^4.1.1",
     "degit": "^2.8.0",
+    "execa": "^4.0.3",
     "lru-cache": "^6.0.0",
     "rollup-plugin-svelte-hot": "^0.10.0-0 || ^0.10.0"
   },
@@ -64,7 +65,6 @@
     "eslint-plugin-markdown": "^2.0.0-alpha.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-svelte3": "^2.7.3",
-    "execa": "^4.0.2",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
     "lint-staged": "^10.2.11",
