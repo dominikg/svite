@@ -1,4 +1,11 @@
 
+### [0.2.2-beta.5](https://github.com/dominikg/svite/compare/0.2.2-beta.4...0.2.2-beta.5) (2020-07-13)
+
+
+### Bug Fixes
+
+* **cli:** use vite defaults for build --ssr {outputDir: 'dist-ssr', assetsDir: '.'} ([5928c49](https://github.com/dominikg/svite/commit/5928c4937eecdd321b03ba872b6219d62e6d97c0))
+
 ### [0.2.2-beta.4](https://github.com/dominikg/svite/compare/0.2.2-beta.3...0.2.2-beta.4) (2020-07-12)
 
 
