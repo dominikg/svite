@@ -128,7 +128,16 @@ function stopServerAndExit(server, signal) {
 
 async function runBuild(options) {
   try {
-    await vite.build(options);
+    if (options.ssr) {
+      await vite.ssrBuild({
+        ...options,
+        ssr: false,
+        outDir: options.outDir === 'dist' ? 'dist-ssr' : options.outDir,
+        assetsDir: options.assetsDir === '_assets' ? '.' : options.assetsDir,
+      });
+    } else {
+      await vite.build(options);
+    }
     process.exit(0);
   } catch (err) {
     log.error('build error', err);
