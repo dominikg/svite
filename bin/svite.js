@@ -293,12 +293,36 @@ async function main() {
     .option('--assetsInlineLimit [number]', 'static asset base64 inline threshold in bytes', 4096)
     .option('--sourcemap [boolean]', 'output source maps for build', false)
     .option('--minify [boolean | "terser" | "esbuild"]', 'enable/disable minification, or specify minifier to use.', 'terser')
-
+    .option(
+      '--stats [boolean|string]',
+      'generate bundle stats with rollup-plugin-visualizer. true, "json": stats.json, ["html" "treemap","sunburst","network"]: stats.html',
+    )
     .option('--ssr [boolean]', 'build for server-side rendering')
     .action(async (cmd) => {
       const options = cmd.opts();
       setupDebug(options);
-      await runBuild(await setupSvite(options));
+      const buildOptions = await setupSvite(options);
+      if (options.stats) {
+        try {
+          const visualizer = require('rollup-plugin-visualizer');
+          const visualizerOptions = {};
+          if (options.stats === true || options.stats === 'json') {
+            visualizerOptions.json = true;
+          } else if (options.stats === 'html') {
+            visualizerOptions.template = 'treemap';
+          } else if (['treemap', 'sunburst', 'network'].includes(options.stats)) {
+            visualizerOptions.template = options.stats;
+          } else {
+            throw new Error(`invalid value for stats option: ${options.stats}`);
+          }
+          visualizerOptions.filename = path.join(options.outDir, `stats.${visualizerOptions.json ? 'json' : 'html'}`);
+          buildOptions.rollupInputOptions.plugins.push(visualizer(visualizerOptions));
+        } catch (e) {
+          log.error('stats option requires rollup-plugin-visualizer to be installed', e);
+          throw e;
+        }
+      }
+      await runBuild(buildOptions);
     });
 
   program

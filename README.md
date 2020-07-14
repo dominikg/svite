@@ -111,8 +111,8 @@ Options:
   --assetsInlineLimit [number]               static asset base64 inline threshold in bytes (default: 4096)
   --sourcemap [boolean]                      output source maps for build (default: false)
   --minify [boolean | "terser" | "esbuild"]  enable/disable minification, or specify minifier to use. (default: "terser")
+  --stats [boolean|string]                   generate bundle stats with rollup-plugin-visualizer. true, "json": stats.json, ["html" "treemap","sunburst","network"]: stats.html
   --ssr [boolean]                            build for server-side rendering
-
 ```
 
 ### optimize
