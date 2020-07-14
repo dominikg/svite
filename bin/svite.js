@@ -59,14 +59,22 @@ function resolvePlugin(config, plugin) {
       ...config.vueCustomBlockTransforms,
       ...plugin.vueCustomBlockTransforms,
     },
-    rollupInputOptions: {
-      ...config.rollupInputOptions,
-      ...plugin.rollupInputOptions,
-    },
-    rollupOutputOptions: {
-      ...config.rollupOutputOptions,
-      ...plugin.rollupOutputOptions,
-    },
+    rollupInputOptions: mergeRollupOptions(config.rollupInputOptions, plugin.rollupInputOptions),
+    rollupOutputOptions: mergeRollupOptions(config.rollupOutputOptions, plugin.rollupOutputOptions),
+  };
+}
+
+function mergeRollupOptions(rollupOptions1, rollupOptions2) {
+  if (!rollupOptions1) {
+    return rollupOptions2;
+  }
+  if (!rollupOptions2) {
+    return rollupOptions1;
+  }
+  return {
+    ...rollupOptions1,
+    ...rollupOptions2,
+    plugins: [...(rollupOptions1.plugins || []), ...(rollupOptions2.plugins || [])],
   };
 }
 
