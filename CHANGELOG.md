@@ -1,4 +1,11 @@
 
+### [0.2.3](https://github.com/dominikg/svite/compare/0.2.2...0.2.3) (2020-07-14)
+
+
+### Bug Fixes
+
+* don't remove rollup plugins provided in vite.config.js ([4dd91ec](https://github.com/dominikg/svite/commit/4dd91ec8adcfc54b7de408d096fc1a7daa4dcd7e))
+
 ### [0.2.2](https://github.com/dominikg/svite/compare/0.2.2-beta.6...0.2.2) (2020-07-14)
 
 ### [0.2.2-beta.6](https://github.com/dominikg/svite/compare/0.2.2-beta.5...0.2.2-beta.6) (2020-07-14)
