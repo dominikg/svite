@@ -1,4 +1,11 @@
 
+### [0.2.2-beta.6](https://github.com/dominikg/svite/compare/0.2.2-beta.5...0.2.2-beta.6) (2020-07-14)
+
+
+### Features
+
+* **cli:** add --stat option to build ([8d908cf](https://github.com/dominikg/svite/commit/8d908cf0d3d1cadf34ba8c5b6a13c592baf44e1d))
+
 ### [0.2.2-beta.5](https://github.com/dominikg/svite/compare/0.2.2-beta.4...0.2.2-beta.5) (2020-07-13)
 
 
