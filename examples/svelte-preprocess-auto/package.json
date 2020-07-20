@@ -6,13 +6,13 @@
     "build": "vite build"
   },
   "dependencies": {
-    "svelte": "^3.23.2"
+    "svelte": "^3.24.0"
   },
   "devDependencies": {
     "pug": "^3.0.0",
-    "stylus": "^0.54.7",
-    "svelte-preprocess": "^3.9.11",
+    "stylus": "^0.54.8",
+    "svelte-preprocess": "^4.0.8",
     "svite": "latest",
-    "vite": "^1.0.0-beta.10"
+    "vite": "^1.0.0-rc.1"
   }
 }
