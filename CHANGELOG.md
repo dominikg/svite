@@ -1,4 +1,12 @@
 
+### [0.2.4](https://github.com/dominikg/svite/compare/0.2.3...0.2.4) (2020-07-20)
+
+
+### Bug Fixes
+
+* invalid formatting in nested stylus and pug ([16c25ec](https://github.com/dominikg/svite/commit/16c25ec81b9f523edd567054cc012e84d8f89d34))
+* make sure deferred rollup plugins have a name right away (fix [#12](https://github.com/dominikg/svite/issues/12)) ([6c3eb16](https://github.com/dominikg/svite/commit/6c3eb16b5e7a326e0794ca90eb827e055a0da5b5))
+
 ### [0.2.3](https://github.com/dominikg/svite/compare/0.2.2...0.2.3) (2020-07-14)
 
 
