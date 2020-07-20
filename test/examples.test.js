@@ -33,7 +33,7 @@ describe('examples', () => {
     await fs.mkdirp(tempDir);
   });
 
-  const examples = ['minimal', 'postcss-tailwind', 'routify-mdsvex'];
+  const examples = ['minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
   for (let example of examples) {
     const exampleDir = path.join(__dirname, '..', 'examples', example);
 

@@ -2,8 +2,8 @@
   "name": "svite-example-preprocess",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "dev": "svite",
+    "build": "svite build"
   },
   "dependencies": {
     "svelte": "^3.24.0"
