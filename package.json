@@ -40,16 +40,16 @@
     "@rollup/plugin-node-resolve": "^8.1.0",
     "@rollup/pluginutils": "^3.1.0",
     "chalk": "^4.1.0",
-    "commander": "^5.1.0",
+    "commander": "^6.0.0",
     "debug": "^4.1.1",
     "degit": "^2.8.0",
     "execa": "^4.0.3",
     "lru-cache": "^6.0.0",
-    "rollup-plugin-svelte-hot": "^0.10.0-0 || ^0.10.0"
+    "rollup-plugin-svelte-hot": "^0.10.0"
   },
   "peerDependencies": {
-    "svelte": "^3.23.2",
-    "vite": "^1.0.0-beta.11 || ^1.0.0"
+    "svelte": "^3.24.0",
+    "vite": "^1.0.0-rc.1"
   },
   "optionalDependencies": {
     "rollup-plugin-visualizer": "^4.0.4"
@@ -72,18 +72,18 @@
     "jest": "^26.1.0",
     "lint-staged": "^10.2.11",
     "npm-run-all": "^4.1.5",
-    "pidtree": "^0.5.0",
     "prettier": "^2.0.5",
     "prettier-plugin-svelte": "^1.1.0",
-    "puppeteer": "^4.0.1",
+    "puppeteer": "^5.2.0",
     "rollup-plugin-visualizer": "^4.0.4",
     "standard-version": "^8.0.1",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-recommended": "^3.0.0",
-    "svelte": "^3.23.2",
+    "svelte": "^3.24.0",
+    "svelte-hmr": "^0.10.1",
     "typescript": "^3.9.6",
-    "vite": "^1.0.0-beta.10"
+    "vite": "^1.0.0-rc.1"
   },
   "husky": {
     "hooks": {
