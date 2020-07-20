@@ -260,8 +260,9 @@ function createDev(config) {
   };
 }
 
-function rollupPluginDeferred(createPlugin) {
+function rollupPluginDeferred(name, createPlugin) {
   const wrapper = {
+    name,
     options: function (options) {
       const plugin = createPlugin();
       Object.keys(plugin).forEach((key) => {
@@ -276,11 +277,11 @@ function rollupPluginDeferred(createPlugin) {
 }
 
 function createBuildPlugins(config) {
-  const buildPlugin = rollupPluginDeferred(() => {
+  const buildPlugin = rollupPluginDeferred('svelte', () => {
     return createRollupPluginSvelteHot(config, 'build');
   });
 
-  const rollupPluginDedupeSvelte = rollupPluginDeferred(() =>
+  const rollupPluginDedupeSvelte = rollupPluginDeferred('node-resolve', () =>
     rollupPluginNodeResolve.nodeResolve({
       dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
     }),
