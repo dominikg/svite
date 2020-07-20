@@ -209,19 +209,14 @@ function createDev(config) {
   ];
 
   if (useTransformCache) {
-    // prevent rerunning svelte transform on unmodified files
-    // cannot be done from transform alone as it lacks the information to decide
-    // use a tandem of middleware and transform to get it done
-    const useCacheMarker = '___use-cached-transform___';
     const transformCache = new LRU(10000);
 
     transforms.push({
       test: (ctx) => {
         return !ctx.isBuild && !!devPlugin && isSvelteRequest(ctx);
       },
-      transform: async ({ path: id, code }) => {
-        const useCache = code === useCacheMarker;
-        if (useCache) {
+      transform: async ({ path: id, code, notModified }) => {
+        if (notModified && transformCache.has(id)) {
           log.debug.enabled && log.debug(`transform cache get ${id}`);
           return transformCache.get(id);
         }
@@ -231,26 +226,11 @@ function createDev(config) {
         return result;
       },
     });
-
-    configureServer.push(async ({ app, resolver }) => {
-      app.use(async (ctx, next) => {
-        if (isSvelteRequest(ctx)) {
-          if (transformCache.has(ctx.path)) {
-            await ctx.read(resolver.requestToFile(ctx.path));
-            if (ctx.__notModified) {
-              ctx.body = useCacheMarker;
-            }
-          }
-        }
-        await next(); // runs the transform above
-      });
-    });
   } else {
     transforms.push({
       test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
       transform: async ({ path: id, code }) => {
-        const result = await devPlugin.transform(code, id);
-        return result;
+        return devPlugin.transform(code, id);
       },
     });
   }
