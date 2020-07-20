@@ -361,8 +361,8 @@ async function main() {
     .option('-c, --cache', 'cache template for later use', false)
     .option('-d, --debug', 'more verbose logging', false)
     .option('-si, --skip-install', 'skip npm install', false)
-    .option('-sg, --skip-git', 'skit git init', false)
-    .option('-sc, --skip-commit', 'skit initial commit', false)
+    .option('-sg, --skip-git', 'skip git init', false)
+    .option('-sc, --skip-commit', 'skip initial commit', false)
     .action(async (targetDir, cmd) => {
       const options = cmd.opts();
       setupDebug(options);

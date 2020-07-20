@@ -75,8 +75,8 @@ Options:
   -c, --cache              cache template for later use (default: false)
   -d, --debug              more verbose logging (default: false)
   -si, --skip-install      skip npm install (default: false)
-  -sg, --skip-git          skit git init (default: false)
-  -sc, --skip-commit       skit initial commit (default: false)
+  -sg, --skip-git          skip git init (default: false)
+  -sc, --skip-commit       skip initial commit (default: false)
 ```
 
 ### dev
