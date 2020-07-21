@@ -136,14 +136,14 @@ async function runServe(options) {
 }
 
 function stopServerAndExit(server, signal) {
-  log.debug(`received ${signal}, stopping server`);
+  log.debug.enabled && log.debug(`received ${signal}, stopping server`);
   const graceSeconds = 3;
   setTimeout(() => {
-    log.warn(`server did not stop within ${graceSeconds}s. Exiting the hard way.`);
+    log.debug.enabled && log.debug(`server did not stop within ${graceSeconds}s. Exiting the hard way.`);
     process.exit(1);
   }, graceSeconds * 1000);
   server.close(() => {
-    log.debug('server stopped. bye');
+    log.debug.enabled && log.debug('server stopped. bye');
     process.exit(0);
   });
 }
