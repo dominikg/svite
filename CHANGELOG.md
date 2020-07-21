@@ -1,4 +1,22 @@
 
+## [0.3.0](https://github.com/dominikg/svite/compare/0.2.4...0.3.0) (2020-07-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* if you use svelte and vue together, you can no longer use the svite binary.
+
+You can however add svite as plugin in vite.config.js and use vite cli.
+
+### Features
+
+* update to vite-1.0.0-rc.3 and disable vue plugin in svite cli ([2338671](https://github.com/dominikg/svite/commit/2338671c559b1b31d9b600b045d9e297904a88a9))
+
+
+### Bug Fixes
+
+* don't override vite.config.js values with cli defaults (fix [#13](https://github.com/dominikg/svite/issues/13)) ([601ecae](https://github.com/dominikg/svite/commit/601ecae49a35dc812880fac5bcba3e3b0ab1cf66))
+
 ### [0.2.4](https://github.com/dominikg/svite/compare/0.2.3...0.2.4) (2020-07-20)
 
 
