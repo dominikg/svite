@@ -52,29 +52,40 @@ async function setupSvite(options) {
     const svitePlugin = svite(options);
     viteConfig = resolvePlugin(viteConfig, svitePlugin);
   }
+
+  optimizeViteConfig(viteConfig);
   return viteConfig;
+}
+
+function optimizeViteConfig(viteConfig) {
+  log.debug('disabling vue support in vite');
+  viteConfig.enableRollupPluginVue = false;
+  viteConfig.vueCompilerOptions = {};
+  viteConfig.vueTransformAssetUrls = {};
+  viteConfig.vueCustomBlockTransforms = {};
 }
 
 function resolvePlugin(config, plugin) {
   return {
     ...config,
+    ...plugin,
     alias: {
       ...plugin.alias,
       ...config.alias,
     },
+    define: {
+      ...plugin.define,
+      ...config.define,
+    },
     transforms: [...(config.transforms || []), ...(plugin.transforms || [])],
     resolvers: [...(config.resolvers || []), ...(plugin.resolvers || [])],
     configureServer: [].concat(config.configureServer || [], plugin.configureServer || []),
-    vueCompilerOptions: {
-      ...config.vueCompilerOptions,
-      ...plugin.vueCompilerOptions,
-    },
-    vueCustomBlockTransforms: {
-      ...config.vueCustomBlockTransforms,
-      ...plugin.vueCustomBlockTransforms,
-    },
+    vueCompilerOptions: {},
+    vueTransformAssetUrls: {},
+    vueCustomBlockTransforms: {},
     rollupInputOptions: mergeRollupOptions(config.rollupInputOptions, plugin.rollupInputOptions),
     rollupOutputOptions: mergeRollupOptions(config.rollupOutputOptions, plugin.rollupOutputOptions),
+    enableRollupPluginVue: false,
   };
 }
 

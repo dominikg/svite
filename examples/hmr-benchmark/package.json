@@ -15,6 +15,6 @@
     "puppeteer": "^4.0.1",
     "svite": "latest",
     "systeminformation": "^4.26.9",
-    "vite": "^1.0.0-rc.1"
+    "vite": "^1.0.0-rc.3"
   }
 }
