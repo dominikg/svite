@@ -8,6 +8,20 @@ const version = pkg.version;
 const execa = require('execa');
 const fs = require('fs');
 
+const buildOptionDefaults = {
+  mode: 'production',
+  base: '/',
+  outDir: 'dist',
+  assetsDir: '_assets',
+  assetsInlineLimit: 4096,
+  sourcemap: false,
+  minify: 'terser',
+};
+
+const devOptionDefaults = {
+  serviceWorker: false,
+};
+
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
 let vite;
 let log = console;
@@ -140,8 +154,8 @@ async function runBuild(options) {
       await vite.ssrBuild({
         ...options,
         ssr: false,
-        outDir: options.outDir === 'dist' ? 'dist-ssr' : options.outDir,
-        assetsDir: options.assetsDir === '_assets' ? '.' : options.assetsDir,
+        outDir: !options.outDir || options.outDir === buildOptionDefaults.outDir ? 'dist-ssr' : options.outDir,
+        assetsDir: !options.assetsDir || options.assetsDir === buildOptionDefaults.assetsDir ? '.' : options.assetsDir,
       });
     } else {
       await vite.build(options);
@@ -263,6 +277,14 @@ async function gitCommit(dir) {
   }
 }
 
+function removeDefaults(options, defaults) {
+  for (const [key, value] of Object.entries(defaults)) {
+    if (options[key] === value) {
+      delete options[key];
+    }
+  }
+}
+
 async function main() {
   program.version(version, '-v, --version').description('svite - build svelte apps with vite');
 
@@ -276,11 +298,12 @@ async function main() {
     )
     .option('-c,  --config [string]', 'use specified vite config file')
     .option('-p,  --port [port]', 'port to use for serve', 3000)
-    .option('-sw, --serviceWorker [boolean]', 'enable service worker caching', false)
+    .option('-sw, --serviceWorker [boolean]', 'enable service worker caching', devOptionDefaults.serviceWorker)
     .option('-o,  --open [boolean]', 'open browser on start')
     .action(async (cmd) => {
       const options = cmd.opts();
       setupDebug(options);
+      removeDefaults(options, devOptionDefaults);
       options.mode = 'development';
       await runServe(await setupSvite(options));
     });
@@ -294,13 +317,17 @@ async function main() {
       false,
     )
     .option('-c, --config [string]', 'use specified vite config file')
-    .option('-m, --mode [string]', 'specify env mode', 'production')
-    .option('--base [string]', 'public base path for build', '/')
-    .option('--outDir [string]', 'output directory for build', 'dist')
-    .option('--assetsDir [string]', 'directory under outDir to place assets in', '_assets')
-    .option('--assetsInlineLimit [number]', 'static asset base64 inline threshold in bytes', 4096)
-    .option('--sourcemap [boolean]', 'output source maps for build', false)
-    .option('--minify [boolean | "terser" | "esbuild"]', 'enable/disable minification, or specify minifier to use.', 'terser')
+    .option('-m, --mode [string]', 'specify env mode', buildOptionDefaults.mode)
+    .option('--base [string]', 'public base path for build', buildOptionDefaults.base)
+    .option('--outDir [string]', 'output directory for build', buildOptionDefaults.outDir)
+    .option('--assetsDir [string]', 'directory under outDir to place assets in', buildOptionDefaults.assetsDir)
+    .option('--assetsInlineLimit [number]', 'static asset base64 inline threshold in bytes', buildOptionDefaults.assetsInlineLimit)
+    .option('--sourcemap [boolean]', 'output source maps for build', buildOptionDefaults.sourcemap)
+    .option(
+      '--minify [boolean | "terser" | "esbuild"]',
+      'enable/disable minification, or specify minifier to use.',
+      buildOptionDefaults.minify,
+    )
     .option(
       '--stats [boolean|string]',
       'generate bundle stats with rollup-plugin-visualizer. true, "json": stats.json, ["html" "treemap","sunburst","network"]: stats.html',
@@ -309,6 +336,7 @@ async function main() {
     .action(async (cmd) => {
       const options = cmd.opts();
       setupDebug(options);
+      removeDefaults(options, buildOptionDefaults);
       const buildOptions = await setupSvite(options);
       if (options.stats) {
         try {
