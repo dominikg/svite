@@ -208,6 +208,15 @@ function createDev(config) {
     },
   ];
 
+  async function devTransform(code, id) {
+    try {
+      return await devPlugin.transform(code, id);
+    } catch (e) {
+      config.dev.onwarn(e);
+      throw e;
+    }
+  }
+
   if (useTransformCache) {
     const transformCache = new LRU(10000);
 
@@ -220,7 +229,7 @@ function createDev(config) {
           log.debug.enabled && log.debug(`transform cache get ${id}`);
           return transformCache.get(id);
         }
-        const result = await devPlugin.transform(code, id);
+        const result = await devTransform(code, id);
         log.debug.enabled && log.debug(`transform cache set ${id}`);
         transformCache.set(id, result);
         return result;
@@ -230,7 +239,7 @@ function createDev(config) {
     transforms.push({
       test: (ctx) => !ctx.isBuild && isSvelteRequest(ctx),
       transform: async ({ path: id, code }) => {
-        return devPlugin.transform(code, id);
+        return devTransform(code, id);
       },
     });
   }
