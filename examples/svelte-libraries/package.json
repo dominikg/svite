@@ -1,0 +1,17 @@
+{
+  "name": "svite-example-libraries",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "svite",
+    "build": "svite build"
+  },
+  "dependencies": {
+    "renderless-svelte": "^0.4.3",
+    "svelte": "^3.24.0",
+    "svelte-calendar": "^1.5.0"
+  },
+  "devDependencies": {
+    "svite": "latest",
+    "vite": "^1.0.0-rc.3"
+  }
+}
