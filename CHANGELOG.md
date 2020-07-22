@@ -1,4 +1,11 @@
 
+### [0.3.1](https://github.com/dominikg/svite/compare/0.3.0...0.3.1) (2020-07-22)
+
+
+### Bug Fixes
+
+* log helpful output on dev transform error (fix [#15](https://github.com/dominikg/svite/issues/15)) ([99d66d3](https://github.com/dominikg/svite/commit/99d66d33f68a190ec5e41cb818066eea2bf9c9bf))
+
 ## [0.3.0](https://github.com/dominikg/svite/compare/0.2.4...0.3.0) (2020-07-21)
 
 
