@@ -15,6 +15,6 @@
     "svelte-preprocess": "^3.9.10",
     "svite": "latest",
     "tailwindcss": "^1.4.6",
-    "vite": "^1.0.0-rc.3"
+    "vite": "1.0.0-beta.12"
   }
 }
