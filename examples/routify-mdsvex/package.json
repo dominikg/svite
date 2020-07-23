@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "svelte": "^3.24.0",
-    "@sveltech/routify": "^1.9.4"
+    "@sveltech/routify": "^1.9.5"
   },
   "devDependencies": {
     "mdsvex": "^0.8.2",
