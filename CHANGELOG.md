@@ -1,4 +1,11 @@
 
+### [0.3.2](https://github.com/dominikg/svite/compare/0.3.1...0.3.2) (2020-07-23)
+
+
+### Bug Fixes
+
+* pin vite to 1.0.0-beta.12 to avoid buggy behavior described in [#17](https://github.com/dominikg/svite/issues/17) ([681722b](https://github.com/dominikg/svite/commit/681722b6e7e907171b9414389f0f532aacabb999))
+
 ### [0.3.1](https://github.com/dominikg/svite/compare/0.3.0...0.3.1) (2020-07-22)
 
 
