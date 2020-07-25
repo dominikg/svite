@@ -12,7 +12,7 @@ Every change in that gif is a separate hot module reload - seriously - [build it
 - svelte compiler result caching in dev
 - hot module reloading thanks to [svelte-hmr](https://github.com/rixo/svelte-hmr#readme)
 - logging with configurable level
-- drop-in installation as vite plugin
+- a cli with lots of options
 
 # quickstart
 
@@ -70,13 +70,15 @@ Usage: svite create [options] [targetDir]
 create a new project. If you do not specify targetDir, "./svite-<template>" will be used
 
 Options:
-  -t, --template [string]  template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
-  -f, --force              force operation even if targetDir exists and is not empty (default: false)
-  -c, --cache              cache template for later use (default: false)
-  -d, --debug              more verbose logging (default: false)
-  -si, --skip-install      skip npm install (default: false)
-  -sg, --skip-git          skip git init (default: false)
-  -sc, --skip-commit       skip initial commit (default: false)
+  -t, --template [string]      template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
+  -ts, --typescript [boolean]  enable typescript support for svelte (default: false)
+  -f, --force                  force operation even if targetDir exists and is not empty (default: false)
+  -c, --cache                  cache template for later use (default: false)
+  -d, --debug                  more verbose logging (default: false)
+  -si, --skip-install          skip npm install (default: false)
+  -sg, --skip-git              skip git init (default: false)
+  -sc, --skip-commit           skip initial commit (default: false)
+  -h, --help                   display help for command
 ```
 
 ### dev
@@ -89,9 +91,11 @@ Usage: svite dev [options]
 Options:
   -d,  --debug [boolean|string]   enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
   -c,  --config [string]          use specified vite config file
+  -ts, --typescript [boolean]     enable typescript preprocessing in svelte (default: false)
   -p,  --port [port]              port to use for serve (default: 3000)
   -sw, --serviceWorker [boolean]  enable service worker caching (default: false)
   -o,  --open [boolean]           open browser on start
+  -h, --help                      display help for command
 ```
 
 ### build
@@ -104,6 +108,7 @@ Usage: svite build [options]
 Options:
   -d, --debug [boolean|string]               enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
   -c, --config [string]                      use specified vite config file
+  -ts, --typescript [boolean]                enable typescript preprocessing in svelte (default: false)
   -m, --mode [string]                        specify env mode (default: "production")
   --base [string]                            public base path for build (default: "/")
   --outDir [string]                          output directory for build (default: "dist")
@@ -113,6 +118,8 @@ Options:
   --minify [boolean | "terser" | "esbuild"]  enable/disable minification, or specify minifier to use. (default: "terser")
   --stats [boolean|string]                   generate bundle stats with rollup-plugin-visualizer. true, "json": stats.json, ["html" "treemap","sunburst","network"]: stats.html
   --ssr [boolean]                            build for server-side rendering
+  -h, --help                                 display help for command
+
 ```
 
 ### optimize
@@ -152,6 +159,7 @@ module.exports = {
 | **useTransformCache**<br> | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
 | **logLevel**              | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
 | **svelte**<br>            | `object`<br>              | `not set`<br>  | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                                               |
+| **typescript**            | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. &bull;&nbsp;`false` disable typescript preprocessing.                                                             |
 
 ### hot
 
@@ -172,6 +180,21 @@ You can use `--debug` cli option to control vite debug output
 ### svelte
 
 use this option if you don't want to use `svelte.config.js` or need a quick override.
+
+### typescript
+
+use this option if you want to use typescript inside svelte
+vite supports typescript via esbuild. But you should use this in `tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "isolatedModules": "true"
+  }
+}
+```
+
+do not use this option together with svelte-preprocess typescript.
 
 ## check out the examples
 
