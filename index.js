@@ -10,6 +10,7 @@ const defaultOptions = {
   hot: true,
   useTransformCache: true,
   logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
+  typescript: false,
 };
 
 const defaultHotOptions = {
@@ -124,6 +125,19 @@ function createConfig(pluginOptions) {
   }
   if (!svelteConfig.onwarn) {
     svelteConfig.onwarn = require('./tools/onwarn');
+  }
+
+  if (sviteConfig.typescript) {
+    if (!svelteConfig.preprocess) {
+      svelteConfig.preprocess = [];
+    } else if (!Array.isArray(svelteConfig.preprocess)) {
+      svelteConfig.preprocess = [svelteConfig.preprocess];
+    }
+    if (svelteConfig.preprocess.some((preprocessor) => preprocessor.script && preprocessor.script.toString().indexOf('typescript') > -1)) {
+      log.error('found a typescript preprocessor in your svelte config. this is incompatible with svite typescript option');
+      throw new Error('no dual typescript setup allowed');
+    }
+    svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
   }
 
   const dev = { ...svelteConfig };

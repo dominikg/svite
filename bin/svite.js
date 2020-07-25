@@ -16,10 +16,12 @@ const buildOptionDefaults = {
   assetsInlineLimit: 4096,
   sourcemap: false,
   minify: 'terser',
+  typescript: false,
 };
 
 const devOptionDefaults = {
   serviceWorker: false,
+  typescript: false,
 };
 
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
@@ -203,14 +205,22 @@ function setupDebug(options) {
   }
 }
 const templates = ['minimal', 'routify-mdsvex', 'postcss-tailwind', 'svelte-preprocess-auto'];
+const typescriptTemplates = ['minimal'];
 async function installTemplate(options) {
-  const template = options.template;
+  let template = options.template;
 
   if (!templates.includes(template)) {
     log.error(`invalid template ${template}. Valid: ${JSON.stringify(templates)}`);
     return;
   }
-  const targetDir = path.join(process.cwd(), options.targetDir || `svite-${template}`);
+  if (options.typescript) {
+    if (!typescriptTemplates.includes(template)) {
+      log.error(`no typescript variant available for ${template} Valid: ${JSON.stringify(typescriptTemplates)}`);
+      return;
+    }
+    template = `typescript/${template}`;
+  }
+  const targetDir = path.join(process.cwd(), options.targetDir || `svite-${template.replace('/', '-')}`);
 
   const degit = require('degit');
   const githubRepo = pkg.repository.url.match(/github\.com\/(.*).git/)[1];
@@ -308,6 +318,7 @@ async function main() {
       false,
     )
     .option('-c,  --config [string]', 'use specified vite config file')
+    .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte', devOptionDefaults.typescript)
     .option('-p,  --port [port]', 'port to use for serve', 3000)
     .option('-sw, --serviceWorker [boolean]', 'enable service worker caching', devOptionDefaults.serviceWorker)
     .option('-o,  --open [boolean]', 'open browser on start')
@@ -328,6 +339,7 @@ async function main() {
       false,
     )
     .option('-c, --config [string]', 'use specified vite config file')
+    .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte', buildOptionDefaults.typescript)
     .option('-m, --mode [string]', 'specify env mode', buildOptionDefaults.mode)
     .option('--base [string]', 'public base path for build', buildOptionDefaults.base)
     .option('--outDir [string]', 'output directory for build', buildOptionDefaults.outDir)
@@ -396,6 +408,7 @@ async function main() {
     .command('create [targetDir]')
     .description('create a new project. If you do not specify targetDir, "./svite-<template>" will be used')
     .option('-t, --template [string]', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
+    .option('-ts, --typescript [boolean]', 'enable typescript support for svelte', false)
     .option('-f, --force', 'force operation even if targetDir exists and is not empty', false)
     .option('-c, --cache', 'cache template for later use', false)
     .option('-d, --debug', 'more verbose logging', false)

@@ -1,0 +1,22 @@
+{
+  "name": "svite-example-minimal-typescript",
+  "version": "0.0.0",
+  "scripts": {
+    "validate": "svelte-check",
+    "dev": "svite -ts",
+    "prebuild": "npm run validate",
+    "build": "svite build -ts"
+  },
+  "dependencies": {
+    "svelte": "^3.24.0"
+  },
+  "devDependencies": {
+    "@tsconfig/svelte": "^1.0.0",
+    "svelte-check": "^0.1.0",
+    "svelte-preprocess": "^4.0.0",
+    "svite": "file:../../..",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.7",
+    "vite": "1.0.0-beta.12"
+  }
+}

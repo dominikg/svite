@@ -33,7 +33,7 @@ describe('examples', () => {
     await fs.mkdirp(tempDir);
   });
 
-  const examples = ['minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
+  const examples = ['typescript/minimal', 'minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
   for (let example of examples) {
     const exampleDir = path.join(__dirname, '..', 'examples', example);
 
@@ -50,9 +50,9 @@ describe('examples', () => {
           await fs.copy(exampleDir, exampleTempDir, {
             filter: (file) => !/dist|node_modules/.test(file),
           });
-
+          const svitePath = example.startsWith('typescript/') ? 'file:../../../../../svite/' : 'file:../../../../svite/';
           await updateExampleFile('package.json', (c) =>
-            c.replace(/"svite": ?"[^"]+"/, '"svite": "file:../../../../svite/"').replace(/"name": ?"([^"]+)"/, '"name": "$1-test"'),
+            c.replace(/"svite": ?"[^"]+"/, `"svite": "${svitePath}"`).replace(/"name": ?"([^"]+)"/, '"name": "$1-test"'),
           );
           await updateExampleFile('src/App.svelte', (c) => `${c}\n<div id="test-div">__xxx__</div>`);
         } catch (e) {
@@ -114,13 +114,13 @@ describe('examples', () => {
             let staticServer;
             beforeAll(async () => {
               try {
-                const buildOutput = await execa(binPath, ['build'], {
+                const buildOutput = await execa(binPath, ['build', [...(example.startsWith('typescript') ? ['-ts'] : [])]], {
                   cwd: exampleTempDir,
                 });
                 expect(buildOutput.stdout).toMatch('Build completed');
                 expect(buildOutput.stderr).toBe('');
               } catch (e) {
-                console.error('vite build failed', e);
+                console.error('svite build failed', e);
                 throw e;
               }
             });
@@ -156,7 +156,7 @@ describe('examples', () => {
           beforeAll(async () => {
             browserLogs.push('------------------- dev -------------------------');
             try {
-              devServer = execa(binPath, {
+              devServer = execa(binPath, [...(example.startsWith('typescript') ? ['-ts'] : [])], {
                 cwd: exampleTempDir,
               });
               devServer.stderr.on('data', (data) => {
