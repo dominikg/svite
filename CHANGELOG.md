@@ -1,4 +1,11 @@
 
+### [0.3.3-beta.0](https://github.com/dominikg/svite/compare/0.3.2...0.3.3-beta.0) (2020-07-25)
+
+
+### Features
+
+* support typescript ([4effaec](https://github.com/dominikg/svite/commit/4effaec00d7b56bb1695cf103640e0d719a6cc5c))
+
 ### [0.3.2](https://github.com/dominikg/svite/compare/0.3.1...0.3.2) (2020-07-23)
 
 
