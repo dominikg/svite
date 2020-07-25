@@ -250,6 +250,7 @@ async function installTemplate(options) {
   await emitter.clone(targetDir);
   log.info(`created ${targetDir}`);
   await updatePkg(targetDir);
+  await addVsCodePluginRecommendation(targetDir);
   if (!options.skipInstall) {
     await npmInstall(targetDir);
   }
@@ -268,6 +269,17 @@ async function updatePkg(dir) {
   pkg.name = path.basename(dir);
   pkg.devDependencies.svite = `^${version}`;
   fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2));
+}
+
+async function addVsCodePluginRecommendation(dir) {
+  fs.mkdirSync(path.join(dir, '.vscode'));
+  fs.writeFileSync(
+    path.join(dir, '.vscode', 'extensions.json'),
+    `{
+  "recommendations": ["svelte.svelte-vscode"]
+}
+`,
+  );
 }
 
 async function npmInstall(dir) {
