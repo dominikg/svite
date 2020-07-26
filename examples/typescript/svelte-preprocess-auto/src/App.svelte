@@ -1,4 +1,4 @@
-<script lang="ts">
+<script type="text/typescript">
   import Nested from './Nested.svelte';
   export let label: string = '';
 
