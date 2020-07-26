@@ -46,20 +46,6 @@
   .App-link {
     color: #ff3e00;
   }
-  .App-logo {
-    height: 40vmin;
-    pointer-events: none;
-    margin-bottom: 1rem;
-    animation: App-logo-spin infinite 1.6s ease-in-out alternate;
-  }
-  @keyframes App-logo-spin {
-    from {
-      transform: scale(1);
-    }
-    to {
-      transform: scale(1.06);
-    }
-  }
 </style>
 
 <nav>
