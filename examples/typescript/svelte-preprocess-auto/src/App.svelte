@@ -1,6 +1,6 @@
-<script type="text/javascript">
+<script lang="ts">
   import Nested from './Nested.svelte';
-  export let label = '';
+  export let label: string = '';
 
   $: console.log(label);
 </script>

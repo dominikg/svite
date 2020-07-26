@@ -2,7 +2,9 @@
 .env
 .npmrc
 node_modules
-examples/*/package-lock.json
-examples/*/yarn.lock
-examples/*/dist
+examples/**/package-lock.json
+examples/**/yarn.lock
+examples/**/dist
+examples/**/dist-ssr
+examples/**/node_modules
 test/temp/**/*

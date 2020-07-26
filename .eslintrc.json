@@ -82,5 +82,9 @@
       }
     }
   ],
-  "ignorePatterns": ["examples/svelte-preprocess-auto/src/App.svelte","CHANGELOG.md"]
+  "ignorePatterns": [
+    "examples/svelte-preprocess-auto/src/App.svelte",
+    "examples/typescript/svelte-preprocess-auto/src/App.svelte",
+    "CHANGELOG.md"
+  ]
 }
