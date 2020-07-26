@@ -212,7 +212,11 @@ postcss and [tailwindcss](https://tailwindcss.com)
 
 ### [svelte-preprocess-auto](/examples/svelte-preprocess-auto)
 
-typescript and svelte-preprocess in automatic mode. This is heavily based on the regular svelte-preprocess example
+svelte-preprocess in automatic mode. This is heavily based on the regular svelte-preprocess example
+
+### [typescript](/examples/typescript)
+
+All of the above, but with typescript support
 
 # limitations
 
