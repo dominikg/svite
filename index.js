@@ -133,11 +133,39 @@ function createConfig(pluginOptions) {
     } else if (!Array.isArray(svelteConfig.preprocess)) {
       svelteConfig.preprocess = [svelteConfig.preprocess];
     }
-    if (svelteConfig.preprocess.some((preprocessor) => preprocessor.script && preprocessor.script.toString().indexOf('typescript') > -1)) {
-      log.error('found a typescript preprocessor in your svelte config. this is incompatible with svite typescript option');
+    if (svelteConfig.preprocess.some((preprocessor) => preprocessor.defaultLanguages)) {
+      log.error(
+        'found svelte-preprocess automatic preprocessor in your svelte config. This is not compatible with svite cli --typescript option.',
+      );
       throw new Error('no dual typescript setup allowed');
+    } else if (
+      svelteConfig.preprocess.some((preprocessor) => preprocessor.script && preprocessor.script.toString().indexOf('typescript') > -1)
+    ) {
+      log.error(
+        'found a script preprocessor for typescript in your svelte config.  This is not compatible with svite cli --typescript option',
+      );
+      throw new Error('no dual typescript setup allowed');
+    } else {
+      log.debug('no typescript preprocessor found, adding svelte-preprocess typescript');
+      // unfortunately esbuild preprocess does not work properly with imports of svelte components as of now
+      // svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
+      const sveltePreprocess = require('svelte-preprocess');
+      svelteConfig.preprocess.unshift(
+        sveltePreprocess({
+          // disable all but typescript
+          babel: false,
+          scss: false,
+          sass: false,
+          less: false,
+          stylus: false,
+          postcss: false,
+          coffeescript: false,
+          pug: false,
+          globalStyle: false,
+          replace: false,
+        }),
+      );
     }
-    svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
   }
 
   const dev = { ...svelteConfig };

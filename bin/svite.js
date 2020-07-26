@@ -205,7 +205,7 @@ function setupDebug(options) {
   }
 }
 const templates = ['minimal', 'routify-mdsvex', 'postcss-tailwind', 'svelte-preprocess-auto'];
-const typescriptTemplates = ['minimal'];
+const typescriptTemplates = ['minimal', 'routify-mdsvex', 'postcss-tailwind', 'svelte-preprocess-auto'];
 async function installTemplate(options) {
   let template = options.template;
 
