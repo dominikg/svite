@@ -11,5 +11,8 @@
       }
     ]
   },
-  "ignoreFiles": ["examples/svelte-preprocess-auto/src/App.svelte"]
+  "ignoreFiles": [
+    "examples/svelte-preprocess-auto/src/App.svelte",
+    "examples/typescript/svelte-preprocess-auto/src/App.svelte"
+  ]
 }
