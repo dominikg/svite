@@ -1,4 +1,11 @@
 
+### [0.3.3-beta.2](https://github.com/dominikg/svite/compare/0.3.3-beta.1...0.3.3-beta.2) (2020-07-26)
+
+
+### Bug Fixes
+
+* create -ts option ate targetDir arg, remove value from option ([9d8385b](https://github.com/dominikg/svite/commit/9d8385bfcc7d5c1b191b2f4cf2ed8365569aa519))
+
 ### [0.3.3-beta.1](https://github.com/dominikg/svite/compare/0.3.3-beta.0...0.3.3-beta.1) (2020-07-26)
 
 
