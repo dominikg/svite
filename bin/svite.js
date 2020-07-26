@@ -420,7 +420,7 @@ async function main() {
     .command('create [targetDir]')
     .description('create a new project. If you do not specify targetDir, "./svite-<template>" will be used')
     .option('-t, --template [string]', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
-    .option('-ts, --typescript [boolean]', 'enable typescript support for svelte', false)
+    .option('-ts, --typescript', 'enable typescript support for svelte', false)
     .option('-f, --force', 'force operation even if targetDir exists and is not empty', false)
     .option('-c, --cache', 'cache template for later use', false)
     .option('-d, --debug', 'more verbose logging', false)
