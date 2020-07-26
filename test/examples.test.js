@@ -1,58 +1,57 @@
 const fs = require('fs-extra');
 const path = require('path');
 const execa = require('execa');
-const puppeteer = require('puppeteer');
 
-jest.setTimeout(60000);
+const { closeKillAll, closeKill, throttledWrite, deleteDir, launchPuppeteer, sleep, hmrUpdateComplete } = require('./utils');
+
+jest.setTimeout(35000);
 
 const tempDir = path.join(__dirname, 'temp');
+const sviteDir = path.join(__dirname, '..');
 
+// global refs so we can stop them
+let npmInstall;
+let buildServer;
+let buildScript;
 let devServer;
 let browser;
 let page;
 
-const getEl = async (selectorOrEl) => {
-  return typeof selectorOrEl === 'string' ? await page.$(selectorOrEl) : selectorOrEl;
-};
-
-const getText = async (selectorOrEl) => {
-  const el = await getEl(selectorOrEl);
-  return el ? el.evaluate((el) => el.textContent) : null;
-};
-
-async function deleteTempDir(dir) {
-  try {
-    await fs.remove(dir);
-  } catch (e) {
-    console.error(`failed to delete ${dir}`, e);
-    throw e;
-  }
-}
 describe('examples', () => {
   beforeAll(async () => {
+    await deleteDir(tempDir);
     await fs.mkdirp(tempDir);
   });
 
-  const examples = ['typescript/minimal', 'minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
+  const examples = [
+    'typescript/minimal',
+    'typescript/postcss-tailwind',
+    'typescript/routify-mdsvex',
+    'typescript/svelte-preprocess-auto',
+    'minimal',
+    'postcss-tailwind',
+    'routify-mdsvex',
+    'svelte-preprocess-auto',
+  ];
   for (let example of examples) {
     const exampleDir = path.join(__dirname, '..', 'examples', example);
 
     describe(example, () => {
       const exampleTempDir = path.join(tempDir, example);
-      const binPath = path.join(exampleTempDir, 'node_modules', '.bin', 'svite');
       const updateExampleFile = updateFile.bind(null, exampleTempDir);
       const browserLogs = [];
       const serverLogs = [];
+
       beforeAll(async () => {
         try {
-          await deleteTempDir(exampleTempDir);
+          await deleteDir(exampleTempDir);
           await fs.mkdirp(exampleTempDir);
           await fs.copy(exampleDir, exampleTempDir, {
             filter: (file) => !/dist|node_modules/.test(file),
           });
-          const svitePath = example.startsWith('typescript/') ? 'file:../../../../../svite/' : 'file:../../../../svite/';
+          const sviteInstallPath = `file:${path.relative(exampleTempDir, sviteDir)}`;
           await updateExampleFile('package.json', (c) =>
-            c.replace(/"svite": ?"[^"]+"/, `"svite": "${svitePath}"`).replace(/"name": ?"([^"]+)"/, '"name": "$1-test"'),
+            c.replace(/"svite": ?"[^"]+"/, `"svite": "${sviteInstallPath}"`).replace(/"name": ?"([^"]+)"/, '"name": "$1-test"'),
           );
           await updateExampleFile('src/App.svelte', (c) => `${c}\n<div id="test-div">__xxx__</div>`);
         } catch (e) {
@@ -60,7 +59,9 @@ describe('examples', () => {
           throw e;
         }
         try {
-          await execa('npm', ['install'], { cwd: exampleTempDir });
+          npmInstall = await execa('npm', ['install'], { cwd: exampleTempDir });
+          await fs.writeFile(path.join(exampleTempDir, 'npm.stdout.log'), npmInstall.stdout);
+          await fs.writeFile(path.join(exampleTempDir, 'npm.stderr.log'), npmInstall.stderr);
         } catch (e) {
           console.error(`npm install failed in ${exampleTempDir}`, e);
           throw e;
@@ -68,24 +69,20 @@ describe('examples', () => {
       });
 
       afterAll(async () => {
-        //await deleteTempDir(exampleTempDir);
         if (browser) await browser.close();
         if (devServer) {
-          devServer.kill('SIGTERM', {
-            forceKillAfterTimeout: 2000,
-          });
+          await closeKill(devServer);
         }
         await fs.writeFile(path.join(exampleTempDir, 'browser.log'), browserLogs.join('\n'));
         await fs.writeFile(path.join(exampleTempDir, 'server.log'), serverLogs.join('\n'));
       });
       describe('svite', () => {
         beforeAll(async () => {
-          browser = await puppeteer.launch(process.env.CI ? { args: ['--no-sandbox', '--disable-setuid-sandbox'] } : {});
+          browser = await launchPuppeteer();
         });
 
         function declareTests(isBuild) {
           test('should render App.svelte', async () => {
-            //TODO make this work
             await expectByPolling(async () => await getText('#test-div'), '__xxx__');
           });
 
@@ -97,9 +94,12 @@ describe('examples', () => {
           if (!isBuild) {
             describe('hmr', () => {
               test('should accept update to App.svelte', async () => {
+                if (example.indexOf('routify') > -1) {
+                  await sleep(250); // let routify route update complete first
+                }
                 expect(await getText('#test-div')).toBe('__xxx__');
                 await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
-                await hmrUpdateComplete('src/App.svelte', 250);
+                await hmrUpdateComplete(page, 'src/App.svelte', 2000);
                 expect(await getText('#test-div')).toBe('__yyy__');
               });
             });
@@ -111,22 +111,23 @@ describe('examples', () => {
         // dev only
         if (!process.env.USE_SW) {
           describe('build', () => {
-            let staticServer;
             beforeAll(async () => {
               try {
-                const buildOutput = await execa(binPath, ['build', [...(example.startsWith('typescript') ? ['-ts'] : [])]], {
+                buildScript = await execa('npm', ['run', 'build'], {
                   cwd: exampleTempDir,
                 });
-                expect(buildOutput.stdout).toMatch('Build completed');
-                expect(buildOutput.stderr).toBe('');
+                await fs.writeFile(path.join(exampleTempDir, 'build.stdout.log'), buildScript.stdout);
+                await fs.writeFile(path.join(exampleTempDir, 'build.stderr.log'), buildScript.stderr);
+                expect(buildScript.stdout).toMatch('Build completed');
+                expect(buildScript.stderr).toBe('');
               } catch (e) {
                 console.error('svite build failed', e);
                 throw e;
               }
             });
 
-            afterAll(() => {
-              if (staticServer) staticServer.close();
+            afterAll(async () => {
+              closeKillAll([buildScript, buildServer]);
             });
 
             describe('app', () => {
@@ -135,8 +136,8 @@ describe('examples', () => {
                 try {
                   const app = new (require('koa'))();
                   app.use(require('koa-static')(path.join(exampleTempDir, 'dist')));
-                  staticServer = require('http').createServer(app.callback());
-                  await new Promise((r) => staticServer.listen(4001, r));
+                  buildServer = require('http').createServer(app.callback());
+                  await new Promise((r) => buildServer.listen(4001, r));
 
                   page = await browser.newPage();
                   await page.goto('http://localhost:4001', { waitUntil: 'networkidle2' });
@@ -156,7 +157,7 @@ describe('examples', () => {
           beforeAll(async () => {
             browserLogs.push('------------------- dev -------------------------');
             try {
-              devServer = execa(binPath, [...(example.startsWith('typescript') ? ['-ts'] : [])], {
+              devServer = execa('npm', ['run', 'dev'], {
                 cwd: exampleTempDir,
               });
               devServer.stderr.on('data', (data) => {
@@ -175,12 +176,22 @@ describe('examples', () => {
                 };
                 devServer.stdout.on('data', resolveLocalUrl);
               });
-
               page = await browser.newPage();
               page.on('console', (msg) => {
                 browserLogs.push(msg.text());
               });
               await page.goto(url, { waitUntil: 'networkidle2' });
+              if (!browserLogs.some((log) => log.indexOf('connected.') > -1)) {
+                await new Promise((resolve) => {
+                  const resolveConnected = (log) => {
+                    if (log.indexOf('connected.') > -1) {
+                      page.off('console', resolveConnected);
+                      resolve();
+                    }
+                  };
+                  page.on('console', resolveConnected);
+                });
+              }
             } catch (e) {
               console.error(`failed to start devserver and open page in dev mode for example ${example}`, e);
               throw e;
@@ -202,25 +213,6 @@ async function updateFile(dir, file, replacer) {
   await throttledWrite(compPath, newContent, 100);
 }
 
-async function hmrUpdateComplete(file, timeout) {
-  return new Promise(function (resolve, reject) {
-    var timer;
-    function listener(data) {
-      const text = data.text();
-      if (text.indexOf(file) > -1) {
-        clearTimeout(timer);
-        page.off('console', listener);
-        resolve();
-      }
-    }
-    page.on('console', listener);
-    timer = setTimeout(function () {
-      page.off('console', listener);
-      reject(new Error(`timeout after ${timeout}ms waiting for hmr update of ${file} to complete`));
-    }, timeout);
-  });
-}
-
 // poll until it updates
 async function expectByPolling(poll, expected) {
   const maxTries = 20;
@@ -235,24 +227,18 @@ async function expectByPolling(poll, expected) {
   }
 }
 
-function msDiff(start) {
-  const diff = process.hrtime(start);
-  return diff[0] * 1000 + Math.round(diff[1] / 1e6);
-}
+const getEl = async (selectorOrEl) => {
+  return typeof selectorOrEl === 'string' ? await page.$(selectorOrEl) : selectorOrEl;
+};
 
-const lastFileWriteTime = {};
-async function throttledWrite(filePath, content, wait) {
-  if (wait) {
-    const lastTime = lastFileWriteTime[filePath];
-    if (lastTime) {
-      const elapsed = msDiff(lastTime);
-      if (wait > elapsed) {
-        const n = wait - elapsed;
-        await sleep(n);
-      }
-    }
-  }
-  lastFileWriteTime[filePath] = process.hrtime();
-  return fs.writeFile(filePath, content);
-}
-const sleep = (n) => new Promise((r) => setTimeout(r, n));
+const getText = async (selectorOrEl) => {
+  const el = await getEl(selectorOrEl);
+  return el ? el.evaluate((el) => el.textContent) : null;
+};
+
+const killAll = () => {
+  closeKillAll([npmInstall, buildServer, buildScript, devServer, page, browser, process]);
+};
+
+process.once('SIGINT', () => killAll());
+process.once('SIGTERM', () => killAll());
