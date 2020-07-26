@@ -1,4 +1,13 @@
 
+### [0.3.3-beta.1](https://github.com/dominikg/svite/compare/0.3.3-beta.0...0.3.3-beta.1) (2020-07-26)
+
+
+### Features
+
+* add typescript option for all examples available as create template ([10cf32c](https://github.com/dominikg/svite/commit/10cf32c22c92c2e1d980cbfd2ac1aa944c5202ea))
+* **create:** add vscode svelte plugin recommendation ([2211d85](https://github.com/dominikg/svite/commit/2211d856dbfea4c8c25010d8a0a86ea2af98b25a))
+* improve .gitignore in examples ([87b5fee](https://github.com/dominikg/svite/commit/87b5feef71b8ca7e6c0dc7cc8802619859d262ec))
+
 ### [0.3.3-beta.0](https://github.com/dominikg/svite/compare/0.3.2...0.3.3-beta.0) (2020-07-25)
 
 
