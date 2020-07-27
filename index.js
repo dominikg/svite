@@ -62,12 +62,68 @@ function applyForcedOptions(config, forcedOptions) {
   return appliedChanges;
 }
 
+function setupTypeScriptPreprocessor(svelteConfig, isBuild) {
+  if (!svelteConfig.preprocess) {
+    svelteConfig.preprocess = [];
+  } else if (!Array.isArray(svelteConfig.preprocess)) {
+    svelteConfig.preprocess = [svelteConfig.preprocess];
+  }
+  if (svelteConfig.preprocess.some((preprocessor) => preprocessor.defaultLanguages)) {
+    log.error(
+      'found svelte-preprocess automatic preprocessor in your svelte config. This is not compatible with svite cli --typescript option.',
+    );
+    throw new Error('no dual typescript setup allowed');
+  } else if (
+    svelteConfig.preprocess.some((preprocessor) => preprocessor.script && preprocessor.script.toString().indexOf('typescript') > -1)
+  ) {
+    log.error(
+      'found a script preprocessor for typescript in your svelte config.  This is not compatible with svite cli --typescript option',
+    );
+    throw new Error('no dual typescript setup allowed');
+  } else {
+    log.debug('no typescript preprocessor found, adding svelte-preprocess typescript');
+    // unfortunately esbuild preprocess does not work properly with imports of svelte components as of now
+    // svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
+    const sveltePreprocess = require('svelte-preprocess');
+    const preprocessOptions = {
+      // disable all but typescript
+      babel: false,
+      scss: false,
+      sass: false,
+      less: false,
+      stylus: false,
+      postcss: false,
+      coffeescript: false,
+      pug: false,
+      globalStyle: false,
+      replace: false,
+    };
+    if (!isBuild) {
+      const devTS = {
+        // in dev: force ultra modern and add vite/dist/importMeta to enable custom hmr
+        compilerOptions: {
+          module: 'esnext',
+          target: 'esnext',
+          types: ['svelte', 'vite/dist/importMeta'],
+        },
+      };
+      log.info('overriding typescript config to support hmr in vite', devTS);
+      preprocessOptions.typescript = devTS;
+    }
+    svelteConfig.preprocess.unshift(sveltePreprocess(preprocessOptions));
+  }
+}
+
 function finalizeConfig(config, type) {
   const isProduction = process.env.NODE_ENV === 'production';
   const isDevServer = !!config.vite;
   const isBuild = type === 'build';
   const svelteConfig = config[type];
   const forcedOptions = forcedSvelteOptions[type];
+  const isTypescript = config.svite.typescript;
+  if (isTypescript) {
+    setupTypeScriptPreprocessor(svelteConfig, isBuild);
+  }
   if (isBuild) {
     forcedOptions.dev = (isDevServer && !!config.dev.hot) || !isProduction;
   }
@@ -125,47 +181,6 @@ function createConfig(pluginOptions) {
   }
   if (!svelteConfig.onwarn) {
     svelteConfig.onwarn = require('./tools/onwarn');
-  }
-
-  if (sviteConfig.typescript) {
-    if (!svelteConfig.preprocess) {
-      svelteConfig.preprocess = [];
-    } else if (!Array.isArray(svelteConfig.preprocess)) {
-      svelteConfig.preprocess = [svelteConfig.preprocess];
-    }
-    if (svelteConfig.preprocess.some((preprocessor) => preprocessor.defaultLanguages)) {
-      log.error(
-        'found svelte-preprocess automatic preprocessor in your svelte config. This is not compatible with svite cli --typescript option.',
-      );
-      throw new Error('no dual typescript setup allowed');
-    } else if (
-      svelteConfig.preprocess.some((preprocessor) => preprocessor.script && preprocessor.script.toString().indexOf('typescript') > -1)
-    ) {
-      log.error(
-        'found a script preprocessor for typescript in your svelte config.  This is not compatible with svite cli --typescript option',
-      );
-      throw new Error('no dual typescript setup allowed');
-    } else {
-      log.debug('no typescript preprocessor found, adding svelte-preprocess typescript');
-      // unfortunately esbuild preprocess does not work properly with imports of svelte components as of now
-      // svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
-      const sveltePreprocess = require('svelte-preprocess');
-      svelteConfig.preprocess.unshift(
-        sveltePreprocess({
-          // disable all but typescript
-          babel: false,
-          scss: false,
-          sass: false,
-          less: false,
-          stylus: false,
-          postcss: false,
-          coffeescript: false,
-          pug: false,
-          globalStyle: false,
-          replace: false,
-        }),
-      );
-    }
   }
 
   const dev = { ...svelteConfig };
