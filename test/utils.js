@@ -36,7 +36,11 @@ const deleteDir = async (dir) => {
 };
 
 const launchPuppeteer = async () => {
-  const browser = await puppeteer.launch(['--headless', '--no-sandbox', '--disable-gpu', '--single-process', '--no-zygote']);
+  const args = ['--headless', '--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
+  if (process.env.CI) {
+    args.push('--disable-setuid-sandbox');
+  }
+  const browser = await puppeteer.launch({ args });
   return browser;
 };
 
