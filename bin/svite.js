@@ -303,7 +303,7 @@ async function gitInit(dir) {
 async function gitCommit(dir) {
   try {
     await execa('git', ['add', '.'], { cwd: dir });
-    await execa('git', ['commit', '-m "initial commit"'], { cwd: dir });
+    await execa('git', ['commit', '-m initial commit'], { cwd: dir });
   } catch (e) {
     console.error(`git commit failed in ${dir}`, e);
     throw e;
