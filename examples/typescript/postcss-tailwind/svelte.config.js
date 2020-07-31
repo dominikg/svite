@@ -1,4 +1,4 @@
-const { postcss } = require('svelte-preprocess');
+const { postcss, typescript } = require('svelte-preprocess');
 module.exports = {
-  preprocess: [postcss()],
+  preprocess: [typescript(), postcss()],
 };
