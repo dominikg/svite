@@ -83,7 +83,7 @@
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "^3.24.0",
     "svelte-hmr": "^0.10.1",
-    "svelte-preprocess": "^4.0.8",
+    "svelte-preprocess": "^4.0.9",
     "tree-kill": "^1.2.2",
     "typescript": "^3.9.6",
     "vite": "1.0.0-beta.12"
