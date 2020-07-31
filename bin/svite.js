@@ -329,7 +329,7 @@ async function main() {
       false,
     )
     .option('-c,  --config [string]', 'use specified vite config file')
-    .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte', devOptionDefaults.typescript)
+    .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', devOptionDefaults.typescript)
     .option('-p,  --port [port]', 'port to use for serve', 3000)
     .option('-o,  --open [boolean]', 'open browser on start')
     .action(async (cmd) => {
@@ -349,7 +349,7 @@ async function main() {
       false,
     )
     .option('-c, --config [string]', 'use specified vite config file')
-    .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte', buildOptionDefaults.typescript)
+    .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', buildOptionDefaults.typescript)
     .option('-m, --mode [string]', 'specify env mode', buildOptionDefaults.mode)
     .option('--base [string]', 'public base path for build', buildOptionDefaults.base)
     .option('--outDir [string]', 'output directory for build', buildOptionDefaults.outDir)
@@ -418,7 +418,7 @@ async function main() {
     .command('create [targetDir]')
     .description('create a new project. If you do not specify targetDir, "./svite-<template>" will be used')
     .option('-t, --template [string]', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
-    .option('-ts, --typescript', 'enable typescript support for svelte', false)
+    .option('-ts, --typescript', 'enable typescript support for svelte !!!EXPERIMENTAL!!!', false)
     .option('-f, --force', 'force operation even if targetDir exists and is not empty', false)
     .option('-c, --cache', 'cache template for later use', false)
     .option('-d, --debug', 'more verbose logging', false)

@@ -71,7 +71,7 @@ create a new project. If you do not specify targetDir, "./svite-<template>" will
 
 Options:
   -t, --template [string]      template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
-  -ts, --typescript [boolean]  enable typescript support for svelte (default: false)
+  -ts, --typescript [boolean]  enable typescript support for svelte !!!EXPERIMENTAL!!! (default: false)
   -f, --force                  force operation even if targetDir exists and is not empty (default: false)
   -c, --cache                  cache template for later use (default: false)
   -d, --debug                  more verbose logging (default: false)
@@ -91,9 +91,8 @@ Usage: svite dev [options]
 Options:
   -d,  --debug [boolean|string]   enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
   -c,  --config [string]          use specified vite config file
-  -ts, --typescript [boolean]     enable typescript preprocessing in svelte (default: false)
+  -ts, --typescript [boolean]     enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
   -p,  --port [port]              port to use for serve (default: 3000)
-  -sw, --serviceWorker [boolean]  enable service worker caching (default: false)
   -o,  --open [boolean]           open browser on start
   -h, --help                      display help for command
 ```
@@ -108,7 +107,7 @@ Usage: svite build [options]
 Options:
   -d, --debug [boolean|string]               enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
   -c, --config [string]                      use specified vite config file
-  -ts, --typescript [boolean]                enable typescript preprocessing in svelte (default: false)
+  -ts, --typescript [boolean]                enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
   -m, --mode [string]                        specify env mode (default: "production")
   --base [string]                            public base path for build (default: "/")
   --outDir [string]                          output directory for build (default: "dist")
@@ -159,7 +158,7 @@ module.exports = {
 | **useTransformCache**<br> | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
 | **logLevel**              | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
 | **svelte**<br>            | `object`<br>              | `not set`<br>  | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                                               |
-| **typescript**            | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. &bull;&nbsp;`false` disable typescript preprocessing.                                                             |
+| **typescript**            | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. !!!EXPERIMENTAL!!! &bull;&nbsp;`false` disable typescript preprocessing.                                          |
 
 ### hot
 
@@ -183,18 +182,23 @@ use this option if you don't want to use `svelte.config.js` or need a quick over
 
 ### typescript
 
+!!! EXPERIMENTAL !!!
+
 use this option if you want to use typescript inside svelte
-vite supports typescript via esbuild. But you should use this in `tsconfig.json`
 
-```json
-{
-  "compilerOptions": {
-    "isolatedModules": "true"
-  }
-}
+This option requires you to set up a typescript preprocessor for svelte as the first preprocessor in svelte.config.js
+
+```js
+const sveltePreprocess = require('svelte-preprocess');
+module.exports = {
+  preprocess: [
+    sveltePreprocess.typescript(), // must be the first one and must be only typescript, not sveltePreprocess()
+    //you can add additional preprocessors here if you need them
+    //if you need svelte-preprocess, disable its typescript preprocessor, you don't want two
+    sveltePreprocess({ typescript: false }),
+  ],
+};
 ```
-
-do not use this option together with svelte-preprocess typescript.
 
 ## check out the examples
 
