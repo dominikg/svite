@@ -1,4 +1,22 @@
 
+## [0.4.0-beta.0](https://github.com/dominikg/svite/compare/0.3.3-beta.2...0.4.0-beta.0) (2020-07-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* svite dev -sw,--serviceworker option removed
+
+### Features
+
+* update to vite-1.0.0-rc.4 ([b24cebd](https://github.com/dominikg/svite/commit/b24cebd71c9697e4aff80ae237a9d330aef5950e))
+* **typescript:** rewrite typescript support use first preprocessor convention ([fe2b583](https://github.com/dominikg/svite/commit/fe2b583149325c8651038dc54ec9655e610be54c))
+* enable use of import.meta.hot in typescript ([15a4b5e](https://github.com/dominikg/svite/commit/15a4b5e13dcd8bb2f87e9325bc92fe7d891432ca))
+
+
+### Bug Fixes
+
+* **create:** remove quotes from initial commit message ([083fffd](https://github.com/dominikg/svite/commit/083fffdfd11cfeb519831e4dd580f7a2adc36e85))
+
 ### [0.3.3-beta.2](https://github.com/dominikg/svite/compare/0.3.3-beta.1...0.3.3-beta.2) (2020-07-26)
 
 
