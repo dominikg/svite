@@ -1,0 +1,21 @@
+{
+  "name": "svite-example-big-typescript",
+  "version": "0.0.0",
+  "scripts": {
+    "validate": "svelte-check && tsc --noEmit",
+    "dev": "svite -ts",
+    "build": "svite build -ts"
+  },
+  "dependencies": {
+    "svelte": "^3.24.0"
+  },
+  "devDependencies": {
+    "@tsconfig/svelte": "^1.0.4",
+    "svelte-check": "^1.0.2",
+    "svelte-preprocess": "^4.0.9",
+    "svite": "latest",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.7",
+    "vite": "1.0.0-rc.4"
+  }
+}

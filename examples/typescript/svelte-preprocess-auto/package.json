@@ -18,6 +18,6 @@
     "svite": "^0.3.3-beta.0",
     "tslib": "^2.0.0",
     "typescript": "^3.9.7",
-    "vite": "1.0.0-beta.12"
+    "vite": "1.0.0-rc.4"
   }
 }

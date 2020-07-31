@@ -20,7 +20,6 @@ const buildOptionDefaults = {
 };
 
 const devOptionDefaults = {
-  serviceWorker: false,
   typescript: false,
 };
 
@@ -332,7 +331,6 @@ async function main() {
     .option('-c,  --config [string]', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte', devOptionDefaults.typescript)
     .option('-p,  --port [port]', 'port to use for serve', 3000)
-    .option('-sw, --serviceWorker [boolean]', 'enable service worker caching', devOptionDefaults.serviceWorker)
     .option('-o,  --open [boolean]', 'open browser on start')
     .action(async (cmd) => {
       const options = cmd.opts();
