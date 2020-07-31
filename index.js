@@ -63,44 +63,47 @@ function applyForcedOptions(config, forcedOptions) {
 }
 
 async function hasTypescriptPreprocessor(svelteConfig) {
-  if(!Array.isArray(svelteConfig.preprocess)) {
+  if (!Array.isArray(svelteConfig.preprocess)) {
     return false;
   }
-  if(!svelteConfig.preprocess[0].script) {
+  if (!svelteConfig.preprocess[0].script) {
     return false;
   }
   try {
-    const result= await svelteConfig.preprocess[0].script({content:'const x:string="y";export{}',attributes:{lang:'ts'},filename:'Test.svelte'},{lang:"ts"},"Test.svelte")
-    log.info('result',result);
+    const result = await svelteConfig.preprocess[0].script(
+      { content: 'const x:string="y";export{}', attributes: { lang: 'ts' }, filename: 'Test.svelte' },
+      { lang: 'ts' },
+      'Test.svelte',
+    );
+    log.debug('script preprocessor at index 0 is typescript. transformed:', result);
     return true;
   } catch (e) {
-    log.debug('script preprocessor at index 0 failed to transform typescript',e);
+    log.debug('script preprocessor at index 0 failed to transform typescript', e);
     return false;
   }
 }
 async function setupTypeScriptPreprocessor(svelteConfig, isBuild) {
   const hasTypescript = await hasTypescriptPreprocessor(svelteConfig);
-  if(!hasTypescript) {
-    throw new Error('svite -ts requires a typescript preprocessor at index 0 in svelte.config.js preprocess:[]')
+  if (!hasTypescript) {
+    throw new Error('svite -ts requires a typescript preprocessor at index 0 in svelte.config.js preprocess:[]');
   }
-  if(!isBuild) {
-
+  if (!isBuild) {
     // unfortunately esbuild preprocess does not work properly with imports of svelte components as of now
     // svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
 
-
-    const  {typescript} = require('svelte-preprocess');
-      const devTS = {
-        module: 'esnext',
-        target: 'es2017',
-        moduleResolution: "node",
-        importsNotUsedAsValues: "error",
-        types: ['svelte', 'vite/dist/importMeta'],
-        sourceMap: true
-      };
-      log.warn('overriding typescript preprocessor to support hmr in vite', devTS);
-      svelteConfig.preprocess[0] = typescript(devTS);
-    }
+    const { typescript } = require('svelte-preprocess');
+    const devTS = {
+      module: 'esnext',
+      target: 'es2017',
+      moduleResolution: 'node',
+      importsNotUsedAsValues: 'error',
+      types: ['svelte', 'vite/dist/importMeta'],
+      sourceMap: true,
+      isolatedModules: true,
+    };
+    log.warn('overriding typescript preprocessor to support hmr in vite', devTS);
+    svelteConfig.preprocess[0] = typescript(devTS);
+  }
 }
 
 async function finalizeConfig(config, type) {
@@ -298,7 +301,7 @@ function createDev(config) {
 function rollupPluginDeferred(name, createPlugin) {
   const wrapper = {
     name,
-    options: async function(options) {
+    options: async function (options) {
       const plugin = await createPlugin();
       Object.keys(plugin).forEach((key) => {
         if (key !== 'options') {
