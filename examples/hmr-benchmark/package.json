@@ -1,6 +1,6 @@
 {
   "name": "svite-example-hmr-benchmark",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "scripts": {
     "benchmark": "node benchmark.js"
   },
@@ -8,13 +8,17 @@
     "svelte": "^3.24.0"
   },
   "devDependencies": {
+    "@tsconfig/svelte": "^1.0.4",
     "del": "^5.1.0",
     "execa": "^4.0.2",
     "fs-extra": "^9.0.1",
     "minimist": "^1.2.5",
     "puppeteer": "^4.0.1",
+    "svelte-preprocess": "^4.0.9",
     "svite": "latest",
     "systeminformation": "^4.26.9",
+    "tslib": "^2.0.0",
+    "typescript": "^3.9.7",
     "vite": "1.0.0-rc.4"
   }
 }

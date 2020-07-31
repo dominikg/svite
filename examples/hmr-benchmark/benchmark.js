@@ -17,6 +17,7 @@ if (argv.h || argv.help) {
       --gif         - create a gif in ./dist (requires ImageMagick 'convert' in path)
       --resultfile  - write stats to a timestamped file
       --throttle X  - wait X milliseconds between writes to the same file
+      --typescript  - use typescript
       --help,-h     - print this message
 `);
   process.exit(0);
@@ -26,8 +27,9 @@ const gif = argv.gif || false;
 const headless = argv.headless || false;
 const resultfile = argv.resultfile || false;
 let throttle = argv.throttle || 0;
+let typescript = argv.typescript || false;
 
-let vite;
+let svite;
 let browser;
 let page;
 let hmrUpdateStats = [];
@@ -36,17 +38,44 @@ let bootStats = {
   pageLoad: null,
 };
 
-const initialTriggerContent = `
+const initialTriggerContent = typescript
+  ? `
+<script lang="ts">
+    let svelte:string='';
+    let plus:string='';
+    let vite:string='';
+    let equals:string='';
+    let sweet:string='';
+</script>
 <style>
     #svelte {color:inherit;}
     #vite {color:inherit;}
     #sweet {color:inherit;}
 </style>
-<span id="svelte"></span>
-<span id="plus"></span>
-<span id="vite"></span>
-<span id="equals"></span>
-<span id="sweet"></span>
+<span id="svelte">{svelte}</span>
+<span id="plus">{plus}</span>
+<span id="vite">{vite}</span>
+<span id="equals">{equals}</span>
+<span id="sweet">{sweet}</span>
+`
+  : `
+<script>
+    let svelte='';
+    let plus='';
+    let vite='';
+    let equals='';
+    let sweet='';
+</script>
+<style>
+    #svelte {color:inherit;}
+    #vite {color:inherit;}
+    #sweet {color:inherit;}
+</style>
+<span id="svelte">{svelte}</span>
+<span id="plus">{plus}</span>
+<span id="vite">{vite}</span>
+<span id="equals">{equals}</span>
+<span id="sweet">{sweet}</span>
 `;
 let currentTriggerContent = initialTriggerContent;
 
@@ -54,14 +83,27 @@ async function prepare() {
   await del(outputDir);
   await fs.mkdir(outputDir);
   await fs.writeFile(hmrTriggerFile, initialTriggerContent);
+  const svelteConfig = path.join(__dirname, 'svelte.config.js');
+  if (typescript) {
+    await fs.writeFile(
+      svelteConfig,
+      `const { typescript } = require('svelte-preprocess');
+module.exports = {
+  preprocess: [typescript()],
+};
+`,
+    );
+  } else {
+    await del(svelteConfig);
+  }
 }
 
 async function startVite() {
   const start = process.hrtime();
-  const viteBin = path.join(__dirname, 'node_modules/.bin/vite');
-  vite = execa(viteBin, { cwd: __dirname });
+  const sviteBin = path.join(__dirname, 'node_modules/.bin/svite');
+  svite = execa(sviteBin, [...(typescript ? ['-ts'] : [])], { cwd: __dirname });
   return new Promise((resolve) => {
-    vite.stdout.on('data', (data) => {
+    svite.stdout.on('data', (data) => {
       if (data.toString().match('running')) {
         bootStats.vite = msDiff(start);
         resolve();
@@ -79,7 +121,7 @@ async function openBrowser() {
 }
 
 async function typeIntoSpan(id, word) {
-  const re = new RegExp(`<span id="${id}">[^<]*`);
+  const re = new RegExp(`let ${id}${typescript ? ':string' : ''}='[^']*`);
   const letters = word.split('');
   for (let l of letters) {
     await updateTriggerFile((c) => c.replace(re, (x) => x + l));
@@ -106,7 +148,7 @@ async function executeDemoScript() {
 }
 
 async function stopVite() {
-  vite.kill('SIGTERM', {
+  svite.kill('SIGTERM', {
     forceKillAfterTimeout: 2000,
   });
 }
@@ -192,6 +234,7 @@ async function writeStats() {
     headless,
     throttle,
     gif,
+    typescript,
   };
   const result = {
     system,
