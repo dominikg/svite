@@ -63,6 +63,12 @@ describe('examples', () => {
           await fs.writeFile(path.join(exampleTempDir, 'npm.stdout.log'), npmInstall.stdout);
           await fs.writeFile(path.join(exampleTempDir, 'npm.stderr.log'), npmInstall.stderr);
         } catch (e) {
+          try {
+            await fs.writeFile(path.join(exampleTempDir, 'npm.stdout.log'), npmInstall.stdout);
+            await fs.writeFile(path.join(exampleTempDir, 'npm.stderr.log'), npmInstall.stderr);
+          } catch(e) {
+            console.error('failed to write logs to disk',e);
+          }
           console.error(`npm install failed in ${exampleTempDir}`, e);
           throw e;
         }
@@ -116,11 +122,16 @@ describe('examples', () => {
                 buildScript = await execa('npm', ['run', 'build'], {
                   cwd: exampleTempDir,
                 });
-                await fs.writeFile(path.join(exampleTempDir, 'build.stdout.log'), buildScript.stdout);
-                await fs.writeFile(path.join(exampleTempDir, 'build.stderr.log'), buildScript.stderr);
+
                 expect(buildScript.stdout).toMatch('Build completed');
                 expect(buildScript.stderr).toBe('');
               } catch (e) {
+                try {
+                  await fs.writeFile(path.join(exampleTempDir, 'build.stdout.log'), buildScript.stdout);
+                  await fs.writeFile(path.join(exampleTempDir, 'build.stderr.log'), buildScript.stderr);
+                } catch(e) {
+                  console.error('failed to write logs to disk',e);
+                }
                 console.error('svite build failed', e);
                 throw e;
               }
