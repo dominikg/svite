@@ -1,4 +1,11 @@
 
+## [0.4.0](https://github.com/dominikg/svite/compare/0.4.0-beta.0...0.4.0) (2020-08-01)
+
+
+### Features
+
+* **typescript:** update benchmark to use svite binary, add typescript option ([a25dc2e](https://github.com/dominikg/svite/commit/a25dc2ecc1a4a71ee387ce916b6241dd2887c02f))
+
 ## [0.4.0-beta.0](https://github.com/dominikg/svite/compare/0.3.3-beta.2...0.4.0-beta.0) (2020-07-31)
 
 
