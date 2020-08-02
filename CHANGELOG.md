@@ -1,4 +1,11 @@
 
+### [0.4.1](https://github.com/dominikg/svite/compare/0.4.0...0.4.1) (2020-08-02)
+
+
+### Bug Fixes
+
+* **hmr:** disable template cache by default and expose svite dev options on cli (fix [#17](https://github.com/dominikg/svite/issues/17))(fix [#33](https://github.com/dominikg/svite/issues/33)) ([61a93f1](https://github.com/dominikg/svite/commit/61a93f19d38576ab1e194c888402c06565226e91))
+
 ## [0.4.0](https://github.com/dominikg/svite/compare/0.4.0-beta.0...0.4.0) (2020-08-01)
 
 
