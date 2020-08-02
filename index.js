@@ -8,7 +8,7 @@ const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelt
 
 const defaultOptions = {
   hot: true,
-  useTransformCache: true,
+  useTransformCache: false,
   logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
   typescript: false,
 };

@@ -70,15 +70,15 @@ Usage: svite create [options] [targetDir]
 create a new project. If you do not specify targetDir, "./svite-<template>" will be used
 
 Options:
-  -t, --template [string]      template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
+  -t,  --template [string]     template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
   -ts, --typescript [boolean]  enable typescript support for svelte !!!EXPERIMENTAL!!! (default: false)
-  -f, --force                  force operation even if targetDir exists and is not empty (default: false)
-  -c, --cache                  cache template for later use (default: false)
-  -d, --debug                  more verbose logging (default: false)
+  -f,  --force                 force operation even if targetDir exists and is not empty (default: false)
+  -c,  --cache                 cache template for later use (default: false)
+  -d,  --debug                 more verbose logging (default: false)
   -si, --skip-install          skip npm install (default: false)
   -sg, --skip-git              skip git init (default: false)
   -sc, --skip-commit           skip initial commit (default: false)
-  -h, --help                   display help for command
+  -h,  --help                  display help for command
 ```
 
 ### dev
@@ -94,6 +94,8 @@ Options:
   -ts, --typescript [boolean]     enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
   -p,  --port [port]              port to use for serve (default: 3000)
   -o,  --open [boolean]           open browser on start
+  --useTransformCache [boolean]   use transform cache for faster hmr (default: false)
+  --hot [boolean]                 enable/disable hmr for svelte (default: true)
   -h, --help                      display help for command
 ```
 

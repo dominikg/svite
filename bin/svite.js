@@ -21,6 +21,8 @@ const buildOptionDefaults = {
 
 const devOptionDefaults = {
   typescript: false,
+  useTransformCache: false,
+  hot: true,
 };
 
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
@@ -330,8 +332,11 @@ async function main() {
     )
     .option('-c,  --config [string]', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', devOptionDefaults.typescript)
+
     .option('-p,  --port [port]', 'port to use for serve', 3000)
     .option('-o,  --open [boolean]', 'open browser on start')
+    .option('--useTransformCache [boolean]', 'use transform cache for faster hmr', devOptionDefaults.useTransformCache)
+    .option('--hot [boolean]', 'enable/disable hmr for svelte', devOptionDefaults.hot)
     .action(async (cmd) => {
       const options = cmd.opts();
       setupDebug(options);
