@@ -1,3 +1,7 @@
+<script lang="ts">
+  import { url } from '@sveltech/routify/runtime';
+</script>
+
 <style>
   #app {
     display: grid;
@@ -27,7 +31,7 @@
 
 <div id="app">
   <nav>
-    <a href="/mdsvex">mdsvex</a>
+    <a href={$url('/mdsvex')}>mdsvex</a>
   </nav>
   <main>
     <slot />
