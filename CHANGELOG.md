@@ -1,4 +1,23 @@
 
+## [0.5.0-beta.0](https://github.com/dominikg/svite/compare/0.4.1...0.5.0-beta.0) (2020-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* - vite moved from peer dependency to dependency
+- dependencies that caused issues after updating them have been set to exact version
+- svelte-hmr is a peer-dependency. add as dependeny to project
+
+### Features
+
+* add option to resolve via svelte field during dev ([06505ba](https://github.com/dominikg/svite/commit/06505bae0446989c486810fa01253ba0017816f6))
+* change dependency setup ([2c5d6ad](https://github.com/dominikg/svite/commit/2c5d6ad32843c4b5f7a36145ec6b272f635bafce))
+
+
+### Bug Fixes
+
+* navigation links in routify examples work in dev ([ef9cda6](https://github.com/dominikg/svite/commit/ef9cda621860d8fa787946ab11d77190ad48c5b4))
+
 ### [0.4.1](https://github.com/dominikg/svite/compare/0.4.0...0.4.1) (2020-08-02)
 
 
