@@ -7,15 +7,15 @@
     "build": "svite build -ts"
   },
   "dependencies": {
-    "svelte": "^3.24.0"
+    "svelte": "3.24.1",
+    "svelte-hmr": "0.10.2"
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^1.0.4",
+    "@tsconfig/svelte": "^1.0.8",
     "svelte-check": "^1.0.2",
-    "svelte-preprocess": "^4.0.9",
+    "svelte-preprocess": "^4.0.10",
     "svite": "latest",
     "tslib": "^2.0.0",
-    "typescript": "^3.9.7",
-    "vite": "1.0.0-rc.4"
+    "typescript": "^3.9.7"
   }
 }

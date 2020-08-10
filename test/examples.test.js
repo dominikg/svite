@@ -66,8 +66,8 @@ describe('examples', () => {
           try {
             await fs.writeFile(path.join(exampleTempDir, 'npm.stdout.log'), npmInstall.stdout);
             await fs.writeFile(path.join(exampleTempDir, 'npm.stderr.log'), npmInstall.stderr);
-          } catch(e) {
-            console.error('failed to write logs to disk',e);
+          } catch (e) {
+            console.error('failed to write logs to disk', e);
           }
           console.error(`npm install failed in ${exampleTempDir}`, e);
           throw e;
@@ -105,7 +105,7 @@ describe('examples', () => {
                 }
                 expect(await getText('#test-div')).toBe('__xxx__');
                 await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
-                await hmrUpdateComplete(page, 'src/App.svelte', 2000);
+                await hmrUpdateComplete(page, 'src/App.svelte', 5000);
                 expect(await getText('#test-div')).toBe('__yyy__');
               });
             });
@@ -129,8 +129,8 @@ describe('examples', () => {
                 try {
                   await fs.writeFile(path.join(exampleTempDir, 'build.stdout.log'), buildScript.stdout);
                   await fs.writeFile(path.join(exampleTempDir, 'build.stderr.log'), buildScript.stderr);
-                } catch(e) {
-                  console.error('failed to write logs to disk',e);
+                } catch (e) {
+                  console.error('failed to write logs to disk', e);
                 }
                 console.error('svite build failed', e);
                 throw e;

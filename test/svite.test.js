@@ -263,7 +263,7 @@ async function updateFile(file, replacer, noHmrWait) {
   await throttledWrite(compPath, newContent, 100);
   fileContentCache[file] = newContent;
   if (!noHmrWait) {
-    await hmrUpdateComplete(page, file, 250);
+    await hmrUpdateComplete(page, file, 500);
   }
 }
 

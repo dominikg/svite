@@ -6,10 +6,10 @@
     "build": "svite build"
   },
   "dependencies": {
-    "svelte": "^3.24.0"
+    "svelte": "3.24.1",
+    "svelte-hmr": "0.10.2"
   },
   "devDependencies": {
-    "vite": "1.0.0-rc.4",
     "svite": "latest"
   }
 }

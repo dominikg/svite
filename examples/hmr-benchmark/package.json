@@ -5,20 +5,20 @@
     "benchmark": "node benchmark.js"
   },
   "dependencies": {
-    "svelte": "^3.24.0"
+    "svelte": "3.24.1",
+    "svelte-hmr": "0.10.2"
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^1.0.4",
+    "@tsconfig/svelte": "^1.0.8",
     "del": "^5.1.0",
     "execa": "^4.0.2",
     "fs-extra": "^9.0.1",
     "minimist": "^1.2.5",
     "puppeteer": "^4.0.1",
-    "svelte-preprocess": "^4.0.9",
+    "svelte-preprocess": "^4.0.10",
     "svite": "latest",
     "systeminformation": "^4.26.9",
     "tslib": "^2.0.0",
-    "typescript": "^3.9.7",
-    "vite": "1.0.0-rc.4"
+    "typescript": "^3.9.7"
   }
 }
