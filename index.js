@@ -11,6 +11,7 @@ const defaultOptions = {
   useTransformCache: false,
   logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
   typescript: false,
+  resolveSvelteField: true,
 };
 
 const defaultHotOptions = {
@@ -210,7 +211,7 @@ function createSvelteTransformTest(svelteOptions) {
 function updateViteConfig(config) {
   const viteConfig = config.vite;
   let addToInclude = svelteDeps.concat();
-  let addToExclude = [];
+  let addToExclude = ['svelte'];
   if (config.dev.hot) {
     addToExclude.push('svelte-hmr');
     addToInclude.push('svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom', 'svelte-hmr/runtime/hot-api-esm');
@@ -292,6 +293,15 @@ function createDev(config) {
       },
     });
   }
+
+  if (config.svite.resolveSvelteField) {
+    try {
+      require('vite/dist/node/resolver').mainFields.unshift('svelte');
+    } catch (e) {
+      log.warn('failed to add svelte to vite resolver mainFields', e);
+    }
+  }
+
   return {
     transforms,
     configureServer,

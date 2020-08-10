@@ -96,6 +96,7 @@ Options:
   -o,  --open [boolean]           open browser on start
   --useTransformCache [boolean]   use transform cache for faster hmr (default: false)
   --hot [boolean]                 enable/disable hmr for svelte (default: true)
+  --resolveSvelteField [boolean]  resolve via svelte field in package.json (default: true)
   -h, --help                      display help for command
 ```
 
