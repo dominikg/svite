@@ -1,3 +1,15 @@
+
+## [0.5.0-beta.1](https://github.com/dominikg/svite/compare/0.5.0-beta.0...0.5.0-beta.1) (2020-08-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* new major version of rollup-pluginutils changes filter behavior
+
+### Bug Fixes
+
+* update depdendencies, svelte-preprocess as optional dependency ([4853116](https://github.com/dominikg/svite/commit/4853116c5625102a9e920c8d2cec3ac47f77c394))
+
 ## [0.5.0-beta.0](https://github.com/dominikg/svite/compare/0.4.1...0.5.0-beta.0) (2020-08-10)
 
 ### ⚠ BREAKING CHANGES
