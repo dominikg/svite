@@ -1,7 +1,7 @@
 /* eslint-env node */
 const fs = require('fs-extra');
 const treeKill = require('tree-kill');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 const sleep = (n) => new Promise((r) => setTimeout(r, n));
 
@@ -35,12 +35,38 @@ const deleteDir = async (dir) => {
   }
 };
 
+const guessChromePath = async () => {
+  const locations = [
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+  ];
+  for (let path of locations) {
+    try {
+      if (await fs.exists(path)) {
+        return path;
+      }
+    } catch (e) {
+      //ignore
+    }
+  }
+};
+
 const launchPuppeteer = async () => {
   const args = ['--headless', '--disable-gpu', '--single-process', '--no-zygote', '--no-sandbox'];
   if (process.env.CI) {
-    args.push('--disable-setuid-sandbox');
+    args.push('--disable-setuid-sandbox', '--disable-dev-shm-usage');
   }
-  const browser = await puppeteer.launch({ args });
+  const executablePath = process.env.CHROME_BIN || (await guessChromePath());
+  if (!executablePath) {
+    throw new Error('failed to identify chrome executable path. set CHROME_BIN env variable');
+  }
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath,
+    args,
+  });
   return browser;
 };
 
