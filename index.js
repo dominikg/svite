@@ -12,6 +12,7 @@ const defaultOptions = {
   logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
   typescript: false,
   resolveSvelteField: true,
+  resolveSvelteExtensions: true,
 };
 
 const defaultHotOptions = {
@@ -294,14 +295,6 @@ function createDev(config) {
     });
   }
 
-  if (config.svite.resolveSvelteField) {
-    try {
-      require('vite/dist/node/resolver').mainFields.unshift('svelte');
-    } catch (e) {
-      log.warn('failed to add svelte to vite resolver mainFields', e);
-    }
-  }
-
   return {
     transforms,
     configureServer,
@@ -332,6 +325,8 @@ function createBuildPlugins(config) {
   const rollupPluginDedupeSvelte = rollupPluginDeferred('node-resolve', () =>
     rollupPluginNodeResolve.nodeResolve({
       dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
+      mainFields: config.svite.resolve.mainFields,
+      extensions: config.svite.resolve.supportedExts,
     }),
   );
 
@@ -366,6 +361,32 @@ function createVitePlugin(config) {
   };
 }
 
+function patchVite(config) {
+  const viteResolver = require('vite/dist/node/resolver');
+  const mainFields = viteResolver.mainFields;
+  const supportedExts = viteResolver.supportedExts;
+  if (config.svite.resolveSvelteField) {
+    try {
+      mainFields.unshift('svelte');
+      log.debug('added "svelte" to list of fields to resolve in package.json', mainFields);
+    } catch (e) {
+      log.warn('failed to add svelte to vite resolver mainFields', e);
+    }
+  }
+  if (config.svite.resolveSvelteExtensions) {
+    try {
+      supportedExts.unshift(...config.build.extensions);
+      log.debug(`added "${config.build.extensions.join(', ')}" to list of extensions to resolve`, supportedExts);
+    } catch (e) {
+      log.warn('failed to add svelte extensions to list of extensions to resolve', e);
+    }
+  }
+  config.svite.resolve = {
+    mainFields,
+    supportedExts,
+  };
+}
+
 module.exports = function svite(pluginOptions = {}) {
   if (pluginOptions.debug) {
     log.setLevel('debug');
@@ -374,5 +395,6 @@ module.exports = function svite(pluginOptions = {}) {
   }
   const config = createConfig(pluginOptions);
   log.setLevel(config.svite.logLevel);
+  patchVite(config);
   return createVitePlugin(config);
 };

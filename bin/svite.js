@@ -24,6 +24,7 @@ const devOptionDefaults = {
   useTransformCache: false,
   hot: true,
   resolveSvelteField: true,
+  resolveSvelteExtensions: true,
 };
 
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
@@ -339,6 +340,7 @@ async function main() {
     .option('--useTransformCache [boolean]', 'use transform cache for faster hmr', devOptionDefaults.useTransformCache)
     .option('--hot [boolean]', 'enable/disable hmr for svelte', devOptionDefaults.hot)
     .option('--resolveSvelteField [boolean]', 'resolve via svelte field in package.json', devOptionDefaults.resolveSvelteField)
+    .option('--resolveSvelteExtensions [boolean]', 'resolve svelte extensions in modules', devOptionDefaults.resolveSvelteExtensions)
     .action(async (cmd) => {
       const options = cmd.opts();
       setupDebug(options);

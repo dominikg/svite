@@ -89,15 +89,16 @@ Start a dev server with `svite` or `svite dev`
 Usage: svite dev [options]
 
 Options:
-  -d,  --debug [boolean|string]   enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
-  -c,  --config [string]          use specified vite config file
-  -ts, --typescript [boolean]     enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
-  -p,  --port [port]              port to use for serve (default: 3000)
-  -o,  --open [boolean]           open browser on start
-  --useTransformCache [boolean]   use transform cache for faster hmr (default: false)
-  --hot [boolean]                 enable/disable hmr for svelte (default: true)
-  --resolveSvelteField [boolean]  resolve via svelte field in package.json (default: true)
-  -h, --help                      display help for command
+  -d,  --debug [boolean|string]        enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
+  -c,  --config [string]               use specified vite config file
+  -ts, --typescript [boolean]          enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
+  -p,  --port [port]                   port to use for serve (default: 3000)
+  -o,  --open [boolean]                open browser on start
+  --useTransformCache [boolean]        use transform cache for faster hmr (default: false)
+  --hot [boolean]                      enable/disable hmr for svelte (default: true)
+  --resolveSvelteField [boolean]       resolve via svelte field in package.json (default: true)
+  --resolveSvelteExtensions [boolean]  resolve svelte extensions in modules (default: true)
+  -h, --help                           display help for command
 ```
 
 ### build
