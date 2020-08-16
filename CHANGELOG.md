@@ -1,4 +1,16 @@
 
+### [0.5.1-beta.0](https://github.com/dominikg/svite/compare/0.5.0...0.5.1-beta.0) (2020-08-16)
+
+
+### Features
+
+* improve resolving ([7677bdf](https://github.com/dominikg/svite/commit/7677bdf9fc333756090f85aae0a637dfcdd99984))
+
+
+### Bug Fixes
+
+* always pass mode option to vite and make sure process.env.NODE_ENV is set ([151bbf5](https://github.com/dominikg/svite/commit/151bbf5070bdb6fa672d4021be15b9225af33329))
+
 ## [0.5.0](https://github.com/dominikg/svite/compare/0.5.0-beta.1...0.5.0) (2020-08-13)
 
 ## [0.5.0-beta.1](https://github.com/dominikg/svite/compare/0.5.0-beta.0...0.5.0-beta.1) (2020-08-13)
