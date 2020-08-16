@@ -9,7 +9,6 @@ const execa = require('execa');
 const fs = require('fs');
 
 const buildOptionDefaults = {
-  mode: 'production',
   base: '/',
   outDir: 'dist',
   assetsDir: '_assets',
@@ -32,6 +31,10 @@ let vite;
 let log = console;
 
 async function setupSvite(options) {
+  if (options.mode && process.env.NODE_ENV == null) {
+    log.debug(`setting process.env.NODE_ENV=${options.mode}`);
+    process.env.NODE_ENV = options.mode;
+  }
   try {
     vite = require('vite');
   } catch (e) {
@@ -359,7 +362,7 @@ async function main() {
     )
     .option('-c, --config [string]', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', buildOptionDefaults.typescript)
-    .option('-m, --mode [string]', 'specify env mode', buildOptionDefaults.mode)
+    .option('-m, --mode [string]', 'specify env mode ["development","production"]', 'production')
     .option('--base [string]', 'public base path for build', buildOptionDefaults.base)
     .option('--outDir [string]', 'output directory for build', buildOptionDefaults.outDir)
     .option('--assetsDir [string]', 'directory under outDir to place assets in', buildOptionDefaults.assetsDir)
