@@ -1,4 +1,11 @@
 
+### [0.5.1-beta.1](https://github.com/dominikg/svite/compare/0.5.1-beta.0...0.5.1-beta.1) (2020-08-17)
+
+
+### Features
+
+* add packageManager option to create command ([c9f44b5](https://github.com/dominikg/svite/commit/c9f44b59f3ccc287c8dedc0bcf71309593ebf30b))
+
 ### [0.5.1-beta.0](https://github.com/dominikg/svite/compare/0.5.0...0.5.1-beta.0) (2020-08-16)
 
 
