@@ -212,6 +212,7 @@ function setupDebug(options) {
 }
 const templates = ['minimal', 'routify-mdsvex', 'postcss-tailwind', 'svelte-preprocess-auto'];
 const typescriptTemplates = ['minimal', 'routify-mdsvex', 'postcss-tailwind', 'svelte-preprocess-auto'];
+
 async function installTemplate(options) {
   let template = options.template;
 
@@ -257,8 +258,9 @@ async function installTemplate(options) {
   log.info(`created ${targetDir}`);
   await updatePkg(targetDir);
   await addVsCodePluginRecommendation(targetDir);
+
   if (!options.skipInstall) {
-    await npmInstall(targetDir);
+    await installDependencies(targetDir, options.packageManager);
   }
 
   if (!options.skipGit) {
@@ -288,11 +290,20 @@ async function addVsCodePluginRecommendation(dir) {
   );
 }
 
-async function npmInstall(dir) {
+async function installDependencies(dir, packageManager) {
   try {
-    await execa('npm', ['install'], { cwd: dir });
+    if (packageManager === 'yarn2') {
+      try {
+        await execa('yarn', ['set', 'version', 'berry'], { cwd: dir });
+      } catch (e) {
+        console.error(`yarn set version berry failed in ${dir}`, e);
+        throw e;
+      }
+      packageManager = 'yarn';
+    }
+    await execa(packageManager, ['install'], { cwd: dir });
   } catch (e) {
-    console.error(`npm install failed in ${dir}`, e);
+    console.error(`${packageManager} install failed in ${dir}`, e);
     throw e;
   }
 }
@@ -431,10 +442,11 @@ async function main() {
     .description('create a new project. If you do not specify targetDir, "./svite-<template>" will be used')
     .option('-t, --template [string]', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
     .option('-ts, --typescript', 'enable typescript support for svelte !!!EXPERIMENTAL!!!', false)
+    .option('-pm, --packageManager [string]', 'which package manager to use. ["npm","pnpm","yarn","yarn2"]', 'npm')
     .option('-f, --force', 'force operation even if targetDir exists and is not empty', false)
     .option('-c, --cache', 'cache template for later use', false)
     .option('-d, --debug', 'more verbose logging', false)
-    .option('-si, --skip-install', 'skip npm install', false)
+    .option('-si, --skip-install', 'skip install', false)
     .option('-sg, --skip-git', 'skip git init', false)
     .option('-sc, --skip-commit', 'skip initial commit', false)
     .action(async (targetDir, cmd) => {

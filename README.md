@@ -70,15 +70,16 @@ Usage: svite create [options] [targetDir]
 create a new project. If you do not specify targetDir, "./svite-<template>" will be used
 
 Options:
-  -t,  --template [string]     template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
-  -ts, --typescript [boolean]  enable typescript support for svelte !!!EXPERIMENTAL!!! (default: false)
-  -f,  --force                 force operation even if targetDir exists and is not empty (default: false)
-  -c,  --cache                 cache template for later use (default: false)
-  -d,  --debug                 more verbose logging (default: false)
-  -si, --skip-install          skip npm install (default: false)
-  -sg, --skip-git              skip git init (default: false)
-  -sc, --skip-commit           skip initial commit (default: false)
-  -h,  --help                  display help for command
+  -t, --template [string]         template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
+  -ts, --typescript               enable typescript support for svelte !!!EXPERIMENTAL!!! (default: false)
+  -pm, --packageManager [string]  which package manager to use. ["npm","pnpm","yarn","yarn2"] (default: "npm")
+  -f, --force                     force operation even if targetDir exists and is not empty (default: false)
+  -c, --cache                     cache template for later use (default: false)
+  -d, --debug                     more verbose logging (default: false)
+  -si, --skip-install             skip install (default: false)
+  -sg, --skip-git                 skip git init (default: false)
+  -sc, --skip-commit              skip initial commit (default: false)
+  -h, --help                      display help for command
 ```
 
 ### dev
