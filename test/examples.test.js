@@ -8,33 +8,22 @@ jest.setTimeout(35000);
 
 const tempDir = path.join(__dirname, 'temp');
 const sviteDir = path.join(__dirname, '..');
-
-// global refs so we can stop them
-let installCmd;
-let buildServer;
-let buildScript;
-let devServer;
-let browser;
-let page;
-
 const examples = ['minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
-
 const pmOptions = ['npm', 'pnpm', 'yarn', 'yarn2'];
 const scriptOptions = ['javascript', 'typescript'];
 
 describe('examples', () => {
   let svitePackage;
+  let browser;
   beforeAll(async () => {
-    await deleteDir(tempDir);
-    await fs.mkdirp(tempDir);
-    try {
-      const packCmd = await execa('npm', ['pack', sviteDir], { cwd: tempDir });
-      svitePackage = path.join(tempDir, packCmd.stdout);
-    } catch (e) {
-      console.error('pack failed', e);
-      throw e;
-    }
+    await cleanTempDir();
+    svitePackage = await createTestPackage();
+    browser = await launchPuppeteer();
   });
+  afterAll(async () => {
+    await closeKill(browser);
+  });
+
   for (let script of scriptOptions) {
     describe(script, () => {
       for (let pm of pmOptions) {
@@ -43,18 +32,19 @@ describe('examples', () => {
           for (let example of examples) {
             describe(example, () => {
               const exampleDir = path.join(__dirname, '..', 'examples', script === 'typescript' ? `typescript/${example}` : example);
-
               const exampleTempDir = path.join(tempDir, script, pm, example);
               const updateExampleFile = updateFile.bind(null, exampleTempDir);
-              const browserLogs = [];
-              const serverLogs = [];
+              const writeExampleLogs = writeLogs.bind(null, exampleTempDir);
+              const takeExampleScreenshot = takeScreenshot.bind(null, exampleTempDir);
+
+              let installCmd;
 
               beforeAll(async () => {
                 try {
                   await deleteDir(exampleTempDir);
                   await fs.mkdirp(exampleTempDir);
                   await fs.copy(exampleDir, exampleTempDir, {
-                    filter: (file) => !/dist|node_modules/.test(file),
+                    filter: (file) => !/dist|dist-ssr|node_modules|package-lock\.json/.test(file),
                   });
                   const testPackageName = `svite-test-${script}-${pm}-${example}`;
                   await updateExampleFile('package.json', (c) =>
@@ -72,154 +62,124 @@ describe('examples', () => {
                     await execa(pmCmd, ['set', 'version', 'berry'], { cwd: exampleTempDir });
                     await fs.writeFile(path.join(exampleTempDir, 'yarn.lock'), '');
                   }
-
                   installCmd = await execa(pmCmd, ['install'], { cwd: exampleTempDir });
-                  await fs.writeFile(path.join(exampleTempDir, 'install.stdout.log'), installCmd.stdout);
-                  await fs.writeFile(path.join(exampleTempDir, 'install.stderr.log'), installCmd.stderr);
                 } catch (e) {
-                  try {
-                    await fs.writeFile(path.join(exampleTempDir, 'install.stdout.log'), installCmd.stdout);
-                    await fs.writeFile(path.join(exampleTempDir, 'install.stderr.log'), installCmd.stderr);
-                  } catch (e) {
-                    console.error('failed to write logs to disk', e);
-                  }
                   console.error(`${pm} install failed in ${exampleTempDir}`, e);
                   throw e;
+                } finally {
+                  if (installCmd) {
+                    await writeExampleLogs('install', installCmd.stdout, installCmd.stderr);
+                  }
                 }
               });
 
               afterAll(async () => {
-                if (browser) await browser.close();
-                if (devServer) {
-                  await closeKill(devServer);
-                }
-                await fs.writeFile(path.join(exampleTempDir, 'browser.log'), browserLogs.join('\n'));
-                await fs.writeFile(path.join(exampleTempDir, 'server.log'), serverLogs.join('\n'));
+                await closeKillAll([installCmd]);
               });
               describe('svite', () => {
-                beforeAll(async () => {
-                  browser = await launchPuppeteer();
+                describe('build', () => {
+                  let buildScript;
+                  let buildServer;
+                  let buildPage;
+                  let buildPageLogs = [];
+                  beforeAll(async () => {
+                    try {
+                      buildScript = await execa(pmCmd, ['run', 'build'], {
+                        cwd: exampleTempDir,
+                      });
+                      expect(buildScript.stdout).toMatch('Build completed');
+                      expect(buildScript.stderr).toBe('');
+                    } catch (e) {
+                      console.error('svite build failed', e);
+                      throw e;
+                    } finally {
+                      if (buildScript) {
+                        await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
+                      }
+                    }
+
+                    // start a static file server
+                    try {
+                      const app = new (require('koa'))();
+                      app.use(require('koa-static')(path.join(exampleTempDir, 'dist')));
+                      buildServer = require('http').createServer(app.callback());
+                      await new Promise((r) => buildServer.listen(4001, r));
+
+                      buildPage = await browser.newPage();
+                      buildPage.on('console', (msg) => {
+                        buildPageLogs.push(msg.text());
+                      });
+                      await buildPage.goto('http://localhost:4001', { waitUntil: 'networkidle2' });
+                    } catch (e) {
+                      console.error(`failed to serve build and open page for example ${example}`, e);
+                      throw e;
+                    }
+                  });
+
+                  afterAll(async () => {
+                    closeKillAll([buildScript, buildServer, buildPage]);
+                    writeExampleLogs('buildPage', buildPageLogs.join('\n'));
+                  });
+
+                  describe('app', () => {
+                    test('page should be loaded', () => {
+                      expect(buildPage).toBeDefined();
+                    });
+                    test('should render App.svelte', async () => {
+                      await takeExampleScreenshot(buildPage, 'buildPage');
+                      await expectByPolling(async () => await getText(buildPage, '#test-div'), '__xxx__');
+                    });
+                    test('should not have failed requests', () => {
+                      const has404 = buildPageLogs.some((msg) => msg.match('404'));
+                      expect(has404).toBe(false);
+                    });
+                  });
                 });
 
-                function declareTests(isBuild) {
-                  test('should render App.svelte', async () => {
-                    await expectByPolling(async () => await getText('#test-div'), '__xxx__');
-                  });
-
-                  test('should not have failed requests', () => {
-                    const has404 = browserLogs.some((msg) => msg.match('404'));
-                    expect(has404).toBe(false);
-                  });
-
-                  if (!isBuild) {
-                    describe('hmr', () => {
-                      test('should accept update to App.svelte', async () => {
-                        if (example.indexOf('routify') > -1) {
-                          await sleep(250); // let routify route update complete first
-                        }
-                        expect(await getText('#test-div')).toBe('__xxx__');
-                        await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
-                        await hmrUpdateComplete(page, 'src/App.svelte', 5000);
-                        expect(await getText('#test-div')).toBe('__yyy__');
-                      });
-                    });
-                  }
-                }
-
-                // test build first since we are going to edit the fixtures when testing dev
-                // no need to run build tests when testing service worker mode since it's
-                // dev only
-                if (!process.env.USE_SW) {
-                  describe('build', () => {
-                    beforeAll(async () => {
-                      try {
-                        buildScript = await execa(pmCmd, ['run', 'build'], {
-                          cwd: exampleTempDir,
-                        });
-                        try {
-                          await fs.writeFile(path.join(exampleTempDir, 'build.stdout.log'), buildScript.stdout);
-                          await fs.writeFile(path.join(exampleTempDir, 'build.stderr.log'), buildScript.stderr);
-                        } catch (e) {
-                          console.error('failed to write logs to disk', e);
-                        }
-                        expect(buildScript.stdout).toMatch('Build completed');
-                        expect(buildScript.stderr).toBe('');
-                      } catch (e) {
-                        try {
-                          await fs.writeFile(path.join(exampleTempDir, 'build.stdout.log'), buildScript.stdout);
-                          await fs.writeFile(path.join(exampleTempDir, 'build.stderr.log'), buildScript.stderr);
-                        } catch (e) {
-                          console.error('failed to write logs to disk', e);
-                        }
-                        console.error('svite build failed', e);
-                        throw e;
-                      }
-                    });
-
-                    afterAll(async () => {
-                      closeKillAll([buildScript, buildServer]);
-                    });
-
-                    describe('app', () => {
-                      beforeAll(async () => {
-                        // start a static file server
-                        try {
-                          const app = new (require('koa'))();
-                          app.use(require('koa-static')(path.join(exampleTempDir, 'dist')));
-                          buildServer = require('http').createServer(app.callback());
-                          await new Promise((r) => buildServer.listen(4001, r));
-
-                          page = await browser.newPage();
-                          await page.goto('http://localhost:4001', { waitUntil: 'networkidle2' });
-                          await page.screenshot({ path: path.join(exampleTempDir, 'built.png'), type: 'png' });
-                        } catch (e) {
-                          console.error(`failed to serve build and open page for example ${example}`, e);
-                          throw e;
-                        }
-                      });
-
-                      declareTests(true);
-                    });
-                  });
-                }
-
                 describe('dev', () => {
+                  let devPage;
+                  let devServer;
+                  let devServerStdErr = [];
+                  let devServerStdOut = [];
+                  let devPageLogs = [];
                   beforeAll(async () => {
-                    browserLogs.push('------------------- dev -------------------------');
                     try {
                       devServer = execa(pmCmd, ['run', 'dev'], {
                         cwd: exampleTempDir,
                       });
                       devServer.stderr.on('data', (data) => {
-                        serverLogs.push(`stderr: ${data.toString()}`);
+                        devServerStdErr.push(data.toString());
                       });
                       devServer.stdout.on('data', (data) => {
-                        serverLogs.push(`stdout: ${data.toString()}`);
+                        devServerStdOut.push(data.toString());
                       });
                       const url = await new Promise((resolve) => {
                         const resolveLocalUrl = (data) => {
-                          const match = data.toString().match(/http:\/\/localhost:\d+/);
+                          const str = data.toString();
+                          // hack, console output may contain color code gibberish
+                          // skip gibberish between localhost: and port number statting with 3
+                          const match = str.match(/(http:\/\/localhost:)(?:[^3]*)(\d+)/);
                           if (match) {
                             devServer.stdout.off('data', resolveLocalUrl);
-                            resolve(match[0]);
+                            resolve(match[1] + match[2]);
                           }
                         };
                         devServer.stdout.on('data', resolveLocalUrl);
                       });
-                      page = await browser.newPage();
-                      page.on('console', (msg) => {
-                        browserLogs.push(msg.text());
+                      devPage = await browser.newPage();
+                      devPage.on('console', (msg) => {
+                        devPageLogs.push(msg.text());
                       });
-                      await page.goto(url, { waitUntil: 'networkidle2' });
-                      if (!browserLogs.some((log) => log.indexOf('connected.') > -1)) {
+                      await devPage.goto(url, { waitUntil: 'networkidle2' });
+                      if (!devPageLogs.some((log) => log.indexOf('connected.') > -1)) {
                         await new Promise((resolve) => {
                           const resolveConnected = (log) => {
                             if (log.indexOf('connected.') > -1) {
-                              page.off('console', resolveConnected);
+                              devPage.off('console', resolveConnected);
                               resolve();
                             }
                           };
-                          page.on('console', resolveConnected);
+                          devPage.on('console', resolveConnected);
                         });
                       }
                     } catch (e) {
@@ -227,8 +187,37 @@ describe('examples', () => {
                       throw e;
                     }
                   });
+
+                  afterAll(async () => {
+                    await closeKillAll([devServer, devPage]);
+                    await writeExampleLogs('devServer', devServerStdOut.join('\n'), devServerStdErr.join('\n'));
+                    await writeExampleLogs('devPage', devPageLogs.join('\n'));
+                  });
+
                   describe('app', () => {
-                    declareTests(false);
+                    test('page should be loaded', () => {
+                      expect(devPage).toBeDefined();
+                    });
+                    test('should render App.svelte', async () => {
+                      await takeExampleScreenshot(devPage, 'devPage');
+                      await expectByPolling(async () => await getText(devPage, '#test-div'), '__xxx__');
+                    });
+
+                    test('should accept update to App.svelte', async () => {
+                      if (example.indexOf('routify') > -1) {
+                        await sleep(250); // let routify route update complete first
+                      }
+                      expect(await getText(devPage, '#test-div')).toBe('__xxx__');
+                      await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
+                      await hmrUpdateComplete(devPage, 'src/App.svelte', 10000);
+                      await takeExampleScreenshot(devPage, 'devHmr');
+                      expect(await getText(devPage, '#test-div')).toBe('__yyy__');
+                    });
+
+                    test('should not have failed requests', () => {
+                      const has404 = devPageLogs.some((msg) => msg.match('404'));
+                      expect(has404).toBe(false);
+                    });
                   });
                 });
               });
@@ -261,18 +250,51 @@ async function expectByPolling(poll, expected) {
   }
 }
 
-const getEl = async (selectorOrEl) => {
+const getEl = async (page, selectorOrEl) => {
   return typeof selectorOrEl === 'string' ? await page.$(selectorOrEl) : selectorOrEl;
 };
 
-const getText = async (selectorOrEl) => {
-  const el = await getEl(selectorOrEl);
+const getText = async (page, selectorOrEl) => {
+  const el = await getEl(page, selectorOrEl);
   return el ? el.evaluate((el) => el.textContent) : null;
 };
 
-const killAll = () => {
-  closeKillAll([installCmd, buildServer, buildScript, devServer, page, browser, process]);
-};
+process.once('SIGINT', () => closeKill(process));
+process.once('SIGTERM', () => closeKill(process));
 
-process.once('SIGINT', () => killAll());
-process.once('SIGTERM', () => killAll());
+async function cleanTempDir() {
+  await deleteDir(tempDir);
+  await fs.mkdirp(tempDir);
+}
+
+async function createTestPackage() {
+  try {
+    const packCmd = await execa('npm', ['pack', sviteDir], { cwd: tempDir });
+    return path.join(tempDir, packCmd.stdout);
+  } catch (e) {
+    console.error('pack failed', e);
+    throw e;
+  }
+}
+
+async function writeLogs(dir, name, out, err) {
+  try {
+    const logDir = path.join(dir, 'logs');
+    await fs.mkdirp(logDir);
+    if (!err) {
+      await fs.writeFile(path.join(logDir, `${name}.log`), out);
+    } else {
+      await fs.writeFile(path.join(logDir, `${name}.out.log`), out);
+      await fs.writeFile(path.join(logDir, `${name}.err.log`), err);
+    }
+  } catch (e) {
+    console.error(`writing ${name} logs failed in ${dir}`, e);
+  }
+}
+
+async function takeScreenshot(dir, page, name) {
+  const screenshotDir = path.join(dir, 'screenshots');
+  await fs.mkdirp(screenshotDir);
+
+  await page.screenshot({ path: path.join(screenshotDir, `${name}.png`), type: 'png' });
+}
