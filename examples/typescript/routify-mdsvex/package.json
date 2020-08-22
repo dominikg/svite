@@ -13,16 +13,16 @@
   "dependencies": {
     "svelte": "3.24.1",
     "svelte-hmr": "0.10.2",
-    "@sveltech/routify": "1.9.7"
+    "@roxi/routify": "^2.0.2"
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^1.0.8",
-    "mdsvex": "^0.8.2",
+    "@tsconfig/svelte": "^1.0.10",
+    "mdsvex": "^0.8.5",
     "npm-run-all": "^4.1.5",
-    "svelte-check": "^1.0.2",
-    "svelte-preprocess": "^4.0.10",
+    "svelte-check": "^1.0.21",
+    "svelte-preprocess": "4.1.1",
     "svite": "latest",
-    "tslib": "^2.0.0",
+    "tslib": "^2.0.1",
     "typescript": "^3.9.7"
   }
 }

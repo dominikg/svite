@@ -11,13 +11,13 @@
     "svelte-hmr": "0.10.2"
   },
   "devDependencies": {
-    "@tsconfig/svelte": "^1.0.8",
+    "@tsconfig/svelte": "^1.0.10",
     "pug": "^3.0.0",
     "stylus": "^0.54.8",
-    "svelte-check": "^1.0.2",
-    "svelte-preprocess": "^4.0.10",
+    "svelte-check": "^1.0.21",
+    "svelte-preprocess": "4.1.1",
     "svite": "latest",
-    "tslib": "^2.0.0",
+    "tslib": "^2.0.1",
     "typescript": "^3.9.7"
   }
 }

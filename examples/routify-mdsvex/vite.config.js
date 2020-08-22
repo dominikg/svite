@@ -1,5 +1,5 @@
 module.exports = {
   optimizeDeps: {
-    exclude: ['@sveltech/routify'],
+    exclude: ['@roxi/routify'],
   },
 };

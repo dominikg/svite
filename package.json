@@ -54,7 +54,7 @@
   },
   "optionalDependencies": {
     "rollup-plugin-visualizer": "^4.0.4",
-    "svelte-preprocess": "4.0.12"
+    "svelte-preprocess": "4.1.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
@@ -84,9 +84,9 @@
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "3.24.1",
-    "svelte-preprocess": "4.0.12",
+    "svelte-preprocess": "4.1.1",
     "tree-kill": "^1.2.2",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.7"
   },
   "husky": {
     "hooks": {

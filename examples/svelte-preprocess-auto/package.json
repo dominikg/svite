@@ -12,7 +12,7 @@
   "devDependencies": {
     "pug": "^3.0.0",
     "stylus": "^0.54.8",
-    "svelte-preprocess": "^4.0.8",
+    "svelte-preprocess": "4.1.1",
     "svite": "latest"
   }
 }

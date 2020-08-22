@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Router } from '@sveltech/routify/runtime';
+  import { Router } from '@roxi/routify/runtime';
   import { routes } from '../.routify/routes';
 </script>
 

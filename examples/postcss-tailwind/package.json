@@ -10,11 +10,12 @@
     "svelte-hmr": "0.10.2"
   },
   "devDependencies": {
+    "postcss": "^7.0.32",
     "postcss-import": "^12.0.1",
     "postcss-load-config": "^2.1.0",
     "postcss-preset-env": "^6.7.0",
-    "svelte-preprocess": "^4.0.8",
+    "svelte-preprocess": "4.1.1",
     "svite": "latest",
-    "tailwindcss": "^1.6.2"
+    "tailwindcss": "^1.7.3"
   }
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { url } from '@sveltech/routify/runtime';
+  import { url } from '@roxi/routify/runtime';
 </script>
 
 <style>

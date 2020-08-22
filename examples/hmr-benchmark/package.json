@@ -15,7 +15,7 @@
     "fs-extra": "^9.0.1",
     "minimist": "^1.2.5",
     "puppeteer": "^4.0.1",
-    "svelte-preprocess": "^4.0.10",
+    "svelte-preprocess": "4.1.1",
     "svite": "latest",
     "systeminformation": "^4.26.9",
     "tslib": "^2.0.0",
