@@ -100,5 +100,11 @@
       "./node_modules/.bin/stylelint --fix",
       "./node_modules/.bin/prettier --write"
     ]
+  },
+  "engines": {
+    "node": "^12||^14",
+    "npm": "^6.14",
+    "yarn": "^1.22 || ^2",
+    "pnpm": "^5.5"
   }
 }
