@@ -28,9 +28,9 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-test-dependencies
         with:
-          path:./test/cache
+          path: ./test/cache
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('test/temp/**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-test-${{ env.cache-name }}-
