@@ -45,6 +45,7 @@ jobs:
       - run: npm i -g pnpm
       - run: npm test  --scripts-prepend-node-path
       - uses: actions/upload-artifact@v2
+        if: failure()
         with:
           name: test-temp-${{ matrix.node-version }}
           path: |
