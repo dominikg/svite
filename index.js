@@ -1,6 +1,5 @@
 const path = require('path');
 const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
-const rollupPluginNodeResolve = require('@rollup/plugin-node-resolve');
 const { createFilter } = require('@rollup/pluginutils');
 const log = require('./tools/log');
 const LRU = require('lru-cache');
@@ -322,14 +321,6 @@ function createBuildPlugins(config) {
     return await createRollupPluginSvelteHot(config, 'build');
   });
 
-  const rollupPluginDedupeSvelte = rollupPluginDeferred('node-resolve', () =>
-    rollupPluginNodeResolve.nodeResolve({
-      dedupe: (importee) => svelteDeps.includes(importee) || importee.startsWith('svelte/'),
-      mainFields: config.svite.resolve.mainFields,
-      extensions: config.svite.resolve.supportedExts,
-    }),
-  );
-
   // prevent vite build spinner from swallowing our logs
   const logProtectPlugin = {
     name: 'svite:logprotect',
@@ -343,7 +334,6 @@ function createBuildPlugins(config) {
   return [
     { name: 'svite', options: () => {} }, // just a marker so cli can test if svite was loaded from vite config
     logProtectPlugin,
-    rollupPluginDedupeSvelte, // rollupDedupe vite option cannot be supplied by a plugin, so we add one for svelte here
     buildPlugin,
   ];
 }

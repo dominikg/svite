@@ -71,6 +71,21 @@ function optimizeViteConfig(viteConfig) {
   viteConfig.vueCompilerOptions = {};
   viteConfig.vueTransformAssetUrls = {};
   viteConfig.vueCustomBlockTransforms = {};
+  const dedupeSvelte = [
+    'svelte/animate',
+    'svelte/easing',
+    'svelte/internal',
+    'svelte/motion',
+    'svelte/store',
+    'svelte/transition',
+    'svelte',
+  ];
+  if (!viteConfig.rollupDedupe) {
+    viteConfig.rollupDedupe = dedupeSvelte;
+  } else {
+    viteConfig.rollupDedupe = [...new Set([...viteConfig.rollupDedupe, dedupeSvelte])];
+  }
+  log.debug('added svelte to rollupDedupe', viteConfig.rollupDedupe.join(`, `));
 }
 
 function resolvePlugin(config, plugin) {
@@ -407,7 +422,10 @@ async function main() {
           } else {
             throw new Error(`invalid value for stats option: ${options.stats}`);
           }
-          visualizerOptions.filename = path.join(options.outDir, `stats.${visualizerOptions.json ? 'json' : 'html'}`);
+          visualizerOptions.filename = path.join(
+            options.outDir || buildOptionDefaults.outDir,
+            `stats.${visualizerOptions.json ? 'json' : 'html'}`,
+          );
           buildOptions.rollupInputOptions.plugins.push(visualizer(visualizerOptions));
         } catch (e) {
           log.error('stats option requires rollup-plugin-visualizer to be installed', e);

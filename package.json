@@ -37,7 +37,6 @@
   },
   "homepage": "https://github.com/dominikg/svite#readme",
   "dependencies": {
-    "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/pluginutils": "^4.0.0",
     "chalk": "^4.1.0",
     "commander": "^6.0.0",
