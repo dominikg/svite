@@ -27,15 +27,18 @@ npm run build # builds to /dist
 
 ## installation
 
-Install svite and vite as a dev dependency
+Install svite as a dev dependency
 
 ```shell script
-npm install -D svite vite
+npm install -D svite
 ```
 
 ## project setup
 
-Vite requires an index.html file at project root that serves as entry point. see [example](/examples/minimal/index.html)
+Vite requires an index.html file at project root that serves as entry point.
+In that index.html you need to reference the script that creates your svelte application.
+
+see [example](/examples/minimal/index.html)
 
 ## run
 
@@ -141,7 +144,7 @@ Options:
   -f, --force                   force optimize even if hash is equal
 ```
 
-## svite options
+## custom vite.config.js
 
 you can pass additional options to svite via vite.config.js
 
@@ -149,11 +152,13 @@ you can pass additional options to svite via vite.config.js
 const svite = require('svite');
 const sviteConfig = {
   hot: true, // boolean or options object for svelte-hmr
-  useTransformCache: true, // boolean
-  svelte: {}, // options for rollup-plugin-svelte
+  useTransformCache: false, // boolean
 };
 module.exports = {
+  // if you provite a svite plugin here, svite cli will use it instead of initializing one for you
   plugins: [svite(sviteConfig)],
+  // if you don't use svite cli, you should provide rollupDedupe option, otherwise you risk duplicate svelte instances and errors
+  rollupDedupe: ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelte/motion', 'svelte/store', 'svelte/transition', 'svelte'],
 };
 ```
 
