@@ -33,3 +33,10 @@ jobs:
       - run: npm run build --if-present
       - run: npm i -g pnpm
       - run: npm test  --scripts-prepend-node-path
+      - uses: actions/upload-artifact@v2
+      with:
+        name: test-dir
+        path: |
+          test/temp/
+          !test/temp/**/node_modules
+          !test/temp/**/.yarn
