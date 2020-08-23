@@ -1,4 +1,16 @@
 
+## [0.6.0-beta.0](https://github.com/dominikg/svite/compare/0.5.1-beta.1...0.6.0-beta.0) (2020-08-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* if you are using older versions it's time to update
+
+### Features
+
+* add tests for other package managers: install,dev,build with yarn,yarn2,pnpm ([06334f3](https://github.com/dominikg/svite/commit/06334f3e1a6455faa12500ac7eee214dec0fdad1))
+* declare supported engines: node 12,14 with modern package managers ([153f28d](https://github.com/dominikg/svite/commit/153f28dd6e0579c1d60af7963cdbe8e6c3b43ea0))
+
 ### [0.5.1-beta.1](https://github.com/dominikg/svite/compare/0.5.1-beta.0...0.5.1-beta.1) (2020-08-17)
 
 
