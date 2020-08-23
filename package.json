@@ -13,7 +13,7 @@
     "format:fix": "npm run format -- --write",
     "fixup": "run-s lint:fix format:fix",
     "test": "jest --clearCache && jest --runInBand --forceExit --ci",
-    "prerelease": "run-s lint test",
+    "prerelease": "run-s lint \"test --scripts-prepend-node-path\"",
     "release": "standard-version",
     "beta-release": "npm run release -- -p beta"
   },
