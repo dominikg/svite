@@ -1,3 +1,11 @@
+
+## [0.6.0-beta.1](https://github.com/dominikg/svite/compare/0.6.0-beta.0...0.6.0-beta.1) (2020-08-23)
+
+
+### Features
+
+* remove additional rollup-plugin-node-resolve and configure rollupDedupe via cli ([97f9f01](https://github.com/dominikg/svite/commit/97f9f01f9a91a4c94dc5d864bcbef5b99e8b32a9))
+
 ## [0.6.0-beta.0](https://github.com/dominikg/svite/compare/0.5.1-beta.1...0.6.0-beta.0) (2020-08-23)
 
 ### ⚠ BREAKING CHANGES
