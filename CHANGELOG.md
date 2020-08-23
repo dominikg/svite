@@ -1,47 +1,50 @@
-
 ## [0.6.0-beta.0](https://github.com/dominikg/svite/compare/0.5.1-beta.1...0.6.0-beta.0) (2020-08-23)
-
 
 ### ⚠ BREAKING CHANGES
 
-* if you are using older versions it's time to update
+- svite now declares supported engines in package.json if you are using older versions it's time to update
+
+```js
+  "engines": {
+    "node": "^12||^14",
+    "npm": "^6.14",
+    "yarn": "^1.22 || ^2",
+    "pnpm": "^5.5"
+  }
+```
 
 ### Features
 
-* add tests for other package managers: install,dev,build with yarn,yarn2,pnpm ([06334f3](https://github.com/dominikg/svite/commit/06334f3e1a6455faa12500ac7eee214dec0fdad1))
-* declare supported engines: node 12,14 with modern package managers ([153f28d](https://github.com/dominikg/svite/commit/153f28dd6e0579c1d60af7963cdbe8e6c3b43ea0))
+- add tests for other package managers: install,dev,build with yarn,yarn2,pnpm ([06334f3](https://github.com/dominikg/svite/commit/06334f3e1a6455faa12500ac7eee214dec0fdad1))
+- declare supported engines: node 12,14 with modern package managers ([153f28d](https://github.com/dominikg/svite/commit/153f28dd6e0579c1d60af7963cdbe8e6c3b43ea0))
 
 ### [0.5.1-beta.1](https://github.com/dominikg/svite/compare/0.5.1-beta.0...0.5.1-beta.1) (2020-08-17)
 
-
 ### Features
 
-* add packageManager option to create command ([c9f44b5](https://github.com/dominikg/svite/commit/c9f44b59f3ccc287c8dedc0bcf71309593ebf30b))
+- add packageManager option to create command ([c9f44b5](https://github.com/dominikg/svite/commit/c9f44b59f3ccc287c8dedc0bcf71309593ebf30b))
 
 ### [0.5.1-beta.0](https://github.com/dominikg/svite/compare/0.5.0...0.5.1-beta.0) (2020-08-16)
 
-
 ### Features
 
-* improve resolving ([7677bdf](https://github.com/dominikg/svite/commit/7677bdf9fc333756090f85aae0a637dfcdd99984))
-
+- improve resolving ([7677bdf](https://github.com/dominikg/svite/commit/7677bdf9fc333756090f85aae0a637dfcdd99984))
 
 ### Bug Fixes
 
-* always pass mode option to vite and make sure process.env.NODE_ENV is set ([151bbf5](https://github.com/dominikg/svite/commit/151bbf5070bdb6fa672d4021be15b9225af33329))
+- always pass mode option to vite and make sure process.env.NODE_ENV is set ([151bbf5](https://github.com/dominikg/svite/commit/151bbf5070bdb6fa672d4021be15b9225af33329))
 
 ## [0.5.0](https://github.com/dominikg/svite/compare/0.5.0-beta.1...0.5.0) (2020-08-13)
 
 ## [0.5.0-beta.1](https://github.com/dominikg/svite/compare/0.5.0-beta.0...0.5.0-beta.1) (2020-08-13)
 
-
 ### ⚠ BREAKING CHANGES
 
-* new major version of rollup-pluginutils changes filter behavior
+- new major version of rollup-pluginutils changes filter behavior
 
 ### Bug Fixes
 
-* update depdendencies, svelte-preprocess as optional dependency ([4853116](https://github.com/dominikg/svite/commit/4853116c5625102a9e920c8d2cec3ac47f77c394))
+- update depdendencies, svelte-preprocess as optional dependency ([4853116](https://github.com/dominikg/svite/commit/4853116c5625102a9e920c8d2cec3ac47f77c394))
 
 ## [0.5.0-beta.0](https://github.com/dominikg/svite/compare/0.4.1...0.5.0-beta.0) (2020-08-10)
 
