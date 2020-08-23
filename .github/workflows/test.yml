@@ -46,8 +46,8 @@ jobs:
       - run: npm test  --scripts-prepend-node-path
       - uses: actions/upload-artifact@v2
         with:
-          name: test-dir
+          name: test-temp-${{ matrix.node-version }}
           path: |
-            test/temp/
+            test/temp/**/*
             !test/temp/**/node_modules
             !test/temp/**/.yarn
