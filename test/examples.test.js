@@ -57,11 +57,32 @@ describe('examples', () => {
                   console.error(e);
                   throw e;
                 }
+
                 try {
                   if (pm === 'yarn2') {
-                    await execa(pmCmd, ['set', 'version', 'berry'], { cwd: exampleTempDir });
                     await fs.writeFile(path.join(exampleTempDir, 'yarn.lock'), '');
+                    await execa(pmCmd, ['set', 'version', 'berry'], { cwd: exampleTempDir });
                   }
+                  const pmCacheDir = `${path.join(__dirname, 'cache', pm)}`;
+                  await fs.mkdirp(pmCacheDir);
+                  switch (pm) {
+                    case 'npm':
+                      await fs.writeFile(path.join(exampleTempDir, '.npmrc'), `cache="${pmCacheDir}"`);
+                      break;
+                    case 'pnpm':
+                      await fs.writeFile(path.join(exampleTempDir, '.npmrc'), `store-dir="${pmCacheDir}"`);
+                      break;
+                    case 'yarn':
+                      await fs.writeFile(path.join(exampleTempDir, '.yarnrc'), `cache-folder "${pmCacheDir}"`);
+                      break;
+                    case 'yarn2':
+                      // don't write file, it was already created by set version berry above
+                      await execa(pmCmd, ['config', 'set', 'cacheFolder', pmCacheDir], { cwd: exampleTempDir });
+                      break;
+                    default:
+                      throw new Error('you must setup a cache configuration for pm ' + pm);
+                  }
+
                   installCmd = await execa(pmCmd, ['install'], { cwd: exampleTempDir });
                 } catch (e) {
                   console.error(`${pm} install failed in ${exampleTempDir}`, e);
