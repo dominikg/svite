@@ -4,7 +4,7 @@ const execa = require('execa');
 
 const { closeKillAll, closeKill, throttledWrite, deleteDir, launchPuppeteer, sleep, hmrUpdateComplete } = require('./utils');
 
-jest.setTimeout(35000);
+jest.setTimeout(60000);
 
 const tempDir = path.join(__dirname, 'temp');
 const sviteDir = path.join(__dirname, '..');
