@@ -4,7 +4,7 @@ const execa = require('execa');
 
 const { sleep, throttledWrite, deleteDir, closeKillAll, launchPuppeteer, hmrUpdateComplete } = require('./utils');
 
-jest.setTimeout(60000);
+jest.setTimeout(process.env.CI ? 120000 : 60000);
 
 const testAppDir = path.join(__dirname, 'app');
 const tempDir = path.join(__dirname, 'temp/app');
