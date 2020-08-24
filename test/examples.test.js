@@ -15,10 +15,17 @@ const scriptOptions = ['javascript', 'typescript'];
 describe('examples', () => {
   let svitePackage;
   let browser;
+  let beforeAllSuccessful = false;
   beforeAll(async () => {
-    await cleanTempDir();
-    svitePackage = await createTestPackage();
-    browser = await launchPuppeteer();
+    try {
+      await cleanTempDir();
+      svitePackage = await createTestPackage();
+      browser = await launchPuppeteer();
+    } catch (e) {
+      console.error('beforeAll failed', e);
+      throw e;
+    }
+    beforeAllSuccessful = true;
   });
   afterAll(async () => {
     await closeKill(browser);
@@ -38,8 +45,13 @@ describe('examples', () => {
               const takeExampleScreenshot = takeScreenshot.bind(null, exampleTempDir);
 
               let installCmd;
+              let beforeAllExampleSuccessful = false;
 
               beforeAll(async () => {
+                if (!beforeAllSuccessful) {
+                  console.error('skipping beforeAllExample, previous beforeAll failed');
+                  return;
+                }
                 try {
                   await deleteDir(exampleTempDir);
                   await fs.mkdirp(exampleTempDir);
@@ -54,7 +66,7 @@ describe('examples', () => {
                   );
                   await updateExampleFile('src/App.svelte', (c) => `${c}\n<div id="test-div">__xxx__</div>`);
                 } catch (e) {
-                  console.error(e);
+                  console.error('failed to setup test project in dir ' + exampleTempDir, e);
                   throw e;
                 }
 
@@ -84,14 +96,15 @@ describe('examples', () => {
                   }
 
                   installCmd = await execa(pmCmd, ['install'], { cwd: exampleTempDir });
+                  await writeExampleLogs('install', installCmd.stdout, installCmd.stderr);
                 } catch (e) {
-                  console.error(`${pm} install failed in ${exampleTempDir}`, e);
-                  throw e;
-                } finally {
                   if (installCmd) {
                     await writeExampleLogs('install', installCmd.stdout, installCmd.stderr);
                   }
+                  console.error(`${pm} install failed in ${exampleTempDir}`, e);
+                  throw e;
                 }
+                beforeAllExampleSuccessful = true;
               });
 
               afterAll(async () => {
@@ -103,20 +116,25 @@ describe('examples', () => {
                   let buildServer;
                   let buildPage;
                   let buildPageLogs = [];
+                  let beforeAllBuildSuccessful = false;
                   beforeAll(async () => {
+                    if (!beforeAllExampleSuccessful) {
+                      console.error('skipping beforeAll build, previous beforeAllExample failed');
+                      return;
+                    }
                     try {
                       buildScript = await execa(pmCmd, ['run', 'build'], {
                         cwd: exampleTempDir,
                       });
                       expect(buildScript.stdout).toMatch('Build completed');
                       expect(buildScript.stderr).toBe('');
+                      await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
                     } catch (e) {
-                      console.error('svite build failed', e);
-                      throw e;
-                    } finally {
                       if (buildScript) {
                         await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
                       }
+                      console.error('svite build failed', e);
+                      throw e;
                     }
 
                     // start a static file server
@@ -135,6 +153,7 @@ describe('examples', () => {
                       console.error(`failed to serve build and open page for example ${example}`, e);
                       throw e;
                     }
+                    beforeAllBuildSuccessful = true;
                   });
 
                   afterAll(async () => {
@@ -144,13 +163,16 @@ describe('examples', () => {
 
                   describe('app', () => {
                     test('page should be loaded', () => {
+                      expect(beforeAllBuildSuccessful).toBe(true);
                       expect(buildPage).toBeDefined();
                     });
                     test('should render App.svelte', async () => {
+                      expect(beforeAllBuildSuccessful).toBe(true);
                       await takeExampleScreenshot(buildPage, 'buildPage');
                       await expectByPolling(async () => await getText(buildPage, '#test-div'), '__xxx__');
                     });
                     test('should not have failed requests', () => {
+                      expect(beforeAllBuildSuccessful).toBe(true);
                       const has404 = buildPageLogs.some((msg) => msg.match('404'));
                       expect(has404).toBe(false);
                     });
@@ -163,7 +185,12 @@ describe('examples', () => {
                   let devServerStdErr = [];
                   let devServerStdOut = [];
                   let devPageLogs = [];
+                  let beforeAllDevSuccessful = false;
                   beforeAll(async () => {
+                    if (!beforeAllExampleSuccessful) {
+                      console.error('skipping beforeAll dev, previous beforeAllExample failed');
+                      return;
+                    }
                     try {
                       devServer = execa(pmCmd, ['run', 'dev'], {
                         cwd: exampleTempDir,
@@ -207,6 +234,7 @@ describe('examples', () => {
                       console.error(`failed to start devserver and open page in dev mode for example ${example}`, e);
                       throw e;
                     }
+                    beforeAllDevSuccessful = true;
                   });
 
                   afterAll(async () => {
@@ -217,14 +245,17 @@ describe('examples', () => {
 
                   describe('app', () => {
                     test('page should be loaded', () => {
+                      expect(beforeAllDevSuccessful).toBe(true);
                       expect(devPage).toBeDefined();
                     });
                     test('should render App.svelte', async () => {
+                      expect(beforeAllDevSuccessful).toBe(true);
                       await takeExampleScreenshot(devPage, 'devPage');
                       await expectByPolling(async () => await getText(devPage, '#test-div'), '__xxx__');
                     });
 
                     test('should accept update to App.svelte', async () => {
+                      expect(beforeAllDevSuccessful).toBe(true);
                       if (example.indexOf('routify') > -1) {
                         await sleep(250); // let routify route update complete first
                       }
@@ -236,6 +267,7 @@ describe('examples', () => {
                     });
 
                     test('should not have failed requests', () => {
+                      expect(beforeAllDevSuccessful).toBe(true);
                       const has404 = devPageLogs.some((msg) => msg.match('404'));
                       expect(has404).toBe(false);
                     });
