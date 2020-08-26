@@ -4,7 +4,7 @@ const execa = require('execa');
 
 const { closeKillAll, closeKill, throttledWrite, deleteDir, launchPuppeteer, sleep, hmrUpdateComplete } = require('./utils');
 
-jest.setTimeout(60000);
+jest.setTimeout(process.env.CI ? 120000 : 60000);
 
 const tempDir = path.join(__dirname, 'temp');
 const sviteDir = path.join(__dirname, '..');
@@ -98,9 +98,8 @@ describe('examples', () => {
                   installCmd = await execa(pmCmd, ['install'], { cwd: exampleTempDir });
                   await writeExampleLogs('install', installCmd.stdout, installCmd.stderr);
                 } catch (e) {
-                  if (installCmd) {
-                    await writeExampleLogs('install', installCmd.stdout, installCmd.stderr);
-                  }
+                  await writeExampleLogs('install', e.stdout, e.stderr);
+                  await writeExampleLogs('install.exception', e.toString(), e.stack);
                   console.error(`${pm} install failed in ${exampleTempDir}`, e);
                   throw e;
                 }
@@ -130,9 +129,8 @@ describe('examples', () => {
                       expect(buildScript.stderr).toBe('');
                       await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
                     } catch (e) {
-                      if (buildScript) {
-                        await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
-                      }
+                      await writeExampleLogs('build', e.stdout, e.stderr);
+                      await writeExampleLogs('build.exception', e.toString(), e.stack);
                       console.error('svite build failed', e);
                       throw e;
                     }
@@ -162,20 +160,23 @@ describe('examples', () => {
                   });
 
                   describe('app', () => {
-                    test('page should be loaded', () => {
-                      expect(beforeAllBuildSuccessful).toBe(true);
-                      expect(buildPage).toBeDefined();
-                    });
-                    test('should render App.svelte', async () => {
-                      expect(beforeAllBuildSuccessful).toBe(true);
-                      await takeExampleScreenshot(buildPage, 'buildPage');
-                      await expectByPolling(async () => await getText(buildPage, '#test-div'), '__xxx__');
-                    });
-                    test('should not have failed requests', () => {
-                      expect(beforeAllBuildSuccessful).toBe(true);
-                      const has404 = buildPageLogs.some((msg) => msg.match('404'));
-                      expect(has404).toBe(false);
-                    });
+                    if (beforeAllBuildSuccessful) {
+                      test('page should be loaded', () => {
+                        expect(buildPage).toBeDefined();
+                      });
+                      test('should render App.svelte', async () => {
+                        await takeExampleScreenshot(buildPage, 'buildPage');
+                        await expectByPolling(async () => await getText(buildPage, '#test-div'), '__xxx__');
+                      });
+                      test('should not have failed requests', () => {
+                        const has404 = buildPageLogs.some((msg) => msg.match('404'));
+                        expect(has404).toBe(false);
+                      });
+                    } else {
+                      test('beforeAll build failed', () => {
+                        expect(beforeAllBuildSuccessful).toBe(true);
+                      });
+                    }
                   });
                 });
 
@@ -244,33 +245,35 @@ describe('examples', () => {
                   });
 
                   describe('app', () => {
-                    test('page should be loaded', () => {
-                      expect(beforeAllDevSuccessful).toBe(true);
-                      expect(devPage).toBeDefined();
-                    });
-                    test('should render App.svelte', async () => {
-                      expect(beforeAllDevSuccessful).toBe(true);
-                      await takeExampleScreenshot(devPage, 'devPage');
-                      await expectByPolling(async () => await getText(devPage, '#test-div'), '__xxx__');
-                    });
+                    if (beforeAllDevSuccessful) {
+                      test('page should be loaded', () => {
+                        expect(devPage).toBeDefined();
+                      });
+                      test('should render App.svelte', async () => {
+                        await takeExampleScreenshot(devPage, 'devPage');
+                        await expectByPolling(async () => await getText(devPage, '#test-div'), '__xxx__');
+                      });
 
-                    test('should accept update to App.svelte', async () => {
-                      expect(beforeAllDevSuccessful).toBe(true);
-                      if (example.indexOf('routify') > -1) {
-                        await sleep(250); // let routify route update complete first
-                      }
-                      expect(await getText(devPage, '#test-div')).toBe('__xxx__');
-                      await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
-                      await hmrUpdateComplete(devPage, 'src/App.svelte', 10000);
-                      await takeExampleScreenshot(devPage, 'devHmr');
-                      expect(await getText(devPage, '#test-div')).toBe('__yyy__');
-                    });
+                      test('should accept update to App.svelte', async () => {
+                        if (example.indexOf('routify') > -1) {
+                          await sleep(250); // let routify route update complete first
+                        }
+                        expect(await getText(devPage, '#test-div')).toBe('__xxx__');
+                        await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
+                        await hmrUpdateComplete(devPage, 'src/App.svelte', 10000);
+                        await takeExampleScreenshot(devPage, 'devHmr');
+                        expect(await getText(devPage, '#test-div')).toBe('__yyy__');
+                      });
 
-                    test('should not have failed requests', () => {
-                      expect(beforeAllDevSuccessful).toBe(true);
-                      const has404 = devPageLogs.some((msg) => msg.match('404'));
-                      expect(has404).toBe(false);
-                    });
+                      test('should not have failed requests', () => {
+                        const has404 = devPageLogs.some((msg) => msg.match('404'));
+                        expect(has404).toBe(false);
+                      });
+                    } else {
+                      test('beforeAll dev failed', () => {
+                        expect(beforeAllDevSuccessful).toBe(true);
+                      });
+                    }
                   });
                 });
               });
