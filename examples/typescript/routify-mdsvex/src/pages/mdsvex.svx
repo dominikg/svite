@@ -2,6 +2,8 @@
 
 Go <a href="https://mdsvex.com" target="_blank">check it out</a>
 
-# try it out below with this page open in dev mode
+# try it out below
+
+Edit `src/pages/mdsvex.svx` and watch your browser update instantly every time you save.
 
 you'll love it, promise!
