@@ -96,13 +96,17 @@ async function setupTypeScriptPreprocessor(svelteConfig, isBuild) {
 
     const { typescript } = require('svelte-preprocess');
     const devTS = {
-      module: 'esnext',
-      target: 'es2017',
       moduleResolution: 'node',
+      target: 'es2017',
       importsNotUsedAsValues: 'error',
-      types: ['svelte', 'vite/dist/importMeta'],
-      sourceMap: true,
       isolatedModules: true,
+      sourceMap: true,
+      types: ['svelte', 'vite/dist/importMeta'],
+      strict: false,
+      esModuleInterop: true,
+      skipLibCheck: true,
+      forceConsistentCasingInFileNames: true,
+      module: 'esnext',
     };
     log.warn('overriding typescript preprocessor to support hmr in vite', devTS);
     svelteConfig.preprocess[0] = typescript(devTS);
