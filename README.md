@@ -93,16 +93,18 @@ Start a dev server with `svite` or `svite dev`
 Usage: svite dev [options]
 
 Options:
-  -d,  --debug [boolean|string]        enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
-  -c,  --config [string]               use specified vite config file
-  -ts, --typescript [boolean]          enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
-  -p,  --port [port]                   port to use for serve (default: 3000)
-  -o,  --open [boolean]                open browser on start
-  --useTransformCache [boolean]        use transform cache for faster hmr (default: false)
-  --hot [boolean]                      enable/disable hmr for svelte (default: true)
-  --resolveSvelteField [boolean]       resolve via svelte field in package.json (default: true)
-  --resolveSvelteExtensions [boolean]  resolve svelte extensions in modules (default: true)
-  -h, --help                           display help for command
+  -d,  --debug [boolean|string]                 enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
+  -r,  --root <string>                          use specified directory as root
+  -c,  --config <string>                        use specified vite config file
+  -ts, --typescript [boolean]                   enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
+  -p,  --port <port>                            port to use for serve (default: 3000)
+  -o,  --open                                   open browser on start
+  --useTransformCache [boolean]                 use transform cache for faster hmr (default: false)
+  --hot [boolean]                               enable/disable hmr for svelte (default: true)
+  --resolveSvelteField [boolean]                resolve via svelte field in package.json (default: true)
+  --resolveSvelteExtensions [boolean]           resolve svelte extensions in modules (default: true)
+  --resolveAbsoluteImportsInsideRoot [boolean]  resolve absolute imports if they end up being inside rootDir (mostly used in generated code) (default: true)
+  -h, --help                                    display help for command
 ```
 
 ### build
@@ -114,19 +116,19 @@ Usage: svite build [options]
 
 Options:
   -d, --debug [boolean|string]               enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar"  (default: false)
-  -c, --config [string]                      use specified vite config file
+  -r,  --root <string>                       use specified directory as root
+  -c,  --config <string>                     use specified vite config file
   -ts, --typescript [boolean]                enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
-  -m, --mode [string]                        specify env mode (default: "production")
-  --base [string]                            public base path for build (default: "/")
-  --outDir [string]                          output directory for build (default: "dist")
-  --assetsDir [string]                       directory under outDir to place assets in (default: "_assets")
-  --assetsInlineLimit [number]               static asset base64 inline threshold in bytes (default: 4096)
+  -m,  --mode <string>                       specify env mode ["development","production"] (default: "production")
+  --base <string>                            public base path for build (default: "/")
+  --outDir <string>                          output directory for build (default: "dist")
+  --assetsDir <string>                       directory under outDir to place assets in (default: "_assets")
+  --assetsInlineLimit <number>               static asset base64 inline threshold in bytes (default: 4096)
   --sourcemap [boolean]                      output source maps for build (default: false)
   --minify [boolean | "terser" | "esbuild"]  enable/disable minification, or specify minifier to use. (default: "terser")
   --stats [boolean|string]                   generate bundle stats with rollup-plugin-visualizer. true, "json": stats.json, ["html" "treemap","sunburst","network"]: stats.html
   --ssr [boolean]                            build for server-side rendering
   -h, --help                                 display help for command
-
 ```
 
 ### optimize
@@ -162,13 +164,15 @@ module.exports = {
 };
 ```
 
-| option                    | type                      | default        | values                                                                                                                                                                |
-| ------------------------- | ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **hot**<br><br>           | `boolean`<br>`object`<br> | `true`<br><br> | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config                           |
-| **useTransformCache**<br> | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
-| **logLevel**              | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
-| **svelte**<br>            | `object`<br>              | `not set`<br>  | &bull;&nbsp;`object` rollup-plugin-svelte config object                                                                                                               |
-| **typescript**            | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. !!!EXPERIMENTAL!!! &bull;&nbsp;`false` disable typescript preprocessing.                                          |
+| option                               | type                      | default        | values                                                                                                                                                                |
+| ------------------------------------ | ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **hot**<br><br>                      | `boolean`<br>`object`<br> | `true`<br><br> | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config                           |
+| **useTransformCache**<br>            | `boolean`<br>             | `false`<br>    | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
+| **logLevel**                         | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
+| **typescript**                       | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. !!!EXPERIMENTAL!!! &bull;&nbsp;`false` disable typescript preprocessing.                                          |
+| **resolveSvelteField**               | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve via svelte field in package.json &bull;&nbsp;`false` don't resolve via svelte field in package.json.                                       |
+| **resolveSvelteExtensions**          | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve svelte extensions. &bull;&nbsp;`false` don't resolve svelte extensions.                                                                    |
+| **resolveAbsoluteImportsInsideRoot** | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve absolute imports in root dir &bull;&nbsp;`false` don't resolve absolute imports                                                            |
 
 ### hot
 
@@ -209,6 +213,23 @@ module.exports = {
   ],
 };
 ```
+
+### resolveSvelteField
+
+Svelte libraries use the svelte field as a way to allow `import Component from "library"` style imports. This option enables resolving these kinds of imports in vite.
+If a library has different exports in svelte and main field of package.json, this option will break importing via main field as svelte field takes precedence.
+
+### resolveSvelteExtensions
+
+Some extensions like .js, .ts can be omitted by default on imports. With this option enabled, all extensions of your svelte config can be omitted too.
+So for `src/components/Button.svelte` you can use `import Button from "/src/components/Button"`
+
+### resolveAbsoluteImportsInsideRoot
+
+With this option enabled, absolute imports into root directory are resolved correctly.
+This is mainly useful for generated code that creates absolute paths like this
+`import Foo from "/home/user/dev/project/src/Foo.svelte"`
+One example are mdsvex layout imports.
 
 ## check out the examples
 
