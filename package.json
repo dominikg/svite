@@ -12,7 +12,7 @@
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
     "format:fix": "npm run format -- --write",
     "fixup": "run-s lint:fix format:fix",
-    "test": "jest --clearCache && TERM=dumb jest --runInBand --ci --json --outputFile=\"test/temp/jest-results.json\" --verbose=false",
+    "test": "jest --clearCache && TERM=dumb jest --runInBand --ci --json --outputFile=\"test/temp/jest-results.json\"",
     "prerelease": "run-s lint \"test --scripts-prepend-node-path\"",
     "release": "standard-version",
     "beta-release": "npm run release -- -p beta"
@@ -39,7 +39,7 @@
   "dependencies": {
     "@rollup/pluginutils": "^4.0.0",
     "chalk": "^4.1.0",
-    "commander": "^6.0.0",
+    "commander": "^6.1.0",
     "debug": "^4.1.1",
     "degit": "^2.8.0",
     "execa": "^4.0.3",
@@ -49,44 +49,44 @@
   },
   "peerDependencies": {
     "svelte": "3.24.1",
-    "svelte-hmr": "0.10.2"
+    "svelte-hmr": "0.10.3"
   },
   "optionalDependencies": {
-    "rollup-plugin-visualizer": "^4.0.4",
-    "svelte-preprocess": "4.1.1"
+    "rollup-plugin-visualizer": "^4.1.1",
+    "svelte-preprocess": "4.2.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^9.1.2",
-    "@typescript-eslint/eslint-plugin": "^3.9.1",
-    "@typescript-eslint/parser": "^3.9.1",
-    "esbuild": "^0.6.25",
-    "eslint": "^7.7.0",
+    "@commitlint/config-conventional": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
+    "esbuild": "^0.6.28",
+    "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-html": "^6.0.3",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^23.18.2",
+    "eslint-plugin-jest": "^23.20.0",
     "eslint-plugin-markdown": "^2.0.0-alpha.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-svelte3": "^2.7.3",
     "husky": "^4.2.5",
-    "jest": "^26.1.0",
+    "jest": "^26.4.2",
     "jest-junit": "^11.1.0",
-    "lint-staged": "^10.2.11",
+    "lint-staged": "^10.2.13",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.5",
-    "prettier-plugin-svelte": "^1.1.0",
+    "prettier": "^2.1.1",
+    "prettier-plugin-svelte": "^1.2.0",
     "puppeteer-core": "^5.2.1",
-    "rollup-plugin-visualizer": "^4.0.4",
+    "rollup-plugin-visualizer": "^4.1.1",
     "standard-version": "^9.0.0",
-    "stylelint": "^13.6.1",
-    "stylelint-config-prettier": "^8.0.1",
+    "stylelint": "^13.7.0",
+    "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "3.24.1",
-    "svelte-preprocess": "4.1.1",
+    "svelte-preprocess": "4.2.1",
     "tree-kill": "^1.2.2",
-    "typescript": "^3.9.7"
+    "typescript": "^4.0.2"
   },
   "husky": {
     "hooks": {
