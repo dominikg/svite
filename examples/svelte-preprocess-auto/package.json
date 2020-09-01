@@ -7,12 +7,12 @@
   },
   "dependencies": {
     "svelte": "3.24.1",
-    "svelte-hmr": "0.10.2"
+    "svelte-hmr": "0.10.3"
   },
   "devDependencies": {
     "pug": "^3.0.0",
     "stylus": "^0.54.8",
-    "svelte-preprocess": "4.1.1",
+    "svelte-preprocess": "4.2.1",
     "svite": "latest"
   }
 }

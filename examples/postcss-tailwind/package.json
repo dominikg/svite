@@ -7,15 +7,15 @@
   },
   "dependencies": {
     "svelte": "3.24.1",
-    "svelte-hmr": "0.10.2"
+    "svelte-hmr": "0.10.3"
   },
   "devDependencies": {
     "postcss": "^7.0.32",
     "postcss-import": "^12.0.1",
     "postcss-load-config": "^2.1.0",
     "postcss-preset-env": "^6.7.0",
-    "svelte-preprocess": "4.1.1",
+    "svelte-preprocess": "4.2.1",
     "svite": "latest",
-    "tailwindcss": "^1.7.3"
+    "tailwindcss": "^1.7.6"
   }
 }
