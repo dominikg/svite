@@ -8,3 +8,4 @@ examples/**/dist
 examples/**/dist-ssr
 examples/**/node_modules
 test/temp/**/*
+test/cache/**/*
