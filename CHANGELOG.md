@@ -1,4 +1,12 @@
 
+### [0.6.1-beta.0](https://github.com/dominikg/svite/compare/0.6.0...0.6.1-beta.0) (2020-09-01)
+
+
+### Features
+
+* options for root directory and resolving of absolute imports inside root ([b9192a0](https://github.com/dominikg/svite/commit/b9192a0b3e9f585d54b2808ddc1bbc9bc02a270a))
+* update routify-mdsvex example with an mdsvex layout ([d413141](https://github.com/dominikg/svite/commit/d413141523ca458c7ee9f6a3aae9e31fb8b32a68))
+
 ## [0.6.0](https://github.com/dominikg/svite/compare/0.6.0-beta.1...0.6.0) (2020-08-30)
 
 ## [0.6.0-beta.1](https://github.com/dominikg/svite/compare/0.6.0-beta.0...0.6.0-beta.1) (2020-08-23)
