@@ -24,6 +24,7 @@ const devOptionDefaults = {
   hot: true,
   resolveSvelteField: true,
   resolveSvelteExtensions: true,
+  resolveAbsoluteImportsInsideRoot: true,
 };
 
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
@@ -361,15 +362,20 @@ async function main() {
       'enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar" ',
       false,
     )
-    .option('-c,  --config [string]', 'use specified vite config file')
+    .option('-r,  --root <string>', 'use specified directory as root')
+    .option('-c,  --config <string>', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', devOptionDefaults.typescript)
-
-    .option('-p,  --port [port]', 'port to use for serve', 3000)
-    .option('-o,  --open [boolean]', 'open browser on start')
+    .option('-p,  --port <port>', 'port to use for serve', 3000)
+    .option('-o,  --open', 'open browser on start')
     .option('--useTransformCache [boolean]', 'use transform cache for faster hmr', devOptionDefaults.useTransformCache)
     .option('--hot [boolean]', 'enable/disable hmr for svelte', devOptionDefaults.hot)
     .option('--resolveSvelteField [boolean]', 'resolve via svelte field in package.json', devOptionDefaults.resolveSvelteField)
     .option('--resolveSvelteExtensions [boolean]', 'resolve svelte extensions in modules', devOptionDefaults.resolveSvelteExtensions)
+    .option(
+      '--resolveAbsoluteImportsInsideRoot [boolean]',
+      'resolve absolute imports if they end up being inside rootDir (mostly used in generated code)',
+      devOptionDefaults.resolveAbsoluteImportsInsideRoot,
+    )
     .action(async (cmd) => {
       const options = cmd.opts();
       setupDebug(options);
@@ -386,13 +392,14 @@ async function main() {
       'enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar" ',
       false,
     )
-    .option('-c, --config [string]', 'use specified vite config file')
+    .option('-r,  --root <string>', 'use specified directory as root')
+    .option('-c,  --config <string>', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', buildOptionDefaults.typescript)
-    .option('-m, --mode [string]', 'specify env mode ["development","production"]', 'production')
-    .option('--base [string]', 'public base path for build', buildOptionDefaults.base)
-    .option('--outDir [string]', 'output directory for build', buildOptionDefaults.outDir)
-    .option('--assetsDir [string]', 'directory under outDir to place assets in', buildOptionDefaults.assetsDir)
-    .option('--assetsInlineLimit [number]', 'static asset base64 inline threshold in bytes', buildOptionDefaults.assetsInlineLimit)
+    .option('-m,  --mode <string>', 'specify env mode ["development","production"]', 'production')
+    .option('--base <string>', 'public base path for build', buildOptionDefaults.base)
+    .option('--outDir <string>', 'output directory for build', buildOptionDefaults.outDir)
+    .option('--assetsDir <string>', 'directory under outDir to place assets in', buildOptionDefaults.assetsDir)
+    .option('--assetsInlineLimit <number>', 'static asset base64 inline threshold in bytes', buildOptionDefaults.assetsInlineLimit)
     .option('--sourcemap [boolean]', 'output source maps for build', buildOptionDefaults.sourcemap)
     .option(
       '--minify [boolean | "terser" | "esbuild"]',

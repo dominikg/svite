@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const rollupPluginSvelteHot = require('rollup-plugin-svelte-hot');
 const { createFilter } = require('@rollup/pluginutils');
 const log = require('./tools/log');
@@ -12,6 +13,7 @@ const defaultOptions = {
   typescript: false,
   resolveSvelteField: true,
   resolveSvelteExtensions: true,
+  resolveAbsoluteImportsInsideRoot: true,
 };
 
 const defaultHotOptions = {
@@ -338,9 +340,30 @@ function createBuildPlugins(config) {
   ];
 }
 
+function createResolvers(config) {
+  const resolvers = [];
+  if (config.svite.resolveAbsoluteImportsInsideRoot) {
+    const rootDir = path.normalize(config.svite.root || process.cwd());
+    resolvers.push({
+      alias(id) {
+        if (id && path.isAbsolute(id) && fs.existsSync(id)) {
+          const relativePath = path.relative(rootDir, id);
+          if (!relativePath.startsWith('.')) {
+            const alias = path.join('/', relativePath);
+            log.debug(`aliasing absolute import ${id} to ${alias}`);
+            return alias;
+          }
+        }
+      },
+    });
+  }
+  return resolvers;
+}
+
 function createVitePlugin(config) {
   const buildPlugins = createBuildPlugins(config);
   const { transforms, configureServer } = createDev(config);
+  const resolvers = createResolvers(config);
   return {
     name: 'svite',
     rollupInputOptions: {
@@ -348,6 +371,7 @@ function createVitePlugin(config) {
     },
     transforms,
     configureServer,
+    resolvers,
   };
 }
 
