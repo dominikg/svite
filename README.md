@@ -73,16 +73,16 @@ Usage: svite create [options] [targetDir]
 create a new project. If you do not specify targetDir, "./svite-<template>" will be used
 
 Options:
-  -t, --template [string]         template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
+  -t,  --template [string]        template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
   -ts, --typescript               enable typescript support for svelte !!!EXPERIMENTAL!!! (default: false)
   -pm, --packageManager [string]  which package manager to use. ["npm","pnpm","yarn","yarn2"] (default: "npm")
-  -f, --force                     force operation even if targetDir exists and is not empty (default: false)
-  -c, --cache                     cache template for later use (default: false)
-  -d, --debug                     more verbose logging (default: false)
+  -f,  --force                    force operation even if targetDir exists and is not empty (default: false)
+  -c,  --cache                    cache template for later use (default: false)
+  -d,  --debug                    more verbose logging (default: false)
   -si, --skip-install             skip install (default: false)
   -sg, --skip-git                 skip git init (default: false)
   -sc, --skip-commit              skip initial commit (default: false)
-  -h, --help                      display help for command
+  -h,  --help                     display help for command
 ```
 
 ### dev
@@ -97,6 +97,7 @@ Options:
   -r,  --root <string>                          use specified directory as root
   -c,  --config <string>                        use specified vite config file
   -ts, --typescript [boolean]                   enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
+  -m,  --mode <string>                          specify env mode eg. ["development","test","staging","production"] (default: "development")
   -p,  --port <port>                            port to use for serve (default: 3000)
   -o,  --open                                   open browser on start
   --useTransformCache [boolean]                 use transform cache for faster hmr (default: false)
@@ -119,7 +120,7 @@ Options:
   -r,  --root <string>                       use specified directory as root
   -c,  --config <string>                     use specified vite config file
   -ts, --typescript [boolean]                enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
-  -m,  --mode <string>                       specify env mode ["development","production"] (default: "production")
+  -m,  --mode <string>                       specify env mode eg. ["development","test","staging","production"] (default: "production")
   --base <string>                            public base path for build (default: "/")
   --outDir <string>                          output directory for build (default: "dist")
   --assetsDir <string>                       directory under outDir to place assets in (default: "_assets")

@@ -365,6 +365,7 @@ async function main() {
     .option('-r,  --root <string>', 'use specified directory as root')
     .option('-c,  --config <string>', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', devOptionDefaults.typescript)
+    .option('-m,  --mode <string>', 'specify env mode eg. ["development","test","staging","production"]', 'development')
     .option('-p,  --port <port>', 'port to use for serve', 3000)
     .option('-o,  --open', 'open browser on start')
     .option('--useTransformCache [boolean]', 'use transform cache for faster hmr', devOptionDefaults.useTransformCache)
@@ -380,7 +381,9 @@ async function main() {
       const options = cmd.opts();
       setupDebug(options);
       removeDefaults(options, devOptionDefaults);
-      options.mode = 'development';
+      if (options.mode !== 'development') {
+        log.info(`running svite dev with custom mode "${options.mode}"`);
+      }
       await runServe(await setupSvite(options));
     });
 
@@ -395,7 +398,7 @@ async function main() {
     .option('-r,  --root <string>', 'use specified directory as root')
     .option('-c,  --config <string>', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', buildOptionDefaults.typescript)
-    .option('-m,  --mode <string>', 'specify env mode ["development","production"]', 'production')
+    .option('-m,  --mode <string>', 'specify env mode eg. ["development","test","staging","production"]', 'production')
     .option('--base <string>', 'public base path for build', buildOptionDefaults.base)
     .option('--outDir <string>', 'output directory for build', buildOptionDefaults.outDir)
     .option('--assetsDir <string>', 'directory under outDir to place assets in', buildOptionDefaults.assetsDir)
@@ -415,6 +418,9 @@ async function main() {
       const options = cmd.opts();
       setupDebug(options);
       removeDefaults(options, buildOptionDefaults);
+      if (options.mode !== 'production') {
+        log.info(`running svite build with custom mode "${options.mode}"`);
+      }
       const buildOptions = await setupSvite(options);
       if (options.stats) {
         try {
