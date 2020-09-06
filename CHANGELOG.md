@@ -1,4 +1,11 @@
 
+### [0.6.1-beta.1](https://github.com/dominikg/svite/compare/0.6.1-beta.0...0.6.1-beta.1) (2020-09-06)
+
+
+### Features
+
+* add --mode option to svite dev command ([d515a55](https://github.com/dominikg/svite/commit/d515a553b114dd32e6dc201dd743dbea2dc61635))
+
 ### [0.6.1-beta.0](https://github.com/dominikg/svite/compare/0.6.0...0.6.1-beta.0) (2020-09-01)
 
 
