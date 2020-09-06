@@ -14,7 +14,7 @@
     "@tsconfig/svelte": "^1.0.10",
     "pug": "^3.0.0",
     "stylus": "^0.54.8",
-    "svelte-check": "^1.0.32",
+    "svelte-check": "^1.0.36",
     "svelte-preprocess": "4.2.1",
     "svite": "latest",
     "tslib": "^2.0.1",

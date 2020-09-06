@@ -16,6 +16,6 @@
     "postcss-preset-env": "^6.7.0",
     "svelte-preprocess": "4.2.1",
     "svite": "latest",
-    "tailwindcss": "^1.7.6"
+    "tailwindcss": "^1.8.3"
   }
 }
