@@ -91,9 +91,6 @@ async function setupTypeScriptPreprocessor(svelteConfig, isBuild) {
     throw new Error('svite -ts requires a typescript preprocessor at index 0 in svelte.config.js preprocess:[]');
   }
   if (!isBuild) {
-    // unfortunately esbuild preprocess does not work properly with imports of svelte components as of now
-    // svelteConfig.preprocess.unshift(require('./tools/svelte-preprocess-ts-vite'));
-
     const { typescript } = require('svelte-preprocess');
     const devTS = {
       moduleResolution: 'node',
