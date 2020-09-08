@@ -25,6 +25,7 @@ const devOptionDefaults = {
   resolveSvelteField: true,
   resolveSvelteExtensions: true,
   resolveAbsoluteImportsInsideRoot: true,
+  port: 3000,
 };
 
 // required after process.env.DEBUG was set so 'debug' works with configured patterns
@@ -343,6 +344,65 @@ async function gitCommit(dir) {
   }
 }
 
+function processOptions(cmd, defaults) {
+  const options = convertDefaultOptionTypes(cmd.opts(), defaults);
+  setupDebug(options);
+  removeDefaults(options, defaults);
+  return options;
+}
+
+function convertDefaultOptionTypes(options, defaults) {
+  for (const [key, defaultValue] of Object.entries(defaults)) {
+    const optionValue = options[key];
+    if (optionValue == null) {
+      options[key] = defaultValue;
+      continue;
+    }
+    const defaultType = typeof defaultValue;
+    const optionType = typeof optionValue;
+    if (defaultType === optionType) {
+      continue;
+    }
+
+    if (defaultType === 'boolean') {
+      options[key] = convertToBoolean(optionValue, key);
+    } else if (defaultType === 'number') {
+      options[key] = convertToNumber(optionValue, key);
+    } else if (defaultType === 'string') {
+      options[key] = convertToString(optionValue);
+    } else {
+      throw new Error('missing converter for option type ' + defaultType);
+    }
+  }
+  return options;
+}
+
+function convertToBoolean(optionValue, optionKey) {
+  if (optionValue === 'true') {
+    return true;
+  } else if (optionValue === 'false') {
+    return false;
+  } else {
+    throw new Error(`invalid boolean option ${optionKey}: ${optionValue}. Allowed values: 'true', 'false'`);
+  }
+}
+
+function convertToNumber(optionValue, optionKey) {
+  try {
+    const result = parseInt(optionValue, 10);
+    if (!isNaN(result)) {
+      return result;
+    }
+  } catch (e) {
+    log.debug('parseInt failed', e);
+  }
+  throw new Error(`invalid number option ${optionKey}: ${optionValue}. Value must be a number`);
+}
+
+function convertToString(optionValue) {
+  return '' + optionValue;
+}
+
 function removeDefaults(options, defaults) {
   for (const [key, value] of Object.entries(defaults)) {
     if (options[key] === value) {
@@ -366,7 +426,7 @@ async function main() {
     .option('-c,  --config <string>', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', devOptionDefaults.typescript)
     .option('-m,  --mode <string>', 'specify env mode eg. ["development","test","staging","production"]', 'development')
-    .option('-p,  --port <port>', 'port to use for serve', 3000)
+    .option('-p,  --port <port>', 'port to use for serve', devOptionDefaults.port)
     .option('-o,  --open', 'open browser on start')
     .option('--useTransformCache [boolean]', 'use transform cache for faster hmr', devOptionDefaults.useTransformCache)
     .option('--hot [boolean]', 'enable/disable hmr for svelte', devOptionDefaults.hot)
@@ -378,9 +438,7 @@ async function main() {
       devOptionDefaults.resolveAbsoluteImportsInsideRoot,
     )
     .action(async (cmd) => {
-      const options = cmd.opts();
-      setupDebug(options);
-      removeDefaults(options, devOptionDefaults);
+      const options = processOptions(cmd, devOptionDefaults);
       if (options.mode !== 'development') {
         log.info(`running svite dev with custom mode "${options.mode}"`);
       }
@@ -415,9 +473,7 @@ async function main() {
     )
     .option('--ssr [boolean]', 'build for server-side rendering')
     .action(async (cmd) => {
-      const options = cmd.opts();
-      setupDebug(options);
-      removeDefaults(options, buildOptionDefaults);
+      const options = processOptions(cmd, buildOptionDefaults);
       if (options.mode !== 'production') {
         log.info(`running svite build with custom mode "${options.mode}"`);
       }
@@ -456,7 +512,7 @@ async function main() {
       'enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar" ',
       false,
     )
-    .option('-c, --config [string]', 'use specified vite config file')
+    .option('-c, --config <string>', 'use specified vite config file')
     .option('-f, --force', 'force optimize even if hash is equal')
     .action(async (cmd) => {
       const options = cmd.opts();
@@ -471,9 +527,9 @@ async function main() {
   program
     .command('create [targetDir]')
     .description('create a new project. If you do not specify targetDir, "./svite-<template>" will be used')
-    .option('-t, --template [string]', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
+    .option('-t, --template <string>', `template for new project. ${JSON.stringify(templates)}`, 'minimal')
     .option('-ts, --typescript', 'enable typescript support for svelte !!!EXPERIMENTAL!!!', false)
-    .option('-pm, --packageManager [string]', 'which package manager to use. ["npm","pnpm","yarn","yarn2"]', 'npm')
+    .option('-pm, --packageManager <string>', 'which package manager to use. ["npm","pnpm","yarn","yarn2"]', 'npm')
     .option('-f, --force', 'force operation even if targetDir exists and is not empty', false)
     .option('-c, --cache', 'cache template for later use', false)
     .option('-d, --debug', 'more verbose logging', false)
