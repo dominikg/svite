@@ -73,16 +73,16 @@ Usage: svite create [options] [targetDir]
 create a new project. If you do not specify targetDir, "./svite-<template>" will be used
 
 Options:
-  -t,  --template [string]        template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
+  -t, --template <string>         template for new project. ["minimal","routify-mdsvex","postcss-tailwind","svelte-preprocess-auto"] (default: "minimal")
   -ts, --typescript               enable typescript support for svelte !!!EXPERIMENTAL!!! (default: false)
-  -pm, --packageManager [string]  which package manager to use. ["npm","pnpm","yarn","yarn2"] (default: "npm")
-  -f,  --force                    force operation even if targetDir exists and is not empty (default: false)
-  -c,  --cache                    cache template for later use (default: false)
-  -d,  --debug                    more verbose logging (default: false)
+  -pm, --packageManager <string>  which package manager to use. ["npm","pnpm","yarn","yarn2"] (default: "npm")
+  -f, --force                     force operation even if targetDir exists and is not empty (default: false)
+  -c, --cache                     cache template for later use (default: false)
+  -d, --debug                     more verbose logging (default: false)
   -si, --skip-install             skip install (default: false)
   -sg, --skip-git                 skip git init (default: false)
   -sc, --skip-commit              skip initial commit (default: false)
-  -h,  --help                     display help for command
+  -h, --help                      display help for command
 ```
 
 ### dev
@@ -103,7 +103,7 @@ Options:
   --useTransformCache [boolean]                 use transform cache for faster hmr (default: false)
   --hot [boolean]                               enable/disable hmr for svelte (default: true)
   --resolveSvelteField [boolean]                resolve via svelte field in package.json (default: true)
-  --resolveSvelteExtensions [boolean]           resolve svelte extensions in modules (default: true)
+  --resolveSvelteExtensions [boolean]           resolve svelte extensions in modules !!!EXPERIMENTAL!!! (default: false)
   --resolveAbsoluteImportsInsideRoot [boolean]  resolve absolute imports if they end up being inside rootDir (mostly used in generated code) (default: true)
   -h, --help                                    display help for command
 ```
@@ -172,7 +172,7 @@ module.exports = {
 | **logLevel**                         | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
 | **typescript**                       | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. !!!EXPERIMENTAL!!! &bull;&nbsp;`false` disable typescript preprocessing.                                          |
 | **resolveSvelteField**               | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve via svelte field in package.json &bull;&nbsp;`false` don't resolve via svelte field in package.json.                                       |
-| **resolveSvelteExtensions**          | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve svelte extensions. &bull;&nbsp;`false` don't resolve svelte extensions.                                                                    |
+| **resolveSvelteExtensions**          | `boolean`                 | `false`        | &bull;&nbsp;`true` resolve svelte extensions. !!!EXPERIMENTAL!!! &bull;&nbsp;`false` don't resolve svelte extensions.                                                 |
 | **resolveAbsoluteImportsInsideRoot** | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve absolute imports in root dir &bull;&nbsp;`false` don't resolve absolute imports                                                            |
 
 ### hot
@@ -222,8 +222,12 @@ If a library has different exports in svelte and main field of package.json, thi
 
 ### resolveSvelteExtensions
 
+!!! EXPERIMENTAL !!!
+
 Some extensions like .js, .ts can be omitted by default on imports. With this option enabled, all extensions of your svelte config can be omitted too.
 So for `src/components/Button.svelte` you can use `import Button from "/src/components/Button"`
+
+This option breaks if a dependency uses a .svelte file in package.json svelte field. e.g. svelte-spa-router.
 
 ### resolveAbsoluteImportsInsideRoot
 
