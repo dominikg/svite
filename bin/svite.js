@@ -23,7 +23,7 @@ const devOptionDefaults = {
   useTransformCache: false,
   hot: true,
   resolveSvelteField: true,
-  resolveSvelteExtensions: true,
+  resolveSvelteExtensions: false,
   resolveAbsoluteImportsInsideRoot: true,
   port: 3000,
 };
@@ -431,7 +431,11 @@ async function main() {
     .option('--useTransformCache [boolean]', 'use transform cache for faster hmr', devOptionDefaults.useTransformCache)
     .option('--hot [boolean]', 'enable/disable hmr for svelte', devOptionDefaults.hot)
     .option('--resolveSvelteField [boolean]', 'resolve via svelte field in package.json', devOptionDefaults.resolveSvelteField)
-    .option('--resolveSvelteExtensions [boolean]', 'resolve svelte extensions in modules', devOptionDefaults.resolveSvelteExtensions)
+    .option(
+      '--resolveSvelteExtensions [boolean]',
+      'resolve svelte extensions in modules !!!EXPERIMENTAL!!!',
+      devOptionDefaults.resolveSvelteExtensions,
+    )
     .option(
       '--resolveAbsoluteImportsInsideRoot [boolean]',
       'resolve absolute imports if they end up being inside rootDir (mostly used in generated code)',

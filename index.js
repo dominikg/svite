@@ -12,7 +12,7 @@ const defaultOptions = {
   logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
   typescript: false,
   resolveSvelteField: true,
-  resolveSvelteExtensions: true,
+  resolveSvelteExtensions: false,
   resolveAbsoluteImportsInsideRoot: true,
 };
 
