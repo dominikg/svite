@@ -1,4 +1,12 @@
 
+### [0.6.1-beta.2](https://github.com/dominikg/svite/compare/0.6.1-beta.1...0.6.1-beta.2) (2020-09-08)
+
+
+### Bug Fixes
+
+* convert cli option values to their default type (fixes [#45](https://github.com/dominikg/svite/issues/45)) ([0b08deb](https://github.com/dominikg/svite/commit/0b08deb85027006d23192fa206c745c57017bd92))
+* turn off resolveSvelteExtensions by default. (fixes [#44](https://github.com/dominikg/svite/issues/44)) ([2adb55a](https://github.com/dominikg/svite/commit/2adb55a9f4be1860c8ea0b390cccbfc0d12c0021))
+
 ### [0.6.1-beta.1](https://github.com/dominikg/svite/compare/0.6.1-beta.0...0.6.1-beta.1) (2020-09-06)
 
 
