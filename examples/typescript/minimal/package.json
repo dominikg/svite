@@ -7,7 +7,7 @@
     "build": "svite build -ts"
   },
   "dependencies": {
-    "svelte": "3.24.1",
+    "svelte": "3.25.0",
     "svelte-hmr": "0.10.3"
   },
   "devDependencies": {
