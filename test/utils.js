@@ -40,7 +40,9 @@ const guessChromePath = async () => {
     '/usr/bin/google-chrome',
     '/usr/bin/chromium-browser',
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    ...[process.env['PROGRAMFILES(X86)'], process.env.PROGRAMFILES, process.env.LOCALAPPDATA]
+      .filter((prefix) => prefix != null && prefix.length > 0)
+      .map((prefix) => prefix + '\\Google\\Chrome\\Application\\chrome.exe'),
   ];
   for (let path of locations) {
     try {
