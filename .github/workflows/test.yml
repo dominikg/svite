@@ -45,11 +45,9 @@ jobs:
       - run: npm i -g pnpm
       - run: npm test  --scripts-prepend-node-path -- --testNamePattern="javascript npm minimal"
       - name: archive test/temp directory
-        if:  ${{ failure() && runner.os != 'Windows' }}
+        if: failure()
+        shell: bash
         run: tar -cvf test-temp.tar --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" test/temp/
-      - name: archive test/temp directory Windows
-        if:  ${{ failure() && runner.os == 'Windows' }}
-        run: tar -cvf test-temp.tar --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" test\temp\
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
