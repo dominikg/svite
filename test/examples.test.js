@@ -61,7 +61,7 @@ describe('examples', () => {
                   const testPackageName = `svite-test-${script}-${pm}-${example}`;
                   await updateExampleFile('package.json', (c) =>
                     c
-                      .replace(/"svite": ?"[^"]+"/, `"svite": "${svitePackage}"`)
+                      .replace(/"svite": ?"[^"]+"/, `"svite": "${svitePackage.replace(/\\/g, '\\\\')}"`)
                       .replace(/"name": ?"([^"]+)"/, `"name": "${testPackageName}","private":true,"license":"UNLICENSED"`),
                   );
                   await updateExampleFile('src/App.svelte', (c) => `${c}\n<div id="test-div">__xxx__</div>`);
