@@ -79,13 +79,13 @@ describe('examples', () => {
                   await fs.mkdirp(pmCacheDir);
                   switch (pm) {
                     case 'npm':
-                      await fs.writeFile(path.join(exampleTempDir, '.npmrc'), `cache="${pmCacheDir}"`);
+                      await fs.writeFile(path.join(exampleTempDir, '.npmrc'), `cache=${pmCacheDir}`);
                       break;
                     case 'pnpm':
-                      await fs.writeFile(path.join(exampleTempDir, '.npmrc'), `store-dir="${pmCacheDir}"`);
+                      await fs.writeFile(path.join(exampleTempDir, '.npmrc'), `store-dir=${pmCacheDir}`);
                       break;
                     case 'yarn':
-                      await fs.writeFile(path.join(exampleTempDir, '.yarnrc'), `cache-folder "${pmCacheDir}"`);
+                      await fs.writeFile(path.join(exampleTempDir, '.yarnrc'), `cache-folder ${pmCacheDir}`);
                       break;
                     case 'yarn2':
                       // don't write file, it was already created by set version berry above
