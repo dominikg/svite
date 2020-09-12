@@ -349,7 +349,8 @@ function createResolvers(config) {
       alias(id) {
         if (id && path.isAbsolute(id) && fs.existsSync(id)) {
           const relativePath = path.relative(rootDir, id);
-          if (!relativePath.startsWith('.')) {
+          if (!relativePath.startsWith('..') && !relativePath.startsWith('node_modules')) {
+            // inside root dir but not in node_modules
             const alias = path.join('/', relativePath);
             log.debug(`aliasing absolute import ${id} to ${alias}`);
             return alias;
