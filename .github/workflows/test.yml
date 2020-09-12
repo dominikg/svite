@@ -1,7 +1,5 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Node.js CI
+# build and test on linux, windows, mac with node 12,14
+name: Test
 
 on:
   push:
@@ -20,6 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest,windows-latest,macos-latest]
         node-version: [12.x, 14.x]
@@ -44,14 +43,14 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm i -g pnpm
-      - run: npm test  --scripts-prepend-node-path
+      - run: npm test  --scripts-prepend-node-path -- --testNamePattern="javascript npm minimal"
       - name: archive test/temp directory
         if: failure()
         run: tar -cvf test-temp.tar --exclude="node_modules" --exclude=".yarn" --exclude="dist" --exclude=".pnp.js" test/temp/
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: test-temp-${{ matrix.node-version }}
+          name: test-temp-${{ matrix.os }}-${{ matrix.node-version }}
           path: |
             test-temp.tar
             test/temp/jest-results.json
@@ -59,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: success()
         with:
-          name: test-results-${{ matrix.node-version }}
+          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}
           path: |
             test/temp/jest-results.json
             test/temp/junit.xml
