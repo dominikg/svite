@@ -341,6 +341,15 @@ function createBuildPlugins(config) {
   ];
 }
 
+function resolvesAsModule(id) {
+  try {
+    require.resolve(id);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 function createResolvers(config) {
   const resolvers = [];
   if (config.svite.resolveAbsoluteImportsInsideRoot) {
@@ -349,9 +358,9 @@ function createResolvers(config) {
       alias(id) {
         if (id && path.isAbsolute(id) && fs.existsSync(id)) {
           const relativePath = path.relative(rootDir, id);
-          if (!relativePath.startsWith('..') && !relativePath.startsWith('node_modules')) {
-            // inside root dir but not in node_modules
-            const alias = path.join('/', relativePath);
+          if (!relativePath.startsWith('..') && !relativePath.startsWith('node_modules') && !resolvesAsModule(id)) {
+            // inside root dir but not in node_modules and not otherwise resolvable as module
+            const alias = '/' + (path.sep !== '/' ? relativePath.split(path.sep).join('/') : relativePath);
             log.debug(`aliasing absolute import ${id} to ${alias}`);
             return alias;
           }
