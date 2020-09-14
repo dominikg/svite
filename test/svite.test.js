@@ -72,7 +72,7 @@ afterAll(async () => {
   await fs.writeFile(path.join(tempDir, 'server.log'), serverLogs.join('\n'));
 });
 
-describe('svite', () => {
+describe('svite hmr-test', () => {
   beforeAll(async () => {
     browser = await launchPuppeteer();
   });
