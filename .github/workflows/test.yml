@@ -25,7 +25,7 @@ jobs:
         test-name-pattern: [
           "javascript npm",
           "javascript pnpm",
-          "javascript yarn",
+          "javascript yarn ",
           "javascript yarn2",
           "typescript npm",
           "typescript pnpm",
