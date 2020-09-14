@@ -1,4 +1,22 @@
 
+## [0.7.0-beta.0](https://github.com/dominikg/svite/compare/0.6.1...0.7.0-beta.0) (2020-09-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* move svelte and svelte-hmr to devDependencies
+
+### Features
+
+* more checks to not alias existing modules, convert alias to use forward slashes ([a452f94](https://github.com/dominikg/svite/commit/a452f948c1e294a6729598f0eef21a6215611e65))
+* move svelte and svelte-hmr to devDependencies ([42a692b](https://github.com/dominikg/svite/commit/42a692bbff887741353bd1f315cd6a711c9fc1bc))
+* update svelte to 3.25.0 ([38af713](https://github.com/dominikg/svite/commit/38af7139d6a9cc801ee82d40162ecb0ccf79c8ca))
+
+
+### Bug Fixes
+
+* do not create aliases for absolute paths into node_modules ([5310ef6](https://github.com/dominikg/svite/commit/5310ef6f2daa912a09c0ec4bf80531468fcb139a))
+
 ### [0.6.1](https://github.com/dominikg/svite/compare/0.6.1-beta.2...0.6.1) (2020-09-08)
 
 ### [0.6.1-beta.2](https://github.com/dominikg/svite/compare/0.6.1-beta.1...0.6.1-beta.2) (2020-09-08)
