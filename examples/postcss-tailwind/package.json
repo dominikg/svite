@@ -16,6 +16,6 @@
     "svelte-hmr": "0.10.3",
     "svelte-preprocess": "4.2.1",
     "svite": "latest",
-    "tailwindcss": "^1.8.3"
+    "tailwindcss": "^1.8.10"
   }
 }
