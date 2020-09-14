@@ -35,18 +35,6 @@ jobs:
         ]
     steps:
       - uses: actions/checkout@v2
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-test-dependencies-${{ matrix.node-version }}
-          testNamePattern: ${{ matrix.test-name-pattern }}
-        with:
-          path: ./test/cache
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('test/temp/**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-test-
-            ${{ runner.os }}-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -54,8 +42,8 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm i -g pnpm
-      - run: echo "testing ${{env.testNamePattern}}"
-      - run: npm test  --scripts-prepend-node-path -- --testNamePattern="${{env.testNamePattern}}"
+      - run: echo "testing ${{matrix.test-name-pattern}}"
+      - run: npm test  --scripts-prepend-node-path -- --testNamePattern="${{matrix.test-name-pattern}}"
       - name: archive test/temp directory
         if: failure()
         shell: bash
@@ -63,7 +51,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: test-temp-${{ matrix.os }}-${{ matrix.node-version }}
+          name: test-temp-${{ matrix.os }}-${{ matrix.node-version }}-${{ matrix.test-name-pattern }}
           path: |
             test-temp.tar
             test/temp/jest-results.json
@@ -71,7 +59,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: success()
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}
+          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}-${{ matrix.test-name-pattern }}
           path: |
             test/temp/jest-results.json
             test/temp/junit.xml
