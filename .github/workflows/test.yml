@@ -43,7 +43,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm i -g pnpm
-      - run: npm test  --scripts-prepend-node-path -- --testNamePattern="javascript npm routify-mdsvex"
+      - run: npm test  --scripts-prepend-node-path
       - name: archive test/temp directory
         if: failure()
         shell: bash
