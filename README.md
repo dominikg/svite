@@ -275,7 +275,6 @@ modules.exports = {
 ```
 
 and always use deep imports `import {something} from 'my-commonjs-dep/deep/import/path'`
-q
 
 # Got a question? / Need help?
 
