@@ -20,20 +20,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest,windows-latest,macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [12.x, 14.x]
-        test-name-pattern-1: [javascript',typescript]
-        test-name-pattern-2: [npm, pnpm,yarn,yarn2]
-        include:
-          - test-name-pattern-1: svite
-            test-name-pattern-2: hmr-test
+        test-name-pattern: [
+          "javascript npm",
+          "javascript pnpm",
+          "javascript yarn",
+          "javascript yarn2",
+          "typescript npm",
+          "typescript pnpm",
+          "typescript yarn ",
+          "typescript yarn2",
+          "svite hmr-test"
+        ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
         uses: actions/cache@v2
         env:
           cache-name: cache-test-dependencies-${{ matrix.node-version }}
-          testNamePattern: "${{ matrix.test-name-pattern-1 }} ${{ matrix.test-name-pattern-2 }}"
+          testNamePattern: ${{ matrix.test-name-pattern }}
         with:
           path: ./test/cache
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('test/temp/**/package-lock.json') }}
