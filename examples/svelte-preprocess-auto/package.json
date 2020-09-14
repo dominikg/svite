@@ -6,13 +6,13 @@
     "build": "svite build"
   },
   "dependencies": {
-    "svelte": "3.25.0",
-    "svelte-hmr": "0.10.3"
   },
   "devDependencies": {
     "pug": "^3.0.0",
     "stylus": "^0.54.8",
     "svelte-preprocess": "4.2.1",
+    "svelte": "3.25.0",
+    "svelte-hmr": "0.10.3",
     "svite": "latest"
   }
 }
