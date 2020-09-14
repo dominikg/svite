@@ -262,6 +262,21 @@ All of the above, but with typescript support
 
 This is an early version, some things may not work as expected. Please report findings.
 
+## imports of commonjs modules don't work in `svite dev`
+
+Support for commonjs modules in vite is limited. If you run into problems, try to add the dependency to vite optimizeDeps via vite.config.js
+
+```js
+modules.exports = {
+  optimizeDeps: {
+    include: ['my-commonjs-dep'],
+  },
+};
+```
+
+and always use deep imports `import {something} from 'my-commonjs-dep/deep/import/path'`
+q
+
 # Got a question? / Need help?
 
 Join [svite discord](https://discord.gg/nzgMZJD)
