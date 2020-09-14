@@ -22,18 +22,18 @@ jobs:
       matrix:
         os: [ubuntu-latest,windows-latest,macos-latest]
         node-version: [12.x, 14.x]
-        testNamePattern1: ['javascript','typescript']
-        testNamePattern2: ['npm','pnpm','yarn','yarn2']
+        test-name-pattern-1: [javascript',typescript]
+        test-name-pattern-2: [npm, pnpm,yarn,yarn2]
         include:
-          - testNamePattern1: 'svite'
-            testNamePattern2: 'hmr-test'
+          - test-name-pattern-1: svite
+            test-name-pattern-2: hmr-test
     steps:
       - uses: actions/checkout@v2
       - name: Cache node modules
         uses: actions/cache@v2
         env:
           cache-name: cache-test-dependencies-${{ matrix.node-version }}
-          testNamePattern: ${{ matrix.testNamePattern1 }} ${{ matrix.testNamePattern2 }}
+          testNamePattern: "${{ matrix.test-name-pattern-1 }} ${{ matrix.test-name-pattern-2 }}"
         with:
           path: ./test/cache
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('test/temp/**/package-lock.json') }}
