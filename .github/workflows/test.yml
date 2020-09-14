@@ -22,7 +22,7 @@ jobs:
       matrix:
         os: [ubuntu-latest,windows-latest,macos-latest]
         node-version: [12.x, 14.x]
-        testNamePattern1: ['javascript','typescript'],
+        testNamePattern1: ['javascript','typescript']
         testNamePattern2: ['npm','pnpm','yarn','yarn2']
         include:
           - testNamePattern1: 'svite'
