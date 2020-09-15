@@ -2,12 +2,26 @@ const fs = require('fs-extra');
 const path = require('path');
 const execa = require('execa');
 
-const { closeKillAll, closeKill, throttledWrite, deleteDir, launchPuppeteer, sleep, hmrUpdateComplete } = require('./utils');
+const {
+  cleanDir,
+  closeKill,
+  closeKillAll,
+  expectByPolling,
+  getText,
+  hmrUpdateComplete,
+  launchPuppeteer,
+  packageSvite,
+  sleep,
+  takeScreenshot,
+  tempDir,
+  updateFile,
+  writeLogs,
+} = require('./utils');
 
 jest.setTimeout(process.env.CI ? 120000 : 60000);
+process.once('SIGINT', () => closeKill(process));
+process.once('SIGTERM', () => closeKill(process));
 
-const tempDir = path.join(__dirname, 'temp');
-const sviteDir = path.join(__dirname, '..');
 const examples = ['minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
 const pmOptions = ['npm', 'pnpm', 'yarn', 'yarn2'];
 const scriptOptions = ['javascript', 'typescript'];
@@ -18,8 +32,8 @@ describe('examples', () => {
   let beforeAllSuccessful = false;
   beforeAll(async () => {
     try {
-      await cleanTempDir();
-      svitePackage = await createTestPackage();
+      await cleanDir(tempDir);
+      svitePackage = await packageSvite();
       browser = await launchPuppeteer();
     } catch (e) {
       console.error('beforeAll failed', e);
@@ -53,8 +67,7 @@ describe('examples', () => {
                   return;
                 }
                 try {
-                  await deleteDir(exampleTempDir);
-                  await fs.mkdirp(exampleTempDir);
+                  await cleanDir(exampleTempDir);
                   await fs.copy(exampleDir, exampleTempDir, {
                     filter: (file) => !/dist|dist-ssr|node_modules|package-lock\.json/.test(file),
                   });
@@ -285,72 +298,3 @@ describe('examples', () => {
     });
   }
 });
-
-async function updateFile(dir, file, replacer) {
-  const compPath = path.join(dir, file);
-  const content = await fs.readFile(compPath, 'utf-8');
-  const newContent = replacer(content);
-  await throttledWrite(compPath, newContent, 100);
-}
-
-// poll until it updates
-async function expectByPolling(poll, expected) {
-  const maxTries = 20;
-  for (let tries = 0; tries < maxTries; tries++) {
-    const actual = (await poll()) || '';
-    if (actual.indexOf(expected) > -1 || tries === maxTries - 1) {
-      expect(actual).toMatch(expected);
-      break;
-    } else {
-      await sleep(50);
-    }
-  }
-}
-
-const getEl = async (page, selectorOrEl) => {
-  return typeof selectorOrEl === 'string' ? await page.$(selectorOrEl) : selectorOrEl;
-};
-
-const getText = async (page, selectorOrEl) => {
-  const el = await getEl(page, selectorOrEl);
-  return el ? el.evaluate((el) => el.textContent) : null;
-};
-
-process.once('SIGINT', () => closeKill(process));
-process.once('SIGTERM', () => closeKill(process));
-
-async function cleanTempDir() {
-  await deleteDir(tempDir);
-  await fs.mkdirp(tempDir);
-}
-
-async function createTestPackage() {
-  try {
-    const packCmd = await execa('npm', ['pack', sviteDir], { cwd: tempDir });
-    return path.join(tempDir, packCmd.stdout);
-  } catch (e) {
-    console.error('pack failed', e);
-    throw e;
-  }
-}
-
-async function writeLogs(dir, name, out, err) {
-  try {
-    const logDir = path.join(dir, 'logs');
-    await fs.mkdirp(logDir);
-    if (!err) {
-      await fs.writeFile(path.join(logDir, `${name}.log`), out);
-    } else {
-      await fs.writeFile(path.join(logDir, `${name}.out.log`), out);
-      await fs.writeFile(path.join(logDir, `${name}.err.log`), err);
-    }
-  } catch (e) {
-    console.error(`writing ${name} logs failed in ${dir}`, e);
-  }
-}
-
-async function takeScreenshot(dir, page, name) {
-  const screenshotDir = path.join(dir, 'screenshots');
-  await fs.mkdirp(screenshotDir);
-  await page.screenshot({ path: path.join(screenshotDir, `${name}.png`), type: 'png' });
-}

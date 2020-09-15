@@ -14,7 +14,4 @@
   }
 </style>
 
-<div class="hmr-test" {id}>
-  <span class="label">{label}</span>
-  <span class="counter increment" on:click={increment}>{$count}</span>
-</div>
+<div class="hmr-test" {id}><span class="label">{label}</span> <span class="counter increment" on:click={increment}>{$count}</span></div>

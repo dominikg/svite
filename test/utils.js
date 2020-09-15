@@ -1,7 +1,11 @@
-/* eslint-env node */
+/* eslint-env node,jest */
+const execa = require('execa');
 const fs = require('fs-extra');
+const path = require('path');
 const treeKill = require('tree-kill');
 const puppeteer = require('puppeteer-core');
+const tempDir = path.join(__dirname, 'temp');
+const sviteDir = path.join(__dirname, '..');
 
 const sleep = (n) => new Promise((r) => setTimeout(r, n));
 
@@ -25,6 +29,19 @@ const throttledWrite = async (filePath, content, wait) => {
   lastFileWriteTime[filePath] = process.hrtime();
   return fs.writeFile(filePath, content);
 };
+const fileContentCache = {};
+const updateFile = async (dir, file, replacer) => {
+  const filePath = path.join(dir, file);
+  const content = fileContentCache[filePath] || (await fs.readFile(filePath, 'utf-8'));
+  const newContent = replacer(content);
+  await throttledWrite(filePath, newContent, 100);
+  fileContentCache[filePath] = newContent;
+};
+
+const updateFileAndWaitForHmrComplete = async (dir, file, replacer, page) => {
+  await updateFile(dir, file, replacer);
+  await hmrUpdateComplete(page, file, 10000);
+};
 
 const deleteDir = async (dir) => {
   try {
@@ -33,6 +50,11 @@ const deleteDir = async (dir) => {
     console.error(`failed to delete ${dir}`, e);
     throw e;
   }
+};
+
+const cleanDir = async (dir) => {
+  await deleteDir(dir);
+  await fs.mkdirp(dir);
 };
 
 const guessChromePath = async () => {
@@ -125,14 +147,78 @@ const killtree = async (pid) => {
   });
 };
 
+const packageSvite = async () => {
+  try {
+    const packCmd = await execa('npm', ['pack', sviteDir], { cwd: tempDir });
+    return path.join(tempDir, packCmd.stdout);
+  } catch (e) {
+    console.error('pack failed', e);
+    throw e;
+  }
+};
+
+// poll until it updates
+const expectByPolling = async (poll, expected) => {
+  const maxTries = 20;
+  for (let tries = 0; tries < maxTries; tries++) {
+    const actual = (await poll()) || '';
+    if (actual.indexOf(expected) > -1 || tries === maxTries - 1) {
+      expect(actual).toMatch(expected);
+      break;
+    } else {
+      await sleep(50);
+    }
+  }
+};
+
+const getEl = async (page, selectorOrEl) => {
+  return typeof selectorOrEl === 'string' ? await page.$(selectorOrEl) : selectorOrEl;
+};
+
+const getText = async (page, selectorOrEl) => {
+  const el = await getEl(page, selectorOrEl);
+  return el ? el.evaluate((el) => el.textContent) : null;
+};
+
+const writeLogs = async (dir, name, out, err) => {
+  try {
+    const logDir = path.join(dir, 'logs');
+    await fs.mkdirp(logDir);
+    if (!err) {
+      await fs.writeFile(path.join(logDir, `${name}.log`), out);
+    } else {
+      await fs.writeFile(path.join(logDir, `${name}.out.log`), out);
+      await fs.writeFile(path.join(logDir, `${name}.err.log`), err);
+    }
+  } catch (e) {
+    console.error(`writing ${name} logs failed in ${dir}`, e);
+  }
+};
+
+const takeScreenshot = async (dir, page, name) => {
+  const screenshotDir = path.join(dir, 'screenshots');
+  await fs.mkdirp(screenshotDir);
+  await page.screenshot({ path: path.join(screenshotDir, `${name}.png`), type: 'png' });
+};
+
 module.exports = {
-  killtree,
-  sleep,
-  msDiff,
-  throttledWrite,
-  deleteDir,
-  launchPuppeteer,
-  hmrUpdateComplete,
+  cleanDir,
   closeKill,
   closeKillAll,
+  deleteDir,
+  expectByPolling,
+  getEl,
+  getText,
+  hmrUpdateComplete,
+  killtree,
+  msDiff,
+  launchPuppeteer,
+  packageSvite,
+  sleep,
+  takeScreenshot,
+  tempDir,
+  throttledWrite,
+  updateFile,
+  updateFileAndWaitForHmrComplete,
+  writeLogs,
 };

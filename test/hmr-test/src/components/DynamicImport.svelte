@@ -17,7 +17,4 @@
   }
 </style>
 
-<div id="dynamic-import">
-  <span class="label">{label}</span>
-  <img alt="imported" src={importedAsset} />
-</div>
+<div id="dynamic-import"><span class="label">{label}</span> <img alt="imported" src={importedAsset} /></div>

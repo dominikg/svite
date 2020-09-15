@@ -17,7 +17,4 @@
   }
 </style>
 
-<div id="static-import">
-  <span class="label">{label}</span>
-  <img alt="imported" src={importedAsset} />
-</div>
+<div id="static-import"><span class="label">{label}</span> <img alt="imported" src={importedAsset} /></div>
