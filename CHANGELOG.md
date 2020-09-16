@@ -1,4 +1,11 @@
 
+## [0.7.0-beta.1](https://github.com/dominikg/svite/compare/0.7.0-beta.0...0.7.0-beta.1) (2020-09-16)
+
+
+### Features
+
+* update svelte to 3.25.1 ([7e1bb60](https://github.com/dominikg/svite/commit/7e1bb60ce68ec91ee5e69793048b98f07ca2b803))
+
 ## [0.7.0-beta.0](https://github.com/dominikg/svite/compare/0.6.1...0.7.0-beta.0) (2020-09-14)
 
 
