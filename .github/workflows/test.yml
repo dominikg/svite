@@ -22,19 +22,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [12.x, 14.x]
-        test-name-pattern: [
-          "javascript npm",
-          "javascript pnpm",
-          "javascript yarn ",
-          "javascript yarn2",
-          "typescript npm",
-          "typescript pnpm",
-          "typescript yarn ",
-          "typescript yarn2",
-          "svite hmr-test"
-        ]
     steps:
       - uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: pm-cache-${{ matrix.node-version }}
+        with:
+          path: ./test/cache
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('test/temp/**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -43,7 +43,7 @@ jobs:
       - run: npm run build --if-present
       - run: npm i -g pnpm
       - run: echo "testing ${{matrix.test-name-pattern}}"
-      - run: npm test  --scripts-prepend-node-path -- --testNamePattern="${{matrix.test-name-pattern}}"
+      - run: npm test  --scripts-prepend-node-path -- --testNamePattern="svite hmr-test"
       - name: archive test/temp directory
         if: failure()
         shell: bash
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: success()
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}-${{ matrix.test-name-pattern }}
+          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}
           path: |
             test/temp/jest-results.json
             test/temp/junit.xml
