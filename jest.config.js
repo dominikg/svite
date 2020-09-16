@@ -1,4 +1,5 @@
 module.exports = {
+  globalSetup: './test/global-setup.js',
   testPathIgnorePatterns: [
     '<rootDir>/test/app',
     '<rootDir>/test/cache',

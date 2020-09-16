@@ -32,7 +32,6 @@ describe('examples', () => {
   let beforeAllSuccessful = false;
   beforeAll(async () => {
     try {
-      await cleanDir(tempDir);
       svitePackage = await packageSvite();
       browser = await launchPuppeteer();
     } catch (e) {
