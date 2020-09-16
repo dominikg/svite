@@ -9,7 +9,7 @@
     "@dependency/dependency": "file:dependency"
   },
   "devDependencies": {
-    "svelte": "3.25.0",
+    "svelte": "3.25.1",
     "svelte-hmr": "0.10.3",
     "svite": "file:../../../svite/"
   }
