@@ -149,10 +149,21 @@ const killtree = async (pid) => {
 
 const packageSvite = async () => {
   try {
+    console.log(`executing npm pack ${sviteDir}`);
     const packCmd = await execa('npm', ['pack', sviteDir], { cwd: tempDir });
-    return path.join(tempDir, packCmd.stdout);
+    const packageName = packCmd.stdout;
+    const packageFilePath = path.join(tempDir, packageName);
+    const packageExists = await fs.exists(packageFilePath);
+    if (packageExists) {
+      console.log(`successfully packed ${packageFilePath}`);
+      return packageFilePath;
+    } else {
+      throw new Error('pack returned with 0 but packageFile does not exist');
+    }
   } catch (e) {
     console.error('pack failed', e);
+    await writeLogs(tempDir, 'pack', e.stdout, e.stderr);
+    await writeLogs(tempDir, 'pack.exception', e.toString(), e.stack);
     throw e;
   }
 };
