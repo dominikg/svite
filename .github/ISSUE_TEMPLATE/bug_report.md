@@ -28,6 +28,5 @@ A link to a repo or a script/code to reproduce the issue
   - svite
   - vite
   - svelte
-- logs
-  - use logLevel: 'debug' in svite config
-  - start vite with `vite --debug` flag
+- logs with debug enabled
+  - start svite with `svite --debug` flag
