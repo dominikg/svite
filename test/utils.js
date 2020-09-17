@@ -1,6 +1,7 @@
 /* eslint-env node,jest */
 const execa = require('execa');
 const fs = require('fs-extra');
+const writeFileAtomic = require('write-file-atomic');
 const path = require('path');
 const treeKill = require('tree-kill');
 const puppeteer = require('puppeteer-core');
@@ -27,7 +28,7 @@ const throttledWrite = async (filePath, content, wait) => {
     }
   }
   lastFileWriteTime[filePath] = process.hrtime();
-  return fs.writeFile(filePath, content);
+  return writeFileAtomic(filePath, content);
 };
 const fileContentCache = {};
 const updateFile = async (dir, file, replacer) => {
