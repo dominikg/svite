@@ -12,7 +12,7 @@
     "format": "prettier --ignore-path .gitignore '**/*.{css,scss,svelte,html,js,ts,svx,md}' --check",
     "format:fix": "npm run format -- --write",
     "fixup": "run-s lint:fix format:fix",
-    "test": "jest --no-cache --runInBand --ci --json --outputFile=\"test/temp/jest-results.json\"",
+    "test": "jest --no-cache --runInBand --force-exit --ci --json --outputFile=\"test/temp/jest-results.json\"",
     "prerelease": "run-s lint \"test --scripts-prepend-node-path\"",
     "release": "standard-version",
     "beta-release": "npm run release -- -p beta"
