@@ -50,7 +50,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: test-temp-${{ matrix.os }}-${{ matrix.node-version }}
+          name: test-failure-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node-version }}
           path: |
             test-temp.tar
             test/temp/jest-results.json
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: success()
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.node-version }}
+          name: test-success-${{github.run_id}}-${{ matrix.os }}-${{ matrix.node-version }}
           path: |
             test/temp/jest-results.json
             test/temp/junit.xml
