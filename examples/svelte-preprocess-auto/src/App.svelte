@@ -1,8 +1,6 @@
 <script type="text/javascript">
   import Nested from './Nested.svelte';
-  export let label = '';
-
-  $: console.log(label);
+  export let name = '';
 </script>
 
 <style type="text/stylus">
@@ -19,7 +17,7 @@
   hr
   h1 Hello!
   br
-  input(bind:value="{label}")
+  input(bind:value="{name}")
   br
-  Nested("{label}")
+  Nested("{name}")
 </template>
