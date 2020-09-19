@@ -16,8 +16,8 @@
     "svelte-hmr": "0.10.3",
     "svelte-preprocess": "4.3.0",
     "svite": "latest",
-    "systeminformation": "^4.27.3",
+    "systeminformation": "^4.27.5",
     "tslib": "^2.0.1",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.3"
   }
 }
