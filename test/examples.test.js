@@ -19,8 +19,6 @@ const {
 } = require('./utils');
 
 jest.setTimeout(process.env.CI ? 120000 : 60000);
-process.once('SIGINT', () => closeKill(process));
-process.once('SIGTERM', () => closeKill(process));
 
 const examples = ['minimal', 'postcss-tailwind', 'routify-mdsvex', 'svelte-preprocess-auto'];
 const pmOptions = ['npm', 'pnpm', 'yarn', 'yarn2'];
