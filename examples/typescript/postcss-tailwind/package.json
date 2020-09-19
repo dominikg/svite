@@ -10,17 +10,17 @@
   },
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",
-    "postcss": "^7.0.32",
+    "postcss": "^8.0.5",
     "postcss-import": "^12.0.1",
-    "postcss-load-config": "^2.1.0",
+    "postcss-load-config": "^2.1.1",
     "postcss-preset-env": "^6.7.0",
-    "svelte-check": "^1.0.42",
+    "svelte-check": "^1.0.45",
     "svelte-preprocess": "4.3.0",
     "svelte": "3.25.1",
     "svelte-hmr": "0.10.3",
     "svite": "latest",
     "tailwindcss": "^1.8.10",
     "tslib": "^2.0.1",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.3"
   }
 }
