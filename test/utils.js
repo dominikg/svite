@@ -98,6 +98,7 @@ const launchPuppeteer = async () => {
 const hmrUpdateComplete = async (page, file, timeout) => {
   return new Promise(function (resolve, reject) {
     var timer;
+
     function listener(data) {
       const text = data.text();
       if (text.indexOf(file) > -1) {
@@ -106,6 +107,7 @@ const hmrUpdateComplete = async (page, file, timeout) => {
         resolve();
       }
     }
+
     page.on('console', listener);
     timer = setTimeout(function () {
       page.off('console', listener);
@@ -146,6 +148,23 @@ const killtree = async (pid) => {
       }
     });
   });
+};
+
+const killProcessTreeOnSignals = () => {
+  function killAndExit() {
+    try {
+      killtree(process.pid);
+    } catch (e) {
+      // ignore
+    }
+    process.exit(1);
+  }
+
+  ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'].forEach(
+    (sig) => {
+      process.once(sig, () => killAndExit());
+    },
+  );
 };
 
 const packageSvite = async () => {
@@ -223,6 +242,7 @@ module.exports = {
   getText,
   hmrUpdateComplete,
   killtree,
+  killProcessTreeOnSignals,
   msDiff,
   launchPuppeteer,
   packageSvite,
