@@ -354,13 +354,21 @@ function createResolvers(config) {
   const resolvers = [];
   if (config.svite.resolveAbsoluteImportsInsideRoot) {
     const rootDir = path.normalize(config.svite.root || process.cwd());
+    const aliasCache = {};
     resolvers.push({
       alias(id) {
-        if (id && path.isAbsolute(id) && fs.existsSync(id)) {
+        if (aliasCache[id] != null) {
+          return aliasCache[id];
+        }
+        if (id && path.isAbsolute(id) && fs.existsSync(id) && fs.lstatSync(id).isFile()) {
           const relativePath = path.relative(rootDir, id);
-          if (!relativePath.startsWith('..') && !relativePath.startsWith('node_modules') && !resolvesAsModule(id)) {
-            // inside root dir but not in node_modules and not otherwise resolvable as module
-            const alias = '/' + (path.sep !== '/' ? relativePath.split(path.sep).join('/') : relativePath);
+          const parts = relativePath.split(path.sep);
+          const firstPart = parts[0];
+          if (firstPart !== '..' && firstPart !== 'node_modules' && (parts.length === 1 || !resolvesAsModule(firstPart))) {
+            // inside rootDir, outside node_modules, not part of a resolvable module
+            // go ahead and create alias
+            const alias = '/' + parts.join('/');
+            aliasCache[id] = alias;
             log.debug(`aliasing absolute import ${id} to ${alias}`);
             return alias;
           }
