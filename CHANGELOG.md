@@ -1,4 +1,11 @@
 
+### [0.7.1-beta.0](https://github.com/dominikg/svite/compare/0.7.0...0.7.1-beta.0) (2020-09-20)
+
+
+### Bug Fixes
+
+* absolute import resolver incorrectly declined all ids as existing modules (fixes [#56](https://github.com/dominikg/svite/issues/56)) ([85168cb](https://github.com/dominikg/svite/commit/85168cb366cb782eeb6234cec42651142ce59a05))
+
 ## [0.7.0](https://github.com/dominikg/svite/compare/0.7.0-beta.1...0.7.0) (2020-09-17)
 
 ## [0.7.0-beta.1](https://github.com/dominikg/svite/compare/0.7.0-beta.0...0.7.0-beta.1) (2020-09-16)
