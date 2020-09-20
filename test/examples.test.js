@@ -270,7 +270,7 @@ describe('examples', () => {
 
                     test('should accept update to App.svelte', async () => {
                       expect(beforeAllDevSuccessful).toBe(true);
-                      if (example.indexOf('routify') > -1) {
+                      if (example.indexOf('routify-mdsvex') > -1) {
                         await sleep(250); // let routify route update complete first
                       }
                       expect(await getText(devPage, '#test-div')).toBe('__xxx__');
@@ -279,6 +279,23 @@ describe('examples', () => {
                       await takeExampleScreenshot(devPage, 'devHmr');
                       expect(await getText(devPage, '#test-div')).toBe('__yyy__');
                     });
+
+                    if (example.indexOf('routify-mdsvex') > -1) {
+                      test('should navigate to mdsvex page', async () => {
+                        await updateExampleFile('src/pages/mdsvex.svx', (c) => `${c}\n<div id="mdsvex-div">__xxx__</div>`);
+                        await Promise.all([devPage.waitForNavigation(), devPage.click('a[href="/mdsvex"]'), sleep(500)]);
+                        await takeExampleScreenshot(devPage, 'devMdsvex');
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
+                      });
+
+                      test('should accept hmr update to mdsvex.svx', async () => {
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
+                        await updateExampleFile('src/pages/mdsvex.svx', (c) => c.replace('__xxx__', '__yyy__'));
+                        await hmrUpdateComplete(devPage, 'src/pages/mdsvex.svx', 10000);
+                        await takeExampleScreenshot(devPage, 'devMdsvexHmr');
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__yyy__');
+                      });
+                    }
 
                     test('should not have failed requests', () => {
                       expect(beforeAllDevSuccessful).toBe(true);
