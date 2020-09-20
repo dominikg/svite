@@ -7,6 +7,7 @@ const pkg = require(path.join(__dirname, '../package.json'));
 const version = pkg.version;
 const execa = require('execa');
 const fs = require('fs');
+const { prerender } = require('../tools/prerender');
 
 const buildOptionDefaults = {
   base: '/',
@@ -16,6 +17,10 @@ const buildOptionDefaults = {
   sourcemap: false,
   minify: 'terser',
   typescript: false,
+};
+const prerenderDefaults = {
+  outDir: 'dist',
+  port: 4002,
 };
 
 const devOptionDefaults = {
@@ -201,6 +206,10 @@ async function runBuild(options) {
     log.error('build error', err);
     process.exit(1);
   }
+}
+
+async function runPrerender(options) {
+  await prerender(options);
 }
 
 async function runOptimize(options) {
@@ -506,6 +515,25 @@ async function main() {
         }
       }
       await runBuild(buildOptions);
+    });
+
+  program
+    .command('prerender')
+    .description('prerender')
+    .option(
+      '-d, --debug [boolean|string]',
+      'enable debug output. you can use true for "vite:*,svite:*" or supply your own patterns. Separate patterns with , start with - to filter. eg: "foo:*,-foo:bar" ',
+      false,
+    )
+    .option('--routesJson <routes>', 'file with routes to prerender')
+    .option('-p,  --port <port>', 'port to use for serve', prerenderDefaults.port)
+    .option('--outDir <string>', 'output directory for build', prerenderDefaults.outDir)
+    .action(async (cmd) => {
+      const options = processOptions(cmd, prerenderDefaults);
+      // TODO validate routesJson param
+      const routes = require(options.routesJson);
+      options.routes = routes;
+      await runPrerender(options);
     });
 
   program
