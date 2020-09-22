@@ -8,13 +8,13 @@ const {
   closeKillAll,
   expectByPolling,
   getText,
-  hmrUpdateComplete,
   launchPuppeteer,
   packageSvite,
   sleep,
   takeScreenshot,
   tempDir,
   updateFile,
+  updateFileAndWaitForHmrComplete,
   writeLogs,
 } = require('./utils');
 
@@ -52,6 +52,7 @@ describe('examples', () => {
               const exampleDir = path.join(__dirname, '..', 'examples', script === 'typescript' ? `typescript/${example}` : example);
               const exampleTempDir = path.join(tempDir, script, pm, example);
               const updateExampleFile = updateFile.bind(null, exampleTempDir);
+              const updateExampleFileAndWaitForHmrUpdate = updateFileAndWaitForHmrComplete.bind(null, exampleTempDir);
               const writeExampleLogs = writeLogs.bind(null, exampleTempDir);
               const takeExampleScreenshot = takeScreenshot.bind(null, exampleTempDir);
 
@@ -274,8 +275,7 @@ describe('examples', () => {
                         await sleep(250); // let routify route update complete first
                       }
                       expect(await getText(devPage, '#test-div')).toBe('__xxx__');
-                      await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
-                      await hmrUpdateComplete(devPage, 'src/App.svelte', 10000);
+                      await updateExampleFileAndWaitForHmrUpdate('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'), devPage);
                       await takeExampleScreenshot(devPage, 'devHmr');
                       expect(await getText(devPage, '#test-div')).toBe('__yyy__');
                     });
@@ -290,8 +290,7 @@ describe('examples', () => {
 
                       test('should accept hmr update to mdsvex.svx', async () => {
                         expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
-                        await updateExampleFile('src/pages/mdsvex.svx', (c) => c.replace('__xxx__', '__yyy__'));
-                        await hmrUpdateComplete(devPage, 'src/pages/mdsvex.svx', 10000);
+                        await updateExampleFileAndWaitForHmrUpdate('src/pages/mdsvex.svx', (c) => c.replace('__xxx__', '__yyy__'), devPage);
                         await takeExampleScreenshot(devPage, 'devMdsvexHmr');
                         expect(await getText(devPage, '#mdsvex-div')).toBe('__yyy__');
                       });
