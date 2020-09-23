@@ -37,11 +37,18 @@ const updateFile = async (dir, file, replacer) => {
   const newContent = replacer(content);
   await throttledWrite(filePath, newContent, 100);
   fileContentCache[filePath] = newContent;
+  return newContent;
 };
 
 const updateFileAndWaitForHmrComplete = async (dir, file, replacer, page) => {
-  await updateFile(dir, file, replacer);
-  await hmrUpdateComplete(page, file, 10000);
+  const newContent = await updateFile(dir, file, replacer);
+  try {
+    await hmrUpdateComplete(page, file, 10000);
+  } catch (e) {
+    console.log(`retrying hmr update for ${file}`);
+    await updateFile(dir, file, () => newContent);
+    await hmrUpdateComplete(page, file, 5000);
+  }
 };
 
 const deleteDir = async (dir) => {
@@ -98,6 +105,7 @@ const launchPuppeteer = async () => {
 const hmrUpdateComplete = async (page, file, timeout) => {
   return new Promise(function (resolve, reject) {
     var timer;
+
     function listener(data) {
       const text = data.text();
       if (text.indexOf(file) > -1) {
@@ -106,6 +114,7 @@ const hmrUpdateComplete = async (page, file, timeout) => {
         resolve();
       }
     }
+
     page.on('console', listener);
     timer = setTimeout(function () {
       page.off('console', listener);
@@ -148,15 +157,30 @@ const killtree = async (pid) => {
   });
 };
 
+const killProcessTreeOnSignals = () => {
+  function killAndExit() {
+    try {
+      killtree(process.pid);
+    } catch (e) {
+      // ignore
+    }
+    process.exit(1);
+  }
+
+  ['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGTERM'].forEach(
+    (sig) => {
+      process.once(sig, () => killAndExit());
+    },
+  );
+};
+
 const packageSvite = async () => {
   try {
-    console.log(`executing npm pack ${sviteDir}`);
     const packCmd = await execa('npm', ['pack', sviteDir], { cwd: tempDir });
     const packageName = packCmd.stdout;
     const packageFilePath = path.join(tempDir, packageName);
     const packageExists = await fs.exists(packageFilePath);
     if (packageExists) {
-      console.log(`successfully packed ${packageFilePath}`);
       return packageFilePath;
     } else {
       throw new Error('pack returned with 0 but packageFile does not exist');
@@ -223,6 +247,7 @@ module.exports = {
   getText,
   hmrUpdateComplete,
   killtree,
+  killProcessTreeOnSignals,
   msDiff,
   launchPuppeteer,
   packageSvite,

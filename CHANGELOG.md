@@ -1,4 +1,24 @@
 
+### [0.7.1-beta.1](https://github.com/dominikg/svite/compare/0.7.1-beta.0...0.7.1-beta.1) (2020-09-23)
+
+
+### Features
+
+* update svelte to 3.26.0 and svelte-hmr to 0.11.0 ([667175c](https://github.com/dominikg/svite/commit/667175c45b38cf4fe76a3fd96a1c97cccfe8a0aa))
+
+
+### Bug Fixes
+
+* don't try to gracefully close http server on Ctrl-C (fixes [#57](https://github.com/dominikg/svite/issues/57)) ([8cf095c](https://github.com/dominikg/svite/commit/8cf095c45b8f006b40a967eeb0f48d57f9b22393))
+* downgrade postcss to 7 in postcss-tailwind examples ([0cd4bf1](https://github.com/dominikg/svite/commit/0cd4bf1f4ed09f0db12412b20176251088c5bcd4))
+
+### [0.7.1-beta.0](https://github.com/dominikg/svite/compare/0.7.0...0.7.1-beta.0) (2020-09-20)
+
+
+### Bug Fixes
+
+* absolute import resolver incorrectly declined all ids as existing modules (fixes [#56](https://github.com/dominikg/svite/issues/56)) ([85168cb](https://github.com/dominikg/svite/commit/85168cb366cb782eeb6234cec42651142ce59a05))
+
 ## [0.7.0](https://github.com/dominikg/svite/compare/0.7.0-beta.1...0.7.0) (2020-09-17)
 
 ## [0.7.0-beta.1](https://github.com/dominikg/svite/compare/0.7.0-beta.0...0.7.0-beta.1) (2020-09-16)

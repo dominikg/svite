@@ -131,8 +131,6 @@ function mergeRollupOptions(rollupOptions1, rollupOptions2) {
 async function runServe(options) {
   const start = Date.now();
   const server = vite.createServer(options);
-  process.once('SIGTERM', () => stopServerAndExit(server, 'SIGTERM'));
-  process.once('SIGINT', () => stopServerAndExit(server, 'SIGINT'));
   let port = options.port || 3000;
   let hostname = options.hostname || 'localhost';
   const protocol = options.https ? 'https' : 'http';
@@ -168,19 +166,6 @@ async function runServe(options) {
     if (options.open) {
       require('vite/dist/node/utils/openBrowser').openBrowser(`${protocol}://${hostname}:${port}`);
     }
-  });
-}
-
-function stopServerAndExit(server, signal) {
-  log.debug.enabled && log.debug(`received ${signal}, stopping server`);
-  const graceSeconds = 3;
-  setTimeout(() => {
-    log.debug.enabled && log.debug(`server did not stop within ${graceSeconds}s. Exiting the hard way.`);
-    process.exit(1);
-  }, graceSeconds * 1000);
-  server.close(() => {
-    log.debug.enabled && log.debug('server stopped. bye');
-    process.exit(0);
   });
 }
 

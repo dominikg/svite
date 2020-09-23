@@ -19,13 +19,11 @@ const {
   writeLogs,
 } = require('./utils');
 
+jest.setTimeout(process.env.CI ? 120000 : 60000);
+
 const getComputedColor = async (page, selectorOrEl) => {
   return (await getEl(page, selectorOrEl)).evaluate((el) => getComputedStyle(el).color);
 };
-
-jest.setTimeout(process.env.CI ? 120000 : 60000);
-process.once('SIGINT', () => closeKill(process));
-process.once('SIGTERM', () => closeKill(process));
 
 describe('svite', () => {
   let svitePackage;
