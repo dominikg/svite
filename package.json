@@ -16,8 +16,12 @@
     "prerelease": "run-s lint \"test --scripts-prepend-node-path\"",
     "release": "standard-version",
     "beta-release": "npm run release -- -p beta",
-    "updates:check": "./scripts/check-updates.js",
-    "updates:upgrade": "./scripts/check-updates.js -u"
+    "update-peers:check": "./scripts/check-updates.js --peers-only",
+    "update-peers:upgrade": "./scripts/check-updates.js --peers-only --upgrade",
+    "update-others:check": "./scripts/check-updates.js --skip-peers",
+    "update-others:upgrade": "./scripts/check-updates.js --skip-peers --upgrade",
+    "update-all:check": "./scripts/check-updates.js",
+    "update-all:upgrade": "./scripts/check-updates.js --upgrade"
   },
   "bin": "./bin/svite.js",
   "main": "index.js",
@@ -50,7 +54,7 @@
     "vite": "1.0.0-rc.4"
   },
   "peerDependencies": {
-    "svelte": "3.26.0",
+    "svelte": "3.28.0",
     "svelte-hmr": "0.11.0"
   },
   "optionalDependencies": {
@@ -86,7 +90,7 @@
     "stylelint": "^13.7.1",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-recommended": "^3.0.0",
-    "svelte": "3.26.0",
+    "svelte": "3.28.0",
     "svelte-preprocess": "4.3.0",
     "tree-kill": "^1.2.2",
     "typescript": "^4.0.3",

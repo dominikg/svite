@@ -16,7 +16,7 @@
     "postcss-preset-env": "^6.7.0",
     "svelte-check": "^1.0.47",
     "svelte-preprocess": "4.3.0",
-    "svelte": "3.26.0",
+    "svelte": "3.28.0",
     "svelte-hmr": "0.11.0",
     "svite": "latest",
     "tailwindcss": "^1.8.10",
