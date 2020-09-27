@@ -21,20 +21,29 @@ async function collectPackagesToUpdate() {
   return examples.concat(other);
 }
 
-async function checkUpdates(packageFile, upgrade) {
-  await ncu.run({
+async function checkUpdates(packageFile, upgrade, filter, reject) {
+  const options = {
     packageFile,
     upgrade,
+    filter,
+    reject,
     jsonUpgraded: false,
     loglevel: 'warn',
-  });
+  };
+  await ncu.run(options);
 }
 
 async function main() {
-  const upgrade = process.argv.length === 3 && process.argv[2] === '-u';
+  const flags = process.argv.length > 2 ? process.argv.slice(2) : [];
+  const upgrade = flags.includes('--upgrade');
+  const peersOnly = flags.includes('--peers-only');
+  const skipPeers = flags.includes('--skip-peers');
+  const peers = Object.keys(require('../package.json').peerDependencies || {});
+  const filter = peersOnly ? peers : undefined;
+  const reject = skipPeers ? peers : undefined;
   const packageFiles = await collectPackagesToUpdate();
   for (let packageFile of packageFiles) {
-    await checkUpdates(packageFile, upgrade);
+    await checkUpdates(packageFile, upgrade, filter, reject);
   }
 }
 

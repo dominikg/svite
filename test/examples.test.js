@@ -8,13 +8,13 @@ const {
   closeKillAll,
   expectByPolling,
   getText,
-  hmrUpdateComplete,
   launchPuppeteer,
   packageSvite,
   sleep,
   takeScreenshot,
   tempDir,
   updateFile,
+  updateFileAndWaitForHmrComplete,
   writeLogs,
 } = require('./utils');
 
@@ -52,6 +52,7 @@ describe('examples', () => {
               const exampleDir = path.join(__dirname, '..', 'examples', script === 'typescript' ? `typescript/${example}` : example);
               const exampleTempDir = path.join(tempDir, script, pm, example);
               const updateExampleFile = updateFile.bind(null, exampleTempDir);
+              const updateExampleFileAndWaitForHmrUpdate = updateFileAndWaitForHmrComplete.bind(null, exampleTempDir);
               const writeExampleLogs = writeLogs.bind(null, exampleTempDir);
               const takeExampleScreenshot = takeScreenshot.bind(null, exampleTempDir);
 
@@ -270,15 +271,30 @@ describe('examples', () => {
 
                     test('should accept update to App.svelte', async () => {
                       expect(beforeAllDevSuccessful).toBe(true);
-                      if (example.indexOf('routify') > -1) {
+                      if (example.indexOf('routify-mdsvex') > -1) {
                         await sleep(250); // let routify route update complete first
                       }
                       expect(await getText(devPage, '#test-div')).toBe('__xxx__');
-                      await updateExampleFile('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'));
-                      await hmrUpdateComplete(devPage, 'src/App.svelte', 10000);
+                      await updateExampleFileAndWaitForHmrUpdate('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'), devPage);
                       await takeExampleScreenshot(devPage, 'devHmr');
                       expect(await getText(devPage, '#test-div')).toBe('__yyy__');
                     });
+
+                    if (example.indexOf('routify-mdsvex') > -1) {
+                      test('should navigate to mdsvex page', async () => {
+                        await updateExampleFile('src/pages/mdsvex.svx', (c) => `${c}\n<div id="mdsvex-div">__xxx__</div>`);
+                        await Promise.all([devPage.waitForNavigation(), devPage.click('a[href="/mdsvex"]'), sleep(500)]);
+                        await takeExampleScreenshot(devPage, 'devMdsvex');
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
+                      });
+
+                      test('should accept hmr update to mdsvex.svx', async () => {
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
+                        await updateExampleFileAndWaitForHmrUpdate('src/pages/mdsvex.svx', (c) => c.replace('__xxx__', '__yyy__'), devPage);
+                        await takeExampleScreenshot(devPage, 'devMdsvexHmr');
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__yyy__');
+                      });
+                    }
 
                     test('should not have failed requests', () => {
                       expect(beforeAllDevSuccessful).toBe(true);

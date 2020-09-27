@@ -1,6 +1,6 @@
 {
   "name": "svite",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "svelte integration plugin for vite",
   "scripts": {
     "lint": "run-p lint:script lint:style",
@@ -17,8 +17,12 @@
     "prerelease": "run-s lint \"test --scripts-prepend-node-path\"",
     "release": "standard-version",
     "beta-release": "npm run release -- -p beta",
-    "updates:check": "./scripts/check-updates.js",
-    "updates:upgrade": "./scripts/check-updates.js -u"
+    "update-peers:check": "./scripts/check-updates.js --peers-only",
+    "update-peers:upgrade": "./scripts/check-updates.js --peers-only --upgrade",
+    "update-others:check": "./scripts/check-updates.js --skip-peers",
+    "update-others:upgrade": "./scripts/check-updates.js --skip-peers --upgrade",
+    "update-all:check": "./scripts/check-updates.js",
+    "update-all:upgrade": "./scripts/check-updates.js --upgrade"
   },
   "bin": "./bin/svite.js",
   "main": "index.js",
@@ -51,24 +55,24 @@
     "vite": "1.0.0-rc.4"
   },
   "peerDependencies": {
-    "svelte": "3.25.1",
-    "svelte-hmr": "0.10.3"
+    "svelte": "3.28.0",
+    "svelte-hmr": "0.11.0"
   },
   "optionalDependencies": {
     "rollup-plugin-visualizer": "^4.1.1",
-    "svelte-preprocess": "4.3.0"
+    "svelte-preprocess": "4.3.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.1.1",
-    "@typescript-eslint/parser": "^4.1.1",
-    "eslint": "^7.9.0",
-    "eslint-config-prettier": "^6.11.0",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-html": "^6.1.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jest": "^24.0.1",
+    "eslint-plugin-jest": "^24.0.2",
     "eslint-plugin-markdown": "^2.0.0-alpha.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-svelte3": "^2.7.3",
@@ -77,18 +81,18 @@
     "jest": "^26.4.2",
     "jest-junit": "^11.1.0",
     "lint-staged": "^10.4.0",
-    "npm-check-updates": "^9.0.1",
+    "npm-check-updates": "^9.0.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.2",
-    "prettier-plugin-svelte": "^1.2.1",
-    "puppeteer-core": "^5.3.0",
+    "prettier-plugin-svelte": "^1.4.0",
+    "puppeteer-core": "^5.3.1",
     "rollup-plugin-visualizer": "^4.1.1",
     "standard-version": "^9.0.0",
-    "stylelint": "^13.7.1",
+    "stylelint": "^13.7.2",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-recommended": "^3.0.0",
-    "svelte": "3.25.1",
-    "svelte-preprocess": "4.3.0",
+    "svelte": "3.28.0",
+    "svelte-preprocess": "4.3.2",
     "tree-kill": "^1.2.2",
     "typescript": "^4.0.3",
     "write-file-atomic": "^3.0.3"
