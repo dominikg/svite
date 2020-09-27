@@ -123,6 +123,7 @@ const writeHtml = async (route, html, distDir) => {
   const filename = routeToFilename(route, distDir);
   const parentDir = path.dirname(filename);
   await fs.mkdirp(parentDir);
+  log.info(`writing ${filename}`);
   await fs.writeFile(filename, html);
 };
 
@@ -142,18 +143,27 @@ const prerender = async (options) => {
   const outputDir = options.outDir || 'dist';
   const port = options.port || 4002;
   const routes = options.routes;
-  const indexLastRoutes = routes.filter((route) => route !== '/' && route !== '/index' && route !== '/index.html');
-  indexLastRoutes.push('/index.html');
+
   try {
     server = await startServer(outputDir, port);
     browser = await launchPuppeteer(port);
-
-    for (let route of indexLastRoutes) {
+    let prerenderPromises = [];
+    for (const route of routes) {
+      if (route === '/' || route === '/index' || route === '/index.html') {
+        continue; //do not prerender base index.html until all routes have been prerendered
+      }
       const url = `http://localhost:${port}${route}`;
       log.info('prerendering ' + url);
-      const html = await prerenderUrl(url, browser);
-      await writeHtml(route, html, outputDir);
+      const prerenderPromise = prerenderUrl(url, browser).then((html) => writeHtml(route, html, outputDir));
+      prerenderPromises.push(prerenderPromise);
     }
+    await Promise.allSettled(prerenderPromises);
+    const indexContent = await fs.readFile(path.join(outputDir, 'index.html'));
+    await fs.writeFile(path.join(outputDir, '__app.html'), indexContent);
+    const route = '/';
+    const url = `http://localhost:${port}${route}`;
+    log.info('prerendering ' + url);
+    await prerenderUrl(url, browser).then((html) => writeHtml(route, html, outputDir));
   } catch (e) {
     log.error(`prerender failed`, e);
   } finally {

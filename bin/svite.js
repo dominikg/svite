@@ -516,7 +516,8 @@ async function main() {
     .action(async (cmd) => {
       const options = processOptions(cmd, prerenderDefaults);
       // TODO validate routesJson param
-      const routes = require(options.routesJson);
+      const routesFile = path.join(process.cwd(), options.routesJson);
+      const routes = require(routesFile);
       options.routes = routes;
       await runPrerender(options);
     });
