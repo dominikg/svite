@@ -25,16 +25,11 @@ async function checkUpdates(packageFile, upgrade, filter, reject) {
   const options = {
     packageFile,
     upgrade,
+    filter,
+    reject,
     jsonUpgraded: false,
     loglevel: 'warn',
   };
-  if (filter) {
-    options.filter = filter;
-  }
-  if (reject) {
-    options.reject = reject;
-  }
-
   await ncu.run(options);
 }
 
