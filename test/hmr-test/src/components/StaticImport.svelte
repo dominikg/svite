@@ -1,6 +1,6 @@
 <script>
-  import img from '/src/assets/static.svg';
-  const importedAsset = img;
+  import asset from '/src/assets/static.svg';
+  const importedAsset = asset;
   const label = 'static-import';
 </script>
 

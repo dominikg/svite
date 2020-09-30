@@ -1,6 +1,6 @@
 <script>
-  import img from '/src/assets/dynamic.svg';
-  const importedAsset = img;
+  import asset from '/src/assets/dynamic.svg';
+  const importedAsset = asset;
   const label = 'dynamic-import';
 </script>
 
