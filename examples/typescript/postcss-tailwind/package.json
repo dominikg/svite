@@ -10,11 +10,11 @@
   },
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",
-    "postcss": "^8.1.0",
+    "postcss": "^8.1.1",
     "postcss-import": "^12.0.1",
     "postcss-load-config": "^2.1.2",
     "postcss-preset-env": "^6.7.0",
-    "svelte-check": "^1.0.52",
+    "svelte-check": "^1.0.53",
     "svelte-preprocess": "4.3.2",
     "svelte": "3.29.0",
     "svelte-hmr": "0.11.1",
