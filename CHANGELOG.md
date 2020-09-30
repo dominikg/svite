@@ -1,4 +1,12 @@
 
+### [0.7.2](https://github.com/dominikg/svite/compare/0.7.1...0.7.2) (2020-09-30)
+
+
+### Features
+
+* update svelte to 3.28.0 ([95c0fa6](https://github.com/dominikg/svite/commit/95c0fa60c94b5ce7a6b1898d25d6f7e245c6cec0))
+* update svelte to 3.29.0 and svelte-hmr to 0.11.1 ([da1396c](https://github.com/dominikg/svite/commit/da1396c74bbf7abeac6b7e26bf01d6408616a248))
+
 ### [0.7.1](https://github.com/dominikg/svite/compare/0.7.1-beta.1...0.7.1) (2020-09-23)
 
 ### [0.7.1-beta.1](https://github.com/dominikg/svite/compare/0.7.1-beta.0...0.7.1-beta.1) (2020-09-23)
