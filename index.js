@@ -66,47 +66,44 @@ function applyForcedOptions(config, forcedOptions) {
 }
 
 async function hasTypescriptPreprocessor(svelteConfig) {
-  if (!Array.isArray(svelteConfig.preprocess)) {
-    return false;
+  let preprocessors;
+  if (!svelteConfig.preprocess) {
+    preprocessors = [];
+  } else if (!Array.isArray(svelteConfig.preprocess)) {
+    preprocessors = [svelteConfig.preprocess];
+  } else {
+    preprocessors = svelteConfig.preprocess;
   }
-  if (!svelteConfig.preprocess[0].script) {
-    return false;
+  for (let preprocessor of preprocessors) {
+    if (await isTypeSriptPreprocessor(preprocessor)) {
+      return true;
+    }
   }
-  try {
-    const result = await svelteConfig.preprocess[0].script(
-      { content: 'const x:string="y";export{}', attributes: { lang: 'ts' }, filename: 'Test.svelte' },
-      { lang: 'ts' },
-      'Test.svelte',
-    );
-    log.debug('script preprocessor at index 0 is typescript. transformed:', result);
-    return true;
-  } catch (e) {
-    log.debug('script preprocessor at index 0 failed to transform typescript', e);
-    return false;
-  }
+  return false;
 }
-async function setupTypeScriptPreprocessor(svelteConfig, isBuild) {
+async function isTypeSriptPreprocessor(preprocessor) {
+  if (preprocessor.script) {
+    try {
+      const result = await preprocessor.script(
+        { content: 'const x:string = "y";\nexport{}\n', attributes: { lang: 'ts' }, filename: 'Test.svelte' },
+        { lang: 'ts' },
+        'Test.svelte',
+      );
+      if (result.code && result.code.match(/const x ?= ?"y";/)) {
+        log.debug('successfully transformed script, found typescript preprocessor', result);
+        return true; // removed :string
+      }
+      log.debug('transformed script but not a typescript preprocessor', result);
+    } catch (e) {
+      log.debug('not a typescript preprocessor', e);
+    }
+  }
+  return false;
+}
+async function ensureTypescriptPreprocessorExists(svelteConfig) {
   const hasTypescript = await hasTypescriptPreprocessor(svelteConfig);
   if (!hasTypescript) {
-    throw new Error('svite -ts requires a typescript preprocessor at index 0 in svelte.config.js preprocess:[]');
-  }
-  if (!isBuild) {
-    const { typescript } = require('svelte-preprocess');
-    const devTS = {
-      moduleResolution: 'node',
-      target: 'es2017',
-      importsNotUsedAsValues: 'error',
-      isolatedModules: true,
-      sourceMap: true,
-      types: ['svelte', 'vite/dist/importMeta'],
-      strict: false,
-      esModuleInterop: true,
-      skipLibCheck: true,
-      forceConsistentCasingInFileNames: true,
-      module: 'esnext',
-    };
-    log.warn('overriding typescript preprocessor to support hmr in vite', devTS);
-    svelteConfig.preprocess[0] = typescript(devTS);
+    throw new Error('svite -ts option requires a typescript preprocessor. Add one to preprocess in svelte.config.js');
   }
 }
 
@@ -118,7 +115,7 @@ async function finalizeConfig(config, type) {
   const forcedOptions = forcedSvelteOptions[type];
   const isTypescript = config.svite.typescript;
   if (isTypescript) {
-    await setupTypeScriptPreprocessor(svelteConfig, isBuild);
+    await ensureTypescriptPreprocessorExists(svelteConfig);
   }
   if (isBuild) {
     forcedOptions.dev = (isDevServer && !!config.dev.hot) || !isProduction;

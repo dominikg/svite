@@ -1,10 +1,26 @@
 const path = require('path');
 const { mdsvex } = require('mdsvex');
-const { typescript } = require('svelte-preprocess');
+const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
   extensions: ['.svelte', '.svx'],
   preprocess: [
-    typescript(),
+    sveltePreprocess({
+      defaults: {
+        script: 'typescript',
+      },
+      typescript: true,
+      // disable preprocessors not in use
+      babel: false,
+      coffeescript: false,
+      globalStyle: false,
+      less: false,
+      postcss: false,
+      pug: false,
+      replace: false,
+      sass: false,
+      scss: false,
+      stylus: false,
+    }),
     mdsvex({
       layout: path.join(__dirname, 'src', 'layouts', 'MdsvexLayout.svelte'),
     }),
