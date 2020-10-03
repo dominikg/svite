@@ -282,7 +282,7 @@ describe('examples', () => {
 
                     if (example.indexOf('routify-mdsvex') > -1) {
                       test('should navigate to mdsvex page', async () => {
-                        await updateExampleFile('src/pages/mdsvex.svx', (c) => `${c}\n<div id="mdsvex-div">__xxx__</div>`);
+                        await updateExampleFile('src/pages/mdsvex.svx', (c) => `<div id="mdsvex-div">__xxx__</div>\n${c}`);
                         await Promise.all([devPage.waitForNavigation(), devPage.click('a[href="/mdsvex"]'), sleep(500)]);
                         await takeExampleScreenshot(devPage, 'devMdsvex');
                         expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
@@ -290,9 +290,13 @@ describe('examples', () => {
 
                       test('should accept hmr update to mdsvex.svx', async () => {
                         expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
-                        await updateExampleFileAndWaitForHmrUpdate('src/pages/mdsvex.svx', (c) => c.replace('__xxx__', '__yyy__'), devPage);
+                        await updateExampleFileAndWaitForHmrUpdate(
+                          'src/pages/mdsvex.svx',
+                          (c) => c.replace('__xxx__', '__yyy__').replace('mdsvex-div', 'mdsvex2-div'),
+                          devPage,
+                        );
                         await takeExampleScreenshot(devPage, 'devMdsvexHmr');
-                        expect(await getText(devPage, '#mdsvex-div')).toBe('__yyy__');
+                        expect(await getText(devPage, '#mdsvex2-div')).toBe('__yyy__');
                       });
                     }
 
