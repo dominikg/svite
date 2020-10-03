@@ -1,4 +1,22 @@
 
+## [0.8.0-beta.0](https://github.com/dominikg/svite/compare/0.7.2...0.8.0-beta.0) (2020-10-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* - include the following compiler options in tsconfig.json
+
+  "compilerOptions": {
+    "module": "esnext",
+    "types": ["svelte","vite/dist/importMeta"]
+  }
+
+- update svelte.config.js preprocessor setup to your preferred way
+
+### Features
+
+* improved typescript support ([827f2e9](https://github.com/dominikg/svite/commit/827f2e9220d583ad4238b162095d720333975449))
+
 ### [0.7.2](https://github.com/dominikg/svite/compare/0.7.1...0.7.2) (2020-09-30)
 
 
