@@ -201,17 +201,42 @@ use this option if you don't want to use `svelte.config.js` or need a quick over
 
 use this option if you want to use typescript inside svelte
 
-This option requires you to set up a typescript preprocessor for svelte as the first preprocessor in svelte.config.js
+This option requires you to set up tsconfig.json like this
+
+```json
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/*", "public/*"],
+  "compilerOptions": {
+    "module": "esnext",
+    "types": ["svelte", "vite/dist/importMeta"]
+  }
+}
+```
+
+And typescript preprocessor in svelte.config.js
 
 ```js
 const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
-  preprocess: [
-    sveltePreprocess.typescript(), // must be the first one and must be only typescript, not sveltePreprocess()
-    //you can add additional preprocessors here if you need them
-    //if you need svelte-preprocess, disable its typescript preprocessor, you don't want two
-    sveltePreprocess({ typescript: false }),
-  ],
+  preprocess: sveltePreprocess({
+    defaults: {
+      script: 'typescript',
+    },
+    typescript: true,
+    // disable preprocessors not in use
+    babel: false,
+    coffeescript: false,
+    globalStyle: false,
+    less: false,
+    postcss: false,
+    pug: false,
+    replace: false,
+    sass: false,
+    scss: false,
+    stylus: false,
+  }),
 };
 ```
 
