@@ -292,11 +292,12 @@ describe('examples', () => {
                         expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
                         await updateExampleFileAndWaitForHmrUpdate(
                           'src/pages/mdsvex.svx',
-                          (c) => c.replace('__xxx__', '__yyy__').replace('mdsvex-div', 'mdsvex2-div'),
+                          (c) => `<div id="mdsvex-div2">__yyy__</div>\n${c}`,
                           devPage,
                         );
+                        await sleep(250);
                         await takeExampleScreenshot(devPage, 'devMdsvexHmr');
-                        expect(await getText(devPage, '#mdsvex2-div')).toBe('__yyy__');
+                        expect(await getText(devPage, '#mdsvex-div2')).toBe('__yyy__');
                       });
                     }
 
