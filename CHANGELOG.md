@@ -1,112 +1,117 @@
-
 ## [0.8.0-beta.0](https://github.com/dominikg/svite/compare/0.7.2...0.8.0-beta.0) (2020-10-03)
-
 
 ### ⚠ BREAKING CHANGES
 
-* - include the following compiler options in tsconfig.json
+- required config updates for typescript projects
 
+include the following compiler options in tsconfig.json
+
+```json
+{
   "compilerOptions": {
     "module": "esnext",
-    "types": ["svelte","vite/dist/importMeta"]
+    "types": ["svelte", "vite/dist/importMeta"]
   }
+}
+```
 
-- update svelte.config.js preprocessor setup to your preferred way
+update svelte.config.js typescript preprocessor setup to your preferred way.
+eg. full auto mode with typescript as default script language
+
+```js
+const sveltePreprocess = require('svelte-preprocess');
+module.exports = {
+  preprocess: sveltePreprocess({
+    defaults: {
+      script: 'typescript',
+    },
+  }),
+};
+```
 
 ### Features
 
-* improved typescript support ([827f2e9](https://github.com/dominikg/svite/commit/827f2e9220d583ad4238b162095d720333975449))
+- improved typescript support ([827f2e9](https://github.com/dominikg/svite/commit/827f2e9220d583ad4238b162095d720333975449))
 
 ### [0.7.2](https://github.com/dominikg/svite/compare/0.7.1...0.7.2) (2020-09-30)
 
-
 ### Features
 
-* update svelte to 3.28.0 ([95c0fa6](https://github.com/dominikg/svite/commit/95c0fa60c94b5ce7a6b1898d25d6f7e245c6cec0))
-* update svelte to 3.29.0 and svelte-hmr to 0.11.1 ([da1396c](https://github.com/dominikg/svite/commit/da1396c74bbf7abeac6b7e26bf01d6408616a248))
+- update svelte to 3.28.0 ([95c0fa6](https://github.com/dominikg/svite/commit/95c0fa60c94b5ce7a6b1898d25d6f7e245c6cec0))
+- update svelte to 3.29.0 and svelte-hmr to 0.11.1 ([da1396c](https://github.com/dominikg/svite/commit/da1396c74bbf7abeac6b7e26bf01d6408616a248))
 
 ### [0.7.1](https://github.com/dominikg/svite/compare/0.7.1-beta.1...0.7.1) (2020-09-23)
 
 ### [0.7.1-beta.1](https://github.com/dominikg/svite/compare/0.7.1-beta.0...0.7.1-beta.1) (2020-09-23)
 
-
 ### Features
 
-* update svelte to 3.26.0 and svelte-hmr to 0.11.0 ([667175c](https://github.com/dominikg/svite/commit/667175c45b38cf4fe76a3fd96a1c97cccfe8a0aa))
-
+- update svelte to 3.26.0 and svelte-hmr to 0.11.0 ([667175c](https://github.com/dominikg/svite/commit/667175c45b38cf4fe76a3fd96a1c97cccfe8a0aa))
 
 ### Bug Fixes
 
-* don't try to gracefully close http server on Ctrl-C (fixes [#57](https://github.com/dominikg/svite/issues/57)) ([8cf095c](https://github.com/dominikg/svite/commit/8cf095c45b8f006b40a967eeb0f48d57f9b22393))
-* downgrade postcss to 7 in postcss-tailwind examples ([0cd4bf1](https://github.com/dominikg/svite/commit/0cd4bf1f4ed09f0db12412b20176251088c5bcd4))
+- don't try to gracefully close http server on Ctrl-C (fixes [#57](https://github.com/dominikg/svite/issues/57)) ([8cf095c](https://github.com/dominikg/svite/commit/8cf095c45b8f006b40a967eeb0f48d57f9b22393))
+- downgrade postcss to 7 in postcss-tailwind examples ([0cd4bf1](https://github.com/dominikg/svite/commit/0cd4bf1f4ed09f0db12412b20176251088c5bcd4))
 
 ### [0.7.1-beta.0](https://github.com/dominikg/svite/compare/0.7.0...0.7.1-beta.0) (2020-09-20)
 
-
 ### Bug Fixes
 
-* absolute import resolver incorrectly declined all ids as existing modules (fixes [#56](https://github.com/dominikg/svite/issues/56)) ([85168cb](https://github.com/dominikg/svite/commit/85168cb366cb782eeb6234cec42651142ce59a05))
+- absolute import resolver incorrectly declined all ids as existing modules (fixes [#56](https://github.com/dominikg/svite/issues/56)) ([85168cb](https://github.com/dominikg/svite/commit/85168cb366cb782eeb6234cec42651142ce59a05))
 
 ## [0.7.0](https://github.com/dominikg/svite/compare/0.7.0-beta.1...0.7.0) (2020-09-17)
 
 ## [0.7.0-beta.1](https://github.com/dominikg/svite/compare/0.7.0-beta.0...0.7.0-beta.1) (2020-09-16)
 
-
 ### Features
 
-* update svelte to 3.25.1 ([7e1bb60](https://github.com/dominikg/svite/commit/7e1bb60ce68ec91ee5e69793048b98f07ca2b803))
+- update svelte to 3.25.1 ([7e1bb60](https://github.com/dominikg/svite/commit/7e1bb60ce68ec91ee5e69793048b98f07ca2b803))
 
 ## [0.7.0-beta.0](https://github.com/dominikg/svite/compare/0.6.1...0.7.0-beta.0) (2020-09-14)
 
-
 ### ⚠ BREAKING CHANGES
 
-* move svelte and svelte-hmr to devDependencies
+- move svelte and svelte-hmr to devDependencies
 
 ### Features
 
-* more checks to not alias existing modules, convert alias to use forward slashes ([a452f94](https://github.com/dominikg/svite/commit/a452f948c1e294a6729598f0eef21a6215611e65))
-* move svelte and svelte-hmr to devDependencies ([42a692b](https://github.com/dominikg/svite/commit/42a692bbff887741353bd1f315cd6a711c9fc1bc))
-* update svelte to 3.25.0 ([38af713](https://github.com/dominikg/svite/commit/38af7139d6a9cc801ee82d40162ecb0ccf79c8ca))
-
+- more checks to not alias existing modules, convert alias to use forward slashes ([a452f94](https://github.com/dominikg/svite/commit/a452f948c1e294a6729598f0eef21a6215611e65))
+- move svelte and svelte-hmr to devDependencies ([42a692b](https://github.com/dominikg/svite/commit/42a692bbff887741353bd1f315cd6a711c9fc1bc))
+- update svelte to 3.25.0 ([38af713](https://github.com/dominikg/svite/commit/38af7139d6a9cc801ee82d40162ecb0ccf79c8ca))
 
 ### Bug Fixes
 
-* do not create aliases for absolute paths into node_modules ([5310ef6](https://github.com/dominikg/svite/commit/5310ef6f2daa912a09c0ec4bf80531468fcb139a))
+- do not create aliases for absolute paths into node_modules ([5310ef6](https://github.com/dominikg/svite/commit/5310ef6f2daa912a09c0ec4bf80531468fcb139a))
 
 ### [0.6.1](https://github.com/dominikg/svite/compare/0.6.1-beta.2...0.6.1) (2020-09-08)
 
 ### [0.6.1-beta.2](https://github.com/dominikg/svite/compare/0.6.1-beta.1...0.6.1-beta.2) (2020-09-08)
 
-
 ### Bug Fixes
 
-* convert cli option values to their default type (fixes [#45](https://github.com/dominikg/svite/issues/45)) ([0b08deb](https://github.com/dominikg/svite/commit/0b08deb85027006d23192fa206c745c57017bd92))
-* turn off resolveSvelteExtensions by default. (fixes [#44](https://github.com/dominikg/svite/issues/44)) ([2adb55a](https://github.com/dominikg/svite/commit/2adb55a9f4be1860c8ea0b390cccbfc0d12c0021))
+- convert cli option values to their default type (fixes [#45](https://github.com/dominikg/svite/issues/45)) ([0b08deb](https://github.com/dominikg/svite/commit/0b08deb85027006d23192fa206c745c57017bd92))
+- turn off resolveSvelteExtensions by default. (fixes [#44](https://github.com/dominikg/svite/issues/44)) ([2adb55a](https://github.com/dominikg/svite/commit/2adb55a9f4be1860c8ea0b390cccbfc0d12c0021))
 
 ### [0.6.1-beta.1](https://github.com/dominikg/svite/compare/0.6.1-beta.0...0.6.1-beta.1) (2020-09-06)
 
-
 ### Features
 
-* add --mode option to svite dev command ([d515a55](https://github.com/dominikg/svite/commit/d515a553b114dd32e6dc201dd743dbea2dc61635))
+- add --mode option to svite dev command ([d515a55](https://github.com/dominikg/svite/commit/d515a553b114dd32e6dc201dd743dbea2dc61635))
 
 ### [0.6.1-beta.0](https://github.com/dominikg/svite/compare/0.6.0...0.6.1-beta.0) (2020-09-01)
 
-
 ### Features
 
-* options for root directory and resolving of absolute imports inside root ([b9192a0](https://github.com/dominikg/svite/commit/b9192a0b3e9f585d54b2808ddc1bbc9bc02a270a))
-* update routify-mdsvex example with an mdsvex layout ([d413141](https://github.com/dominikg/svite/commit/d413141523ca458c7ee9f6a3aae9e31fb8b32a68))
+- options for root directory and resolving of absolute imports inside root ([b9192a0](https://github.com/dominikg/svite/commit/b9192a0b3e9f585d54b2808ddc1bbc9bc02a270a))
+- update routify-mdsvex example with an mdsvex layout ([d413141](https://github.com/dominikg/svite/commit/d413141523ca458c7ee9f6a3aae9e31fb8b32a68))
 
 ## [0.6.0](https://github.com/dominikg/svite/compare/0.6.0-beta.1...0.6.0) (2020-08-30)
 
 ## [0.6.0-beta.1](https://github.com/dominikg/svite/compare/0.6.0-beta.0...0.6.0-beta.1) (2020-08-23)
 
-
 ### Features
 
-* remove additional rollup-plugin-node-resolve and configure rollupDedupe via cli ([97f9f01](https://github.com/dominikg/svite/commit/97f9f01f9a91a4c94dc5d864bcbef5b99e8b32a9))
+- remove additional rollup-plugin-node-resolve and configure rollupDedupe via cli ([97f9f01](https://github.com/dominikg/svite/commit/97f9f01f9a91a4c94dc5d864bcbef5b99e8b32a9))
 
 ## [0.6.0-beta.0](https://github.com/dominikg/svite/compare/0.5.1-beta.1...0.6.0-beta.0) (2020-08-23)
 
