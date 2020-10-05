@@ -59,13 +59,13 @@
   },
   "optionalDependencies": {
     "rollup-plugin-visualizer": "^4.1.1",
-    "svelte-preprocess": "4.3.2"
+    "svelte-preprocess": "4.4.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
     "eslint": "^7.10.0",
     "eslint-config-prettier": "^6.12.0",
     "eslint-config-recommended": "^4.1.0",
@@ -77,10 +77,10 @@
     "eslint-plugin-svelte3": "^2.7.3",
     "glob": "^7.1.6",
     "husky": "^4.3.0",
-    "jest": "^26.4.2",
-    "jest-junit": "^11.1.0",
+    "jest": "^26.5.0",
+    "jest-junit": "^12.0.0",
     "lint-staged": "^10.4.0",
-    "npm-check-updates": "^9.0.3",
+    "npm-check-updates": "^9.0.4",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.2",
     "prettier-plugin-svelte": "^1.4.0",
@@ -91,7 +91,7 @@
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "3.29.0",
-    "svelte-preprocess": "4.3.2",
+    "svelte-preprocess": "4.4.2",
     "tree-kill": "^1.2.2",
     "typescript": "^4.0.3",
     "write-file-atomic": "^3.0.3"
