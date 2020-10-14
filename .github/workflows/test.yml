@@ -24,17 +24,6 @@ jobs:
         node-version: [12.x, 14.x]
     steps:
       - uses: actions/checkout@v2
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: pm-cache-${{ matrix.node-version }}
-        with:
-          path: ./test/cache
-          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('test/temp/**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-test-${{ env.cache-name }}-
-            ${{ runner.os }}-test-
-            ${{ runner.os }}-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
