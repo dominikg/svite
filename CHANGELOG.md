@@ -16,16 +16,12 @@ include the following compiler options in tsconfig.json
 ```
 
 update svelte.config.js typescript preprocessor setup to your preferred way.
-eg. full auto mode with typescript as default script language
+eg. full auto mode
 
 ```js
 const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
-  preprocess: sveltePreprocess({
-    defaults: {
-      script: 'typescript',
-    },
-  }),
+  preprocess: sveltePreprocess(),
 };
 ```
 

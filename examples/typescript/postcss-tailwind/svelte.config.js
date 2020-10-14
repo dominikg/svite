@@ -1,10 +1,6 @@
 const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
   preprocess: sveltePreprocess({
-    defaults: {
-      script: 'typescript',
-      style: 'postcss',
-    },
     typescript: true,
     postcss: true,
     // disable preprocessors not in use

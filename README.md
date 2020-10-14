@@ -221,9 +221,6 @@ And typescript preprocessor in svelte.config.js
 const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
   preprocess: sveltePreprocess({
-    defaults: {
-      script: 'typescript',
-    },
     typescript: true,
     // disable preprocessors not in use
     babel: false,
@@ -238,6 +235,14 @@ module.exports = {
     stylus: false,
   }),
 };
+```
+
+To use typescript in svelte files, add `lang="ts"` attribute to script tags
+
+```
+<script lang="ts">
+    export let foo: string;
+</script>
 ```
 
 ### resolveSvelteField

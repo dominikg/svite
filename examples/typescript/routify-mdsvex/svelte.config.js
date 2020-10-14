@@ -5,9 +5,6 @@ module.exports = {
   extensions: ['.svelte', '.svx'],
   preprocess: [
     sveltePreprocess({
-      defaults: {
-        script: 'typescript',
-      },
       typescript: true,
       // disable preprocessors not in use
       babel: false,

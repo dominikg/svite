@@ -1,9 +1,6 @@
 const sveltePreprocess = require('svelte-preprocess');
 module.exports = {
   preprocess: sveltePreprocess({
-    defaults: {
-      script: 'typescript',
-    },
     typescript: true,
     // disable preprocessors not in use
     babel: false,
