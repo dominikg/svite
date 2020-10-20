@@ -217,6 +217,10 @@ const getText = async (page, selectorOrEl) => {
 };
 
 const writeLogs = async (dir, name, out, err) => {
+  if (!out && !err) {
+    console.error(`empty write attempt for ${name}  in ${dir}`);
+    return;
+  }
   try {
     const logDir = path.join(dir, 'logs');
     await fs.mkdirp(logDir);

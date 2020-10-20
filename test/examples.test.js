@@ -140,9 +140,9 @@ describe('examples', () => {
                       expect(buildScript.stderr).toBe('');
                       await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
                     } catch (e) {
+                      console.error('svite build failed', e);
                       await writeExampleLogs('build', e.stdout, e.stderr);
                       await writeExampleLogs('build.exception', e.toString(), e.stack);
-                      console.error('svite build failed', e);
                       throw e;
                     }
 
