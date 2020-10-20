@@ -217,8 +217,8 @@ const getText = async (page, selectorOrEl) => {
 };
 
 const writeLogs = async (dir, name, out, err) => {
-  if (!out && !err) {
-    console.error(`empty write attempt for ${name}  in ${dir}`);
+  if (out == null && err == null) {
+    console.error(`invalid write attempt for ${name}  in ${dir}`);
     return;
   }
   try {
