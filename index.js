@@ -305,11 +305,8 @@ function rollupPluginDeferred(name, createPlugin) {
     name,
     options: async function (options) {
       const plugin = await createPlugin();
-      Object.keys(plugin).forEach((key) => {
-        if (key !== 'options') {
-          wrapper[key] = plugin[key];
-        }
-      });
+      const index = options.plugins.findIndex((p) => p.name === name);
+      options.plugins[index] = plugin;
       return plugin.options ? await plugin.options.apply(this, options) : options;
     },
   };
