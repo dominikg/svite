@@ -11,7 +11,7 @@
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",
     "postcss": "^8.1.4",
-    "postcss-import": "^13.0.0",
+    "postcss-import": "^12.0.1",
     "postcss-load-config": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "svelte-check": "^1.1.6",
