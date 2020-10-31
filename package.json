@@ -51,7 +51,7 @@
     "execa": "^4.1.0",
     "lru-cache": "^6.0.0",
     "rollup-plugin-svelte-hot": "0.11.1",
-    "vite": "1.0.0-rc.8"
+    "vite": "1.0.0-rc.5"
   },
   "peerDependencies": {
     "svelte": "3.29.4",
