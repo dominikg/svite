@@ -7,6 +7,7 @@ const {
   closeKill,
   closeKillAll,
   expectByPolling,
+  findUnexpectedBuildErrorMessages,
   getText,
   launchPuppeteer,
   packageSvite,
@@ -137,7 +138,8 @@ describe('examples', () => {
                         cwd: exampleTempDir,
                       });
                       expect(buildScript.stdout).toMatch('Build completed');
-                      expect(buildScript.stderr).toBe('');
+                      const unexpectedBuildErrorMessages = findUnexpectedBuildErrorMessages(buildScript.stderr);
+                      expect(unexpectedBuildErrorMessages).toEqual([]);
                       await writeExampleLogs('build', buildScript.stdout, buildScript.stderr);
                     } catch (e) {
                       console.error('svite build failed', e);

@@ -100,7 +100,7 @@ Options:
   -m,  --mode <string>                          specify env mode eg. ["development","test","staging","production"] (default: "development")
   -p,  --port <port>                            port to use for serve (default: 3000)
   -o,  --open                                   open browser on start
-  --useTransformCache [boolean]                 use transform cache for faster hmr (default: false)
+  --useTransformCache [boolean]                 use transform cache for faster hmr (default: true)
   --hot [boolean]                               enable/disable hmr for svelte (default: true)
   --resolveSvelteField [boolean]                resolve via svelte field in package.json (default: true)
   --resolveSvelteExtensions [boolean]           resolve svelte extensions in modules !!!EXPERIMENTAL!!! (default: false)
@@ -168,7 +168,7 @@ module.exports = {
 | option                               | type                      | default        | values                                                                                                                                                                |
 | ------------------------------------ | ------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **hot**<br><br>                      | `boolean`<br>`object`<br> | `true`<br><br> | &bull;&nbsp;`true` use default svelte-hmr config<br>&bull;&nbsp;`false` disable svelte-hmr<br>&bull;&nbsp;`object` custom svelte-hmr config                           |
-| **useTransformCache**<br>            | `boolean`<br>             | `false`<br>    | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
+| **useTransformCache**<br>            | `boolean`<br>             | `true`<br>     | &bull;&nbsp;`true` enable transform cache<br>&bull;&nbsp;`false` disable transform cache                                                                              |
 | **logLevel**                         | `string`                  | `'info'`       | &bull;&nbsp;`'debug'` &bull;&nbsp;`'info'` &bull;&nbsp;`'warn'` &bull;&nbsp;`'error'` &bull;&nbsp;`'silent'`. cli 'debug' flag automatically sets logLevel to 'debug' |
 | **typescript**                       | `boolean`                 | `false`        | &bull;&nbsp;`true` enable typescript preprocessing. !!!EXPERIMENTAL!!! &bull;&nbsp;`false` disable typescript preprocessing.                                          |
 | **resolveSvelteField**               | `boolean`                 | `true`         | &bull;&nbsp;`true` resolve via svelte field in package.json &bull;&nbsp;`false` don't resolve via svelte field in package.json.                                       |

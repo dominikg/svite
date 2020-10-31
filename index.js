@@ -8,7 +8,7 @@ const svelteDeps = ['svelte/animate', 'svelte/easing', 'svelte/internal', 'svelt
 
 const defaultOptions = {
   hot: true,
-  useTransformCache: false,
+  useTransformCache: true,
   logLevel: 'info', // 'debug','info','warn','error'  ('silent' for no output)
   typescript: false,
   resolveSvelteField: true,
@@ -380,7 +380,8 @@ function createVitePlugin(config) {
   return {
     name: 'svite',
     rollupInputOptions: {
-      plugins: buildPlugins,
+      pluginsPreBuild: buildPlugins,
+      pluginsOptimizer: buildPlugins,
     },
     transforms,
     configureServer,

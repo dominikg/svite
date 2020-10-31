@@ -20,7 +20,7 @@ const buildOptionDefaults = {
 
 const devOptionDefaults = {
   typescript: false,
-  useTransformCache: false,
+  useTransformCache: true,
   hot: true,
   resolveSvelteField: true,
   resolveSvelteExtensions: false,
@@ -51,8 +51,8 @@ async function setupSvite(options) {
   };
   if (
     viteConfig.rollupInputOptions &&
-    viteConfig.rollupInputOptions.plugins &&
-    viteConfig.rollupInputOptions.plugins.some((p) => p.name === 'svite')
+    viteConfig.rollupInputOptions.pluginsPreBuild &&
+    viteConfig.rollupInputOptions.pluginsPreBuild.some((p) => p.name === 'svite')
   ) {
     log.debug('using svite plugin provided in vite config');
   } else {
@@ -60,7 +60,7 @@ async function setupSvite(options) {
     log.debug('adding svite plugin to vite');
     const svite = require(path.resolve(__dirname, '../index.js'));
     const svitePlugin = svite(options);
-    viteConfig = resolvePlugin(viteConfig, svitePlugin);
+    viteConfig = resolveSvitePlugin(viteConfig, svitePlugin);
   }
 
   optimizeViteConfig(viteConfig);
@@ -90,10 +90,12 @@ function optimizeViteConfig(viteConfig) {
   log.debug('added svelte to rollupDedupe', viteConfig.rollupDedupe.join(`, `));
 }
 
-function resolvePlugin(config, plugin) {
+// this mimics vites own resolvePlugin but only takes the steps needed to add svite after the fact
+function resolveSvitePlugin(config, plugin) {
   return {
     ...config,
     ...plugin,
+
     alias: {
       ...plugin.alias,
       ...config.alias,
@@ -102,30 +104,34 @@ function resolvePlugin(config, plugin) {
       ...plugin.define,
       ...config.define,
     },
-    transforms: [...(config.transforms || []), ...(plugin.transforms || [])],
-    resolvers: [...(config.resolvers || []), ...(plugin.resolvers || [])],
-    configureServer: [].concat(config.configureServer || [], plugin.configureServer || []),
-    vueCompilerOptions: {},
-    vueTransformAssetUrls: {},
-    vueCustomBlockTransforms: {},
-    rollupInputOptions: mergeRollupOptions(config.rollupInputOptions, plugin.rollupInputOptions),
-    rollupOutputOptions: mergeRollupOptions(config.rollupOutputOptions, plugin.rollupOutputOptions),
-    enableRollupPluginVue: false,
+    transforms: mergeArrays(config.transforms, plugin.transforms),
+    indexHtmlTransforms: mergeArrays(config.indexHtmlTransforms, plugin.indexHtmlTransforms),
+    resolvers: mergeArrays(config.resolvers, plugin.resolvers),
+    configureServer: mergeArrays(config.configureServer, plugin.configureServer),
+    configureBuild: mergeArrays(config.configureBuild, plugin.configureBuild),
+    rollupInputOptions: mergeObjectOptions(config.rollupInputOptions, plugin.rollupInputOptions),
+    rollupOutputOptions: mergeObjectOptions(config.rollupOutputOptions, plugin.rollupOutputOptions),
   };
 }
 
-function mergeRollupOptions(rollupOptions1, rollupOptions2) {
-  if (!rollupOptions1) {
-    return rollupOptions2;
+function mergeArrays(a, b) {
+  return [...(a || []), ...(b || [])];
+}
+
+function mergeObjectOptions(to, from) {
+  if (!to) return from;
+  if (!from) return to;
+  const res = { ...to };
+  for (const key in from) {
+    const existing = res[key];
+    const toMerge = from[key];
+    if (Array.isArray(existing) || Array.isArray(toMerge)) {
+      res[key] = [].concat(existing, toMerge).filter(Boolean);
+    } else {
+      res[key] = toMerge;
+    }
   }
-  if (!rollupOptions2) {
-    return rollupOptions1;
-  }
-  return {
-    ...rollupOptions1,
-    ...rollupOptions2,
-    plugins: [...(rollupOptions1.plugins || []), ...(rollupOptions2.plugins || [])],
-  };
+  return res;
 }
 
 async function runServe(options) {

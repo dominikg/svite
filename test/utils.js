@@ -181,7 +181,9 @@ const packageSvite = async () => {
     const packageFilePath = path.join(tempDir, packageName);
     const packageExists = await fs.exists(packageFilePath);
     if (packageExists) {
-      return packageFilePath;
+      const uniqueTestFilePath = packageFilePath.replace('.tgz', `-test.${+Date.now()}.tgz`);
+      await fs.move(packageFilePath, uniqueTestFilePath);
+      return uniqueTestFilePath;
     } else {
       throw new Error('pack returned with 0 but packageFile does not exist');
     }
@@ -241,12 +243,28 @@ const takeScreenshot = async (dir, page, name) => {
   await page.screenshot({ path: path.join(screenshotDir, `${name}.png`), type: 'png' });
 };
 
+const findUnexpectedBuildErrorMessages = (errorlog) => {
+  if (!errorlog) {
+    return [];
+  }
+  return errorlog.split('\n').filter((line) => line && !isExpectedErrorMessage(line));
+};
+
+const isExpectedErrorMessage = (line) => {
+  //TODO remove once vite released fix in rc.9
+  if (line.indexOf('Unknown input options:') > -1) {
+    return true;
+  }
+  return false;
+};
+
 module.exports = {
   cleanDir,
   closeKill,
   closeKillAll,
   deleteDir,
   expectByPolling,
+  findUnexpectedBuildErrorMessages,
   getEl,
   getText,
   hmrUpdateComplete,
