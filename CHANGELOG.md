@@ -1,20 +1,14 @@
-
 ### [0.8.1-beta.0](https://github.com/dominikg/svite/compare/0.8.0...0.8.1-beta.0) (2020-10-31)
-
 
 ### Features
 
-* relax version selectors for vite, svelte, svelte-hmr, rollup-plugin-svelte-hot ([78b28b9](https://github.com/dominikg/svite/commit/78b28b92120878e29a6b59071953bc134cce4904))
-* update to svelte 3.29.4 ([43abb9a](https://github.com/dominikg/svite/commit/43abb9ac1cb244394950e9e311c0afa8c25eba5c))
-* update to vite-1.0.0-rc.6 ([467fd91](https://github.com/dominikg/svite/commit/467fd9141508e2ed691c69f774cb1817b7cd6a30))
-* update to vite-1.0.0-rc.8 and latest svelte-hmr ([b4f043b](https://github.com/dominikg/svite/commit/b4f043bd87f409666009dbe262b819fb8495a673))
-* update to vite-1.0.0-rc.8, enable transformCache by default again ([4a8a220](https://github.com/dominikg/svite/commit/4a8a220778843d143681cb9b8c90549e5fdb8fe5))
-
+- relax version selectors for vite, svelte, svelte-hmr, rollup-plugin-svelte-hot ([78b28b9](https://github.com/dominikg/svite/commit/78b28b92120878e29a6b59071953bc134cce4904))
+- update to svelte 3.29.4 ([43abb9a](https://github.com/dominikg/svite/commit/43abb9ac1cb244394950e9e311c0afa8c25eba5c))
+- update to vite-1.0.0-rc.8, enable transformCache by default again ([4a8a220](https://github.com/dominikg/svite/commit/4a8a220778843d143681cb9b8c90549e5fdb8fe5))
 
 ### Bug Fixes
 
-* downgrade postcss-import to v12 to avoid error with required postcss8 message ([44cbb31](https://github.com/dominikg/svite/commit/44cbb31ae074767dc432afbc0c192d2e6a0c89e8))
-* revert to vite-1.0.0-rc.5 ([c4142f7](https://github.com/dominikg/svite/commit/c4142f701072011306e5b63f660b8f219e02083d))
+- downgrade postcss-import to v12 to avoid error with required postcss8 message ([44cbb31](https://github.com/dominikg/svite/commit/44cbb31ae074767dc432afbc0c192d2e6a0c89e8))
 
 ## [0.8.0](https://github.com/dominikg/svite/compare/0.8.0-beta.1...0.8.0) (2020-10-20)
 
