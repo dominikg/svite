@@ -250,8 +250,8 @@ const findUnexpectedBuildErrorMessages = (errorlog) => {
   return errorlog.split('\n').filter((line) => line && !isExpectedErrorMessage(line));
 };
 
+// eslint-disable-next-line  no-unused-vars
 const isExpectedErrorMessage = (line) => {
-  // eslint-disable-line  no-unused-vars
   // this helper exists to ignore error messages that are false positives.
   // should only be added temporary until fixed
   return false;
