@@ -121,6 +121,7 @@ Options:
   -c,  --config <string>                     use specified vite config file
   -ts, --typescript [boolean]                enable typescript preprocessing in svelte !!!EXPERIMENTAL!!! (default: false)
   -m,  --mode <string>                       specify env mode eg. ["development","test","staging","production"] (default: "production")
+  --entry <string>                           entry point for the application (default: "index.html")
   --base <string>                            public base path for build (default: "/")
   --outDir <string>                          output directory for build (default: "dist")
   --assetsDir <string>                       directory under outDir to place assets in (default: "_assets")

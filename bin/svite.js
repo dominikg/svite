@@ -16,6 +16,7 @@ const buildOptionDefaults = {
   sourcemap: false,
   minify: 'terser',
   typescript: false,
+  entry: 'index.html',
 };
 
 const devOptionDefaults = {
@@ -452,6 +453,7 @@ async function main() {
     .option('-c,  --config <string>', 'use specified vite config file')
     .option('-ts, --typescript [boolean]', 'enable typescript preprocessing in svelte !!!EXPERIMENTAL!!!', buildOptionDefaults.typescript)
     .option('-m,  --mode <string>', 'specify env mode eg. ["development","test","staging","production"]', 'production')
+    .option('--entry <string>', 'entry point for the application', buildOptionDefaults.entry)
     .option('--base <string>', 'public base path for build', buildOptionDefaults.base)
     .option('--outDir <string>', 'output directory for build', buildOptionDefaults.outDir)
     .option('--assetsDir <string>', 'directory under outDir to place assets in', buildOptionDefaults.assetsDir)
