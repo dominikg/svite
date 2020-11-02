@@ -251,10 +251,9 @@ const findUnexpectedBuildErrorMessages = (errorlog) => {
 };
 
 const isExpectedErrorMessage = (line) => {
-  //TODO remove once vite released fix in rc.9
-  if (line.indexOf('Unknown input options:') > -1) {
-    return true;
-  }
+  // eslint-disable-line  no-unused-vars
+  // this helper exists to ignore error messages that are false positives.
+  // should only be added temporary until fixed
   return false;
 };
 
