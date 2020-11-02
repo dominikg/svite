@@ -1,3 +1,12 @@
+
+### [0.8.1-beta.1](https://github.com/dominikg/svite/compare/0.8.1-beta.0...0.8.1-beta.1) (2020-11-02)
+
+
+### Features
+
+* pass new --entry option from svite build to vite ([aa13cff](https://github.com/dominikg/svite/commit/aa13cff99be4dc0f3eb451fa0f86b9d85ccaf88f))
+* update to vite-1.0.0-rc.9 ([997999f](https://github.com/dominikg/svite/commit/997999f7593e87a4d1388a30615ba35ecdd7b443))
+
 ### [0.8.1-beta.0](https://github.com/dominikg/svite/compare/0.8.0...0.8.1-beta.0) (2020-10-31)
 
 ### Features
