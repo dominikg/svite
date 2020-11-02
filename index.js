@@ -381,6 +381,7 @@ function createVitePlugin(config) {
     name: 'svite',
     rollupInputOptions: {
       pluginsPreBuild: buildPlugins,
+      pluginsOptimizer: buildPlugins,
     },
     transforms,
     configureServer,
