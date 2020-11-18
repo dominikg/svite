@@ -12,7 +12,7 @@
     */
   }
   .world {
-    @apply text-teal-500 italic; /*  here's some tailwind apply */
+    @apply text-green-500 italic; /*  here's some tailwind apply */
   }
 </style>
 
