@@ -10,7 +10,7 @@
     "build:svite": "svite build"
   },
   "dependencies": {
-    "@roxi/routify": "^2.0.2"
+    "@roxi/routify": "^2.7.3"
   },
   "devDependencies": {
     "mdsvex": "^0.8.8",

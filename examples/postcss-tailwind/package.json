@@ -8,14 +8,14 @@
   "dependencies": {
   },
   "devDependencies": {
-    "postcss": "^8.1.4",
-    "postcss-import": "^12.0.1",
+    "postcss": "^8.1.7",
+    "postcss-import": "^13.0.0",
     "postcss-load-config": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "svelte": "^3.29.7",
     "svelte-hmr": "^0.11.6",
-    "svelte-preprocess": "^4.5.2",
+    "svelte-preprocess": "^4.6.0",
     "svite": "latest",
-    "tailwindcss": "^1.9.6"
+    "tailwindcss": "^2.0.1"
   }
 }
