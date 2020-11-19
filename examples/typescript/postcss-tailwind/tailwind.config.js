@@ -1,5 +1,6 @@
 module.exports = {
-  purge: process.env.NODE_ENV === 'production' && {
+  purge: {
+    enabled: process.env.NODE_ENV === 'production',
     content: ['./src/**/*.svelte', './src/**/*.html', './src/**/*.css', './index.html'],
     options: {
       whitelistPatterns: [/svelte-/],
@@ -24,10 +25,4 @@ module.exports = {
   },
   variants: {},
   plugins: [],
-  future: {
-    removeDeprecatedGapUtilities: true,
-    purgeLayersByDefault: true,
-    defaultLineHeights: true,
-    standardFontWeights: true,
-  },
 };
