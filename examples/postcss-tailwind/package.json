@@ -9,12 +9,12 @@
   },
   "devDependencies": {
     "postcss": "^7.0.35",
-    "postcss-import": "^12.0.0",
+    "postcss-import": "^12.0.1",
     "postcss-load-config": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "svelte": "^3.29.7",
     "svelte-hmr": "^0.11.6",
-    "svelte-preprocess": "^4.6.0",
+    "svelte-preprocess": "^4.6.1",
     "svite": "latest",
     "tailwindcss": "compat"
   }

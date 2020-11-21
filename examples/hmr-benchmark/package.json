@@ -14,10 +14,10 @@
     "puppeteer": "^5.5.0",
     "svelte": "^3.29.7",
     "svelte-hmr": "^0.11.6",
-    "svelte-preprocess": "^4.6.0",
+    "svelte-preprocess": "^4.6.1",
     "svite": "latest",
     "systeminformation": "^4.30.1",
     "tslib": "^2.0.3",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.2"
   }
 }

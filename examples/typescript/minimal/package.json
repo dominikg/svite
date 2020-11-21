@@ -10,12 +10,12 @@
   },
   "devDependencies": {
     "@tsconfig/svelte": "^1.0.10",
-    "svelte-check": "^1.1.13",
-    "svelte-preprocess": "^4.6.0",
+    "svelte-check": "^1.1.15",
+    "svelte-preprocess": "^4.6.1",
     "svelte": "^3.29.7",
     "svelte-hmr": "^0.11.6",
     "svite": "latest",
     "tslib": "^2.0.3",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.2"
   }
 }

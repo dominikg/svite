@@ -46,7 +46,7 @@
     "@rollup/pluginutils": "^4.1.0",
     "chalk": "^4.1.0",
     "commander": "^6.2.0",
-    "debug": "^4.2.0",
+    "debug": "^4.3.1",
     "degit": "^2.8.0",
     "execa": "^4.1.0",
     "lru-cache": "^6.0.0",
@@ -59,14 +59,14 @@
   },
   "optionalDependencies": {
     "rollup-plugin-visualizer": "^4.2.0",
-    "svelte-preprocess": "^4.6.0"
+    "svelte-preprocess": "^4.6.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
-    "eslint": "^7.13.0",
+    "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-config-recommended": "^4.1.0",
     "eslint-plugin-html": "^6.1.1",
@@ -81,9 +81,9 @@
     "jest": "^26.6.3",
     "jest-junit": "^12.0.0",
     "lint-staged": "^10.5.1",
-    "npm-check-updates": "^10.2.1",
+    "npm-check-updates": "^10.2.2",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.1.2",
+    "prettier": "^2.2.0",
     "prettier-plugin-svelte": "^1.4.1",
     "puppeteer-core": "^5.5.0",
     "rollup-plugin-visualizer": "^4.2.0",
@@ -92,9 +92,9 @@
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-recommended": "^3.0.0",
     "svelte": "^3.29.7",
-    "svelte-preprocess": "^4.6.0",
+    "svelte-preprocess": "^4.6.1",
     "tree-kill": "^1.2.2",
-    "typescript": "^4.0.5",
+    "typescript": "^4.1.2",
     "write-file-atomic": "^3.0.3"
   },
   "husky": {
