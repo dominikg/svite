@@ -211,7 +211,7 @@ function createSvelteTransformTest(svelteOptions) {
 function updateViteConfig(config) {
   const viteConfig = config.vite;
   let addToInclude = svelteDeps.concat();
-  let addToExclude = ['svelte'];
+  let addToExclude = [];
   if (config.dev.hot) {
     addToExclude.push('svelte-hmr');
     addToInclude.push('svelte-hmr/runtime/esm', 'svelte-hmr/runtime/proxy-adapter-dom', 'svelte-hmr/runtime/hot-api-esm');
