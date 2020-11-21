@@ -278,28 +278,29 @@ describe('examples', () => {
                       }
                       expect(await getText(devPage, '#test-div')).toBe('__xxx__');
                       await updateExampleFileAndWaitForHmrUpdate('src/App.svelte', (c) => c.replace('__xxx__', '__yyy__'), devPage);
+                      if (example.indexOf('routify-mdsvex') > -1) {
+                        await sleep(1000); // let routify route update complete first
+                      }
                       await takeExampleScreenshot(devPage, 'devHmr');
                       expect(await getText(devPage, '#test-div')).toBe('__yyy__');
                     });
 
                     if (example.indexOf('routify-mdsvex') > -1) {
                       test('should navigate to mdsvex page', async () => {
-                        await updateExampleFile('src/pages/mdsvex.svx', (c) => `<div id="mdsvex-div">__xxx__</div>\n${c}`);
-                        await Promise.all([devPage.waitForNavigation(), devPage.click('a[href="/mdsvex"]'), sleep(500)]);
+                        await Promise.all([devPage.waitForNavigation(), devPage.click('a[href="/mdsvex"]'), sleep(1000)]);
                         await takeExampleScreenshot(devPage, 'devMdsvex');
-                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
+                        expect(await getText(devPage, 'a[href="https://mdsvex.com"]')).toBe('check it out');
                       });
 
                       test('should accept hmr update to mdsvex.svx', async () => {
-                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
                         await updateExampleFileAndWaitForHmrUpdate(
                           'src/pages/mdsvex.svx',
-                          (c) => `<div id="mdsvex-div2">__yyy__</div>\n${c}`,
+                          (c) => `<div id="mdsvex-div">__xxx__</div>\n${c}`,
                           devPage,
                         );
-                        await sleep(250);
+                        await sleep(1000);
                         await takeExampleScreenshot(devPage, 'devMdsvexHmr');
-                        expect(await getText(devPage, '#mdsvex-div2')).toBe('__yyy__');
+                        expect(await getText(devPage, '#mdsvex-div')).toBe('__xxx__');
                       });
                     }
 
