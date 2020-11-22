@@ -1,23 +1,22 @@
+const { tailwindExtractor } = require('tailwindcss/lib/lib/purgeUnusedStyles');
+
+const svelteClassColonExtractor = (content) => {
+  return content.match(/(?<=class:)([a-zA-Z0-9_-]+)/gm) || [];
+};
+
 module.exports = {
   purge: {
     enabled: process.env.NODE_ENV === 'production',
     content: ['./src/**/*.svelte', './src/**/*.html', './src/**/*.css', './index.html'],
+    preserveHtmlElements: true,
     options: {
-      whitelistPatterns: [/svelte-/],
+      safelist: [/svelte-/],
       defaultExtractor: (content) => {
-        const regExp = new RegExp(/[A-Za-z0-9-_:/]+/g);
-        const matchedTokens = [];
-        let match = regExp.exec(content);
-        while (match) {
-          if (match[0].startsWith('class:')) {
-            matchedTokens.push(match[0].substring(6));
-          } else {
-            matchedTokens.push(match[0]);
-          }
-          match = regExp.exec(content);
-        }
-        return matchedTokens;
+        // WARNING: tailwindExtractor is internal tailwind api
+        // if this breaks after a tailwind update, report to svite repo
+        return [...tailwindExtractor(content), ...svelteClassColonExtractor(content)];
       },
+      keyframes: true,
     },
   },
   theme: {
