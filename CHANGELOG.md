@@ -1,4 +1,17 @@
 
+### [0.8.1-beta.2](https://github.com/dominikg/svite/compare/0.8.1-beta.1...0.8.1-beta.2) (2020-11-22)
+
+
+### Features
+
+* udate tailwind example to v2 - uses compat build and postcss7 ([713f3ce](https://github.com/dominikg/svite/commit/713f3ce52430c979046922cea33c7268fbfd1942))
+* update tailwind ts example to v2 - uses compat build and postcss7 ([771b4c9](https://github.com/dominikg/svite/commit/771b4c9c20fc60f76d76a472d21928a9acffdb93))
+
+
+### Bug Fixes
+
+* don't exclude 'svelte' from optimize. starting with 3.29.5 it works and breaks without it ([98d7ce8](https://github.com/dominikg/svite/commit/98d7ce859617b6cbe64c8ebd7a9c92acdf8698e8))
+
 ### [0.8.1-beta.1](https://github.com/dominikg/svite/compare/0.8.1-beta.0...0.8.1-beta.1) (2020-11-02)
 
 
