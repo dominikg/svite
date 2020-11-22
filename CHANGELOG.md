@@ -1,4 +1,6 @@
 
+### [0.8.1](https://github.com/dominikg/svite/compare/0.8.1-beta.2...0.8.1) (2020-11-22)
+
 ### [0.8.1-beta.2](https://github.com/dominikg/svite/compare/0.8.1-beta.1...0.8.1-beta.2) (2020-11-22)
 
 
