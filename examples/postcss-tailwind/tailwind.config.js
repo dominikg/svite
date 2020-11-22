@@ -12,8 +12,11 @@ module.exports = {
     options: {
       safelist: [/svelte-/],
       defaultExtractor: (content) => {
+        // WARNING: tailwindExtractor is internal tailwind api
+        // if this breaks after a tailwind update, report to svite repo
         return [...tailwindExtractor(content), ...svelteClassColonExtractor(content)];
       },
+      keyframes: true,
     },
   },
   theme: {
