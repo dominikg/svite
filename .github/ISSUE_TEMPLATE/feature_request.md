@@ -2,7 +2,7 @@
 name: Feature request
 about: Cool ideas go here
 title: ''
-labels: ''
+labels: 'enhancement',
 assignees: ''
 ---
 
