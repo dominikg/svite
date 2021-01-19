@@ -293,6 +293,10 @@ All of the above, but with typescript support
 
 This is an early version, some things may not work as expected. Please report findings.
 
+## SSR not supported
+
+There is a `--ssr` flag, but it doesn't work. [This feature is tracked in #22](https://github.com/dominikg/svite/issues/22).
+
 ## imports of commonjs modules don't work in `svite dev`
 
 Support for commonjs modules in vite is limited. If you run into problems, try to add the dependency to vite optimizeDeps via vite.config.js
