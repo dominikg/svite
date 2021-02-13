@@ -4,6 +4,14 @@
 
 Every change in that gif is a separate hot module reload - seriously - [build it yourself](https://github.com/dominikg/svite/issues/6)
 
+## DEPRECATION WARNING - svite@0.8.1
+
+- svite@0.8.1 still uses vite 1.x which has been deprecated
+- There isn't going to be another 0.8.x release based on vite1
+- a new version with vite2 is being worked on, no ETA or promises at this point
+
+that being said, 0.8.1 still works, happy hot module reloading.
+
 ## features
 
 - reads svelte configuration from `svelte.config.js`
